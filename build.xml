@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="MainActivity" default="help">
+<project name="MainActivity"
+    default="help">
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
@@ -33,7 +34,8 @@
          This must be done before we load project.properties since
          the proguard config can use sdk.dir -->
     <property environment="env" />
-    <condition property="sdk.dir" value="${env.ANDROID_HOME}">
+    <condition property="sdk.dir"
+        value="${env.ANDROID_HOME}">
         <isset property="env.ANDROID_HOME" />
     </condition>
 
@@ -49,10 +51,8 @@
     <loadproperties srcFile="project.properties" />
 
     <!-- quick check on sdk.dir -->
-    <fail
-            message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
-            unless="sdk.dir"
-    />
+    <fail message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
+        unless="sdk.dir" />
 
     <!--
         Import per project custom build rules if present at the root of the project.
@@ -66,7 +66,8 @@
             -post-build
             -pre-clean
     -->
-    <import file="custom_rules.xml" optional="true" />
+    <import file="custom_rules.xml"
+        optional="true" />
 
     <!-- Import the actual build file.
 
