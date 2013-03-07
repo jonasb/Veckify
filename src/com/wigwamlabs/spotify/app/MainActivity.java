@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
         }
         mSpotifySession = new SpotifySession(this, mSpotifyContext, null, null, null);
         if (!mSpotifySession.relogin()) {
+            mSpotifySession.login(TempPrivateSettings.username, TempPrivateSettings.password, true);
         }
     }
 
