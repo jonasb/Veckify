@@ -1,5 +1,10 @@
 .idea/
 bin/
 gen/
+libs/armeabi/
+obj/
 out/
+proguard_logs/
+
+key.c
 local.properties
