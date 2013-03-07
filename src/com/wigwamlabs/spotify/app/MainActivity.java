@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
         if (mSpotifySession != null) {
             mSpotifySession.destroy();
         }
-        mSpotifySession = new SpotifySession(mSpotifyContext);
+        mSpotifySession = new SpotifySession(this, mSpotifyContext, null, null, null);
     }
 
 }

@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include <jni.h>
+#include "ExceptionUtils.h"
 #include "utils.h"
 #include "wigwamlabs/Session.h"
 
@@ -23,17 +24,38 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession
     }
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession_nativeCreate(JNIEnv *env, jobject self, jobject context) {
+extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession_nativeCreate(JNIEnv *env, jobject self, jobject context, jstring settingsPath, jstring cachePath, jstring deviceId) {
     LOGV("nativeCreate()");
 
     Context *c = getNativeContext(env, context);
+    const char *settingsPathStr = env->GetStringUTFChars(settingsPath, NULL);
+    const char *cachePathStr = env->GetStringUTFChars(cachePath, NULL);
+    const char *deviceIdStr = env->GetStringUTFChars(deviceId, NULL);
 
-    return reinterpret_cast<jint>(new Session(c));
+    sp_error error;
+    Session *session = Session::create(c, settingsPathStr, cachePathStr, deviceIdStr, error);
+
+    env->ReleaseStringUTFChars(deviceId, deviceIdStr);
+    env->ReleaseStringUTFChars(cachePath, cachePathStr);
+    env->ReleaseStringUTFChars(settingsPath, settingsPathStr);
+
+    if (error != SP_ERROR_OK) {
+        ExceptionUtils::throwException(env, ExceptionUtils::RUNTIME_EXCEPTION, sp_error_message(error));
+        return 0;
+    }
+
+    return reinterpret_cast<jint>(session);
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession_nativeDestroy(JNIEnv *env, jobject self) {
     LOGV("nativeDestroy()");
 
     Session *session = getNativeSession(env, self);
+    sp_error error = session->destroy();
     delete session;
+
+    if (error != SP_ERROR_OK) {
+        ExceptionUtils::throwException(env, ExceptionUtils::RUNTIME_EXCEPTION, sp_error_message(error));
+        return;
+    }
 }

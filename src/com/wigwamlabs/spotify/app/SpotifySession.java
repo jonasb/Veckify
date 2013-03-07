@@ -1,5 +1,8 @@
 package com.wigwamlabs.spotify.app;
 
+import android.content.Context;
+import android.provider.Settings;
+
 public class SpotifySession {
     static {
         nativeInitClass();
@@ -7,8 +10,17 @@ public class SpotifySession {
 
     private int mHandle;
 
-    public SpotifySession(SpotifyContext spotifyContext) {
-        mHandle = nativeCreate(spotifyContext);
+    public SpotifySession(Context context, SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId) {
+        if (settingsPath == null) {
+            settingsPath = context.getFilesDir().getAbsolutePath();
+        }
+        if (cachePath == null) {
+            cachePath = context.getCacheDir().getAbsolutePath();
+        }
+        if (deviceId == null) {
+            deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+        mHandle = nativeCreate(spotifyContext, settingsPath, cachePath, deviceId);
     }
 
     private static native void nativeInitClass();
@@ -20,7 +32,7 @@ public class SpotifySession {
         }
     }
 
-    private native int nativeCreate(SpotifyContext spotifyContext);
+    private native int nativeCreate(SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId);
 
     private native void nativeDestroy();
 }

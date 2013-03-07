@@ -1,5 +1,6 @@
 package com.wigwamlabs.spotify.app;
 
+//TODO perhaps this class is not needed since the session provides the same role
 public class SpotifyContext {
     static {
         System.loadLibrary("spotify");
