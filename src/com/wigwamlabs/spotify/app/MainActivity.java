@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
             mSpotifySession.destroy();
         }
         mSpotifySession = new SpotifySession(this, mSpotifyContext, null, null, null);
+        if (!mSpotifySession.relogin()) {
+        }
     }
 
 }

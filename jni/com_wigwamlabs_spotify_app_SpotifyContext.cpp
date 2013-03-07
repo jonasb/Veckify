@@ -1,5 +1,5 @@
 #define LOG_TAG "com_wigwamlabs_spotify_app_SpotifyContext"
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 #include "log.h"
 
 #include <jni.h>

@@ -32,7 +32,19 @@ public class SpotifySession {
         }
     }
 
+    public boolean relogin() {
+        return nativeRelogin();
+    }
+
+    public void login(String username, String password, boolean rememberMe) {
+        nativeLogin(username, password, rememberMe);
+    }
+
     private native int nativeCreate(SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId);
 
     private native void nativeDestroy();
+
+    private native boolean nativeRelogin();
+
+    private native void nativeLogin(String username, String password, boolean rememberMe);
 }

@@ -1,5 +1,5 @@
 #define LOG_TAG "com_wigwamlabs_spotify_app_SpotifySession"
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 #include "log.h"
 
 #include <jni.h>
@@ -53,6 +53,31 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession
     Session *session = getNativeSession(env, self);
     sp_error error = session->destroy();
     delete session;
+
+    if (error != SP_ERROR_OK) {
+        ExceptionUtils::throwException(env, ExceptionUtils::RUNTIME_EXCEPTION, sp_error_message(error));
+        return;
+    }
+}
+
+extern "C" JNIEXPORT jboolean JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession_nativeRelogin(JNIEnv *env, jobject self) {
+    LOGV("nativeRelogin()");
+
+    Session *session = getNativeSession(env, self);
+    return session->relogin();
+}
+
+extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession_nativeLogin(JNIEnv *env, jobject self, jstring username, jstring password, jboolean rememberMe) {
+    LOGV("nativeLogin()");
+
+    Session *session = getNativeSession(env, self);
+    const char *usernameStr = env->GetStringUTFChars(username, NULL);
+    const char *passwordStr = env->GetStringUTFChars(password, NULL);
+
+    sp_error error = session->login(usernameStr, passwordStr, rememberMe);
+
+    env->ReleaseStringUTFChars(password, passwordStr);
+    env->ReleaseStringUTFChars(username, usernameStr);
 
     if (error != SP_ERROR_OK) {
         ExceptionUtils::throwException(env, ExceptionUtils::RUNTIME_EXCEPTION, sp_error_message(error));
