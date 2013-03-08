@@ -52,10 +52,10 @@ void Session::onConnectionStateUpdated(sp_session *session) {
 ////////////////////////////////////////////////////////////
 // factory
 
-Session *Session::create(Context *context, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError) {
+Session *Session::create(Context *context, SessionCallback *callback, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError) {
     LOGV("create(%s, %s, %s)", settingsPath, cachePath, deviceId);
     // create instance
-    Session *self = new Session(context);
+    Session *self = new Session(context, callback);
 
     // create thread
     outError = self->startThread();
@@ -113,8 +113,9 @@ Session *Session::create(Context *context, const char *settingsPath, const char 
 //
 //
 
-Session::Session(Context *context) :
+Session::Session(Context *context, SessionCallback *callback) :
     mContext(context),
+    mCallback(callback),
     mSession(NULL),
     mMainThread(0),
     mMainNotifyDo(0),
@@ -175,6 +176,7 @@ void *Session::mainThreadLoop() {
         pthread_mutex_unlock(&mMainNotifyMutex);
 
         do {
+            LOGV("Calling sp_session_process_events");
             sp_session_process_events(mSession, &nextTimeout);
         } while (nextTimeout == 0);
 
@@ -207,6 +209,7 @@ sp_error Session::destroy() {
 
 Session::~Session() {
     mContext = NULL;
+    delete mCallback;
     if (mSession) {
         LOGE("mSession not null, forgot to call destroy()?");
     }
@@ -256,7 +259,9 @@ void Session::onLogMessage(const char *data) {
 }
 
 void Session::onConnectionStateUpdated() {
-    LOGV("onConnectionStateUpdated()");
+    LOGV("onConnectionStateUpdated() %d", pthread_self());
+
+    mCallback->onConnectionStateUpdated(sp_session_connectionstate(mSession));
 }
 
 } // namespace wigwamlabs

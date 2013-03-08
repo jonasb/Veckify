@@ -3,5 +3,10 @@
 
     <string name="app_name">SpotifyApp</string>
     <string name="login">Login</string>
+    <string name="connectionStateUndefined">Undefined</string>
+    <string name="connectionStateOffline">Offline</string>
+    <string name="connectionStateDisconnected">Disconnected</string>
+    <string name="connectionStateLoggedIn">Logged in</string>
+    <string name="connectionStateLoggedOut">Logged out</string>
 
 </resources>

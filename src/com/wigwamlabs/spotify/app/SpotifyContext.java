@@ -1,5 +1,7 @@
 package com.wigwamlabs.spotify.app;
 
+import proguard.annotation.KeepName;
+
 //TODO perhaps this class is not needed since the session provides the same role
 public class SpotifyContext {
     static {
@@ -9,6 +11,7 @@ public class SpotifyContext {
         nativeInitClass();
     }
 
+    @KeepName
     private int mHandle;
 
     public SpotifyContext() {

@@ -1,14 +1,23 @@
 package com.wigwamlabs.spotify.app;
 
 import android.content.Context;
+import android.os.Handler;
 import android.provider.Settings;
 
-public class SpotifySession {
-    static {
-        nativeInitClass();
-    }
+import proguard.annotation.Keep;
+import proguard.annotation.KeepName;
 
+public class SpotifySession {
+    public static final int CONNECTION_STATE_LOGGED_OUT = 0;
+    public static final int CONNECTION_STATE_LOGGED_IN = 1;
+    public static final int CONNECTION_STATE_DISCONNECTED = 2;
+    public static final int CONNECTION_STATE_UNDEFINED = 3;
+    public static final int CONNECTION_STATE_OFFLINE = 4;
+    private static final Handler mHandler = new Handler();
+    @KeepName
     private int mHandle;
+    private int mState;
+    private Callback mCallback;
 
     public SpotifySession(Context context, SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId) {
         if (settingsPath == null) {
@@ -46,5 +55,32 @@ public class SpotifySession {
 
     private native boolean nativeRelogin();
 
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
+
     private native void nativeLogin(String username, String password, boolean rememberMe);
+
+    @Keep
+    void onConnectionStateUpdated(int state) {
+        mState = state;
+        if (mCallback == null) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onConnectionStateUpdated(mState);
+                }
+            }
+        });
+    }
+
+    static {
+        nativeInitClass();
+    }
+
+    interface Callback {
+        void onConnectionStateUpdated(int state);
+    }
 }

@@ -9,9 +9,13 @@
     <fail message="ndk.dir is missing. Make sure to set it in local.properties or to inject it through the NDK_HOME environment variable."
         unless="ndk.dir" />
 
-    <target name="-pre-build">
+    <target name="ndk-build">
         <exec executable="${ndk.dir}/ndk-build"
             failonerror="true" />
+    </target>
+
+    <target name="-pre-build"
+        depends="ndk-build">
     </target>
 
     <target name="clean"
@@ -19,6 +23,18 @@
         <exec executable="${ndk.dir}/ndk-build"
             failonerror="true">
             <arg value="clean" />
+        </exec>
+    </target>
+
+    <target name="run">
+        <exec executable="adb">
+            <arg value="shell"/>
+            <arg value="am"/>
+            <arg value="start"/>
+            <arg value="-a"/>
+            <arg value="android.intent.action.MAIN"/>
+            <arg value="-n"/>
+            <arg value="com.wigwamlabs.spotify.app/.MainActivity"/>
         </exec>
     </target>
 </project>

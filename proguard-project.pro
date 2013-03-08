@@ -12,13 +12,12 @@
 
 # Add any project specific keep options here:
 
+-keepattributes *Annotation*
+-keep @interface *
+-include proguard-annotations.pro
+
 -keepclasseswithmembernames class * {
     native <methods>;
-}
-
-# JNI code is accessing these fields through reflection
--keepclassmembers class * {
-    private int mHandle;
 }
 
 # If your project uses WebView with JS, uncomment the following

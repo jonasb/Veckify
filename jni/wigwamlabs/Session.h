@@ -8,9 +8,15 @@ namespace wigwamlabs {
 
 class Context;
 
+class SessionCallback {
+public:
+    virtual void onConnectionStateUpdated(int state) = 0;
+};
+
+
 class Session {
 public:
-    static Session *create(Context *context, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError);
+    static Session *create(Context *context, SessionCallback *callback, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError);
     sp_error destroy();
     ~Session();
     bool relogin();
@@ -25,7 +31,7 @@ private:
     static void onLogMessage(sp_session *session, const char *data);
     static void onConnectionStateUpdated(sp_session *session);
 
-    Session(Context *context);
+    Session(Context *context, SessionCallback *callback);
     sp_error startThread();
     void *mainThreadLoop();
     void onLoggedIn(sp_error error);
@@ -37,6 +43,7 @@ private:
     void onConnectionStateUpdated();
 private:
     Context *mContext;
+    SessionCallback *mCallback;
     sp_session *mSession;
     pthread_t mMainThread;
     pthread_mutex_t mMainNotifyMutex;
