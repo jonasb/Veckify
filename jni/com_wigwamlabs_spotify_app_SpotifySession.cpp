@@ -129,3 +129,13 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession
         return;
     }
 }
+
+extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_app_SpotifySession_nativeGetPlaylistContainer(JNIEnv *env, jobject self) {
+    LOGV("nativeLogin()");
+
+    Session *session = getNativeSession(env, self);
+
+    PlaylistContainer *container = session->getPlaylistContainer();
+
+    return reinterpret_cast<int>(container);
+}

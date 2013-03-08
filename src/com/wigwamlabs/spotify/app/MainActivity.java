@@ -2,8 +2,11 @@ package com.wigwamlabs.spotify.app;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import com.wigwamlabs.spotify.PlaylistContainer;
 
 public class MainActivity extends Activity implements SpotifySession.Callback {
 
@@ -80,5 +83,11 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         mConnectionState.setText(res);
 
         mLoginButton.setVisibility(state == SpotifySession.CONNECTION_STATE_LOGGED_OUT ? View.VISIBLE : View.GONE);
+
+
+        PlaylistContainer container = mSpotifySession.getPlaylistContainer();
+        int count = container.getCount();
+        Log.d("XXX", "playlists: " + count);
+        container.destroy();
     }
 }

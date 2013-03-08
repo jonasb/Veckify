@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include "Session.h"
+#include "PlaylistContainer.h"
 #include <stddef.h>
 #include <string.h>
 #include "key.c"
@@ -225,6 +226,14 @@ bool Session::relogin() {
 sp_error Session::login(const char *username, const char *password, bool rememberMe) {
     LOGV("login(%s, ***, %d)", username, rememberMe);
     return sp_session_login(mSession, username, password, rememberMe, NULL); //TODO need to deal with blob?
+}
+
+PlaylistContainer *Session::getPlaylistContainer() {
+    sp_playlistcontainer *c = sp_session_playlistcontainer(mSession);
+    if (!c) {
+        return NULL;
+    }
+    return new PlaylistContainer(c);
 }
 
 void Session::onLoggedIn(sp_error error) {

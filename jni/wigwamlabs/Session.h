@@ -7,12 +7,12 @@
 namespace wigwamlabs {
 
 class Context;
+class PlaylistContainer;
 
 class SessionCallback {
 public:
     virtual void onConnectionStateUpdated(int state) = 0;
 };
-
 
 class Session {
 public:
@@ -21,6 +21,7 @@ public:
     ~Session();
     bool relogin();
     sp_error login(const char *username, const char *password, bool rememberMe);
+    PlaylistContainer *getPlaylistContainer();
 private:
     static void *mainThreadLoop(void *self);
     static void onLoggedIn(sp_session *session, sp_error error);

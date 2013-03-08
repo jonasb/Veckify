@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.provider.Settings;
 
+import com.wigwamlabs.spotify.PlaylistContainer;
 import proguard.annotation.Keep;
 import proguard.annotation.KeepName;
 
@@ -49,6 +50,14 @@ public class SpotifySession {
         nativeLogin(username, password, rememberMe);
     }
 
+    public PlaylistContainer getPlaylistContainer() {
+        int handle = nativeGetPlaylistContainer();
+        if (handle == 0) {
+            return null;
+        }
+        return new PlaylistContainer(handle);
+    }
+
     private native int nativeCreate(SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId);
 
     private native void nativeDestroy();
@@ -60,6 +69,8 @@ public class SpotifySession {
     }
 
     private native void nativeLogin(String username, String password, boolean rememberMe);
+
+    private native int nativeGetPlaylistContainer();
 
     @Keep
     void onConnectionStateUpdated(int state) {

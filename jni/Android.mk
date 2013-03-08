@@ -6,10 +6,12 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE := libspotify-jni
 LOCAL_SRC_FILES := \
+    com_wigwamlabs_spotify_PlaylistContainer.cpp \
     com_wigwamlabs_spotify_app_SpotifyContext.cpp \
     com_wigwamlabs_spotify_app_SpotifySession.cpp \
     ExceptionUtils.cpp \
     wigwamlabs/Context.cpp \
+    wigwamlabs/PlaylistContainer.cpp \
     wigwamlabs/Session.cpp \
 #
 LOCAL_SHARED_LIBRARIES += \
