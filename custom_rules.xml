@@ -37,4 +37,10 @@
             <arg value="com.wigwamlabs.spotify.app/.MainActivity"/>
         </exec>
     </target>
+
+    <!--
+    <target name="-debug-obfuscation-check">
+        <property name="proguard.enabled" value="true"/>
+    </target>
+    -->
 </project>

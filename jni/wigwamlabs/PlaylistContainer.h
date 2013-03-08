@@ -5,12 +5,15 @@
 
 namespace wigwamlabs {
 
+class Playlist;
+
 class PlaylistContainer {
 public:
     PlaylistContainer(sp_playlistcontainer *container);
     sp_error destroy();
 
     int getCount();
+    Playlist *getPlaylist(int index);
 
 private:
     sp_playlistcontainer *mContainer;

@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include "PlaylistContainer.h"
+#include "Playlist.h"
 
 namespace wigwamlabs {
 
@@ -14,7 +15,7 @@ sp_error PlaylistContainer::destroy() {
     LOGV("destroy()");
     sp_error error = SP_ERROR_OK;
     if (mContainer) {
-        error = sp_playlistcontainer_release(mContainer);
+        //TODO crashes sometimes, should not release when comes from session?  error = sp_playlistcontainer_release(mContainer);
         mContainer = NULL;
     }
     return error;
@@ -22,6 +23,14 @@ sp_error PlaylistContainer::destroy() {
 
 int PlaylistContainer::getCount() {
     return sp_playlistcontainer_num_playlists(mContainer);
+}
+
+Playlist *PlaylistContainer::getPlaylist(int index) {
+    sp_playlist *playlist = sp_playlistcontainer_playlist(mContainer, index);
+    if (playlist == NULL) {
+        return NULL;
+    }
+    return new Playlist(playlist, false);
 }
 
 } // namespace wigwamlabs

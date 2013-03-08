@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include <jni.h>
+#include "utils.h"
 #include "ExceptionUtils.h"
 #include "wigwamlabs/PlaylistContainer.h"
 
@@ -15,7 +16,7 @@ PlaylistContainer *getNativePlaylistContainer(JNIEnv *env, jobject object) {
     return reinterpret_cast<PlaylistContainer *>(handle);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_PlaylistContainer_nativeInitClass(JNIEnv *env, jclass klass) {
+JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_PlaylistContainer, nativeInitClass) {
     LOGV("nativeInitClass()");
 
     if (sPlaylistContainerHandleField == 0) {
@@ -23,7 +24,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_PlaylistContainer_
     }
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_PlaylistContainer_nativeDestroy(JNIEnv *env, jobject self) {
+JNI_METHOD(void, com_wigwamlabs_spotify_PlaylistContainer, nativeDestroy) {
     LOGV("nativeDestroy()");
 
     PlaylistContainer *container = getNativePlaylistContainer(env, self);
@@ -36,9 +37,19 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_PlaylistContainer_
     }
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_PlaylistContainer_nativeGetCount(JNIEnv *env, jobject self) {
+JNI_METHOD(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetCount) {
     LOGV("nativeGetCount()");
 
     PlaylistContainer *container = getNativePlaylistContainer(env, self);
     return container->getCount();
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetPlaylist, jint index) {
+    LOGV("nativeGetPlaylist(%d)", index);
+
+    PlaylistContainer *container = getNativePlaylistContainer(env, self);
+
+    Playlist *playlist = container->getPlaylist(index);
+
+    return reinterpret_cast<jint>(playlist);
 }

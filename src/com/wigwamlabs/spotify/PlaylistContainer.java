@@ -4,7 +4,7 @@ import proguard.annotation.KeepName;
 
 public class PlaylistContainer {
     @KeepName
-    private final int mHandle;
+    private int mHandle;
 
     static {
         nativeInitClass();
@@ -20,13 +20,21 @@ public class PlaylistContainer {
 
     private native int nativeGetCount();
 
+    private native int nativeGetPlaylist(int index);
+
     public void destroy() {
         if (mHandle != 0) {
             nativeDestroy();
+            mHandle = 0;
         }
     }
 
     public int getCount() {
         return nativeGetCount();
+    }
+
+    public Playlist getPlaylist(int index) {
+        int handle = nativeGetPlaylist(index);
+        return Playlist.create(handle);
     }
 }

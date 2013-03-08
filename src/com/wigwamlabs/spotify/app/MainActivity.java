@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 
 public class MainActivity extends Activity implements SpotifySession.Callback {
@@ -14,6 +15,7 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     private SpotifySession mSpotifySession;
     private TextView mConnectionState;
     private View mLoginButton;
+    private View mGetPlaylistsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,13 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         });
 
         mConnectionState = (TextView) findViewById(R.id.connectionState);
+
+        mGetPlaylistsButton = findViewById(R.id.getPlaylists);
+        mGetPlaylistsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                getPlaylists();
+            }
+        });
 
         mSpotifyContext = new SpotifyContext();
     }
@@ -83,11 +92,20 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         mConnectionState.setText(res);
 
         mLoginButton.setVisibility(state == SpotifySession.CONNECTION_STATE_LOGGED_OUT ? View.VISIBLE : View.GONE);
+        mLoginButton.setEnabled(true);
 
+        mGetPlaylistsButton.setVisibility(state == SpotifySession.CONNECTION_STATE_LOGGED_OUT ? View.GONE : View.VISIBLE);
+    }
 
+    private void getPlaylists() {
         PlaylistContainer container = mSpotifySession.getPlaylistContainer();
         int count = container.getCount();
         Log.d("XXX", "playlists: " + count);
+        for (int i = 0; i < count; i++) {
+            Playlist list = container.getPlaylist(i);
+            Log.d("XXX", "name: " + list.getName());
+            list.destroy();
+        }
         container.destroy();
     }
 }

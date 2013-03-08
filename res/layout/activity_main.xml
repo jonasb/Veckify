@@ -28,4 +28,13 @@
         android:layout_toRightOf="@id/connectionStateLabel"
         android:layout_alignBaseline="@id/connectionStateLabel"
         android:text="@string/connectionStateLoggedOut" />
+
+    <Button
+        android:id="@+id/getPlaylists"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/getPlaylists"
+        android:layout_below="@id/connectionStateLabel"
+        android:visibility="gone"/>
+
 </RelativeLayout>
