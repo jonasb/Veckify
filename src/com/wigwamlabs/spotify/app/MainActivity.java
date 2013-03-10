@@ -104,8 +104,8 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         for (int i = 0; i < count; i++) {
             Playlist list = container.getPlaylist(i);
             Log.d("XXX", "name: " + list.getName());
-            list.destroy();
+//            list.destroy();
         }
-        container.destroy();
+//        container.destroy();
     }
 }

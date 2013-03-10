@@ -14,6 +14,7 @@ public:
 
 private:
     sp_playlist *mPlaylist;
+    sp_playlist_callbacks mCallbacks;
     bool mOwner;
 };
 

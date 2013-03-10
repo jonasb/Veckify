@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include <jni.h>
+#include <pthread.h>
 #include "utils.h"
 #include "ExceptionUtils.h"
 #include "wigwamlabs/PlaylistContainer.h"
@@ -10,6 +11,46 @@
 using namespace wigwamlabs;
 
 jfieldID sPlaylistContainerHandleField = 0;
+jmethodID sPlaylistContainerOnContainerLoaded = 0;
+
+class PlaylistContainerCallbackJNI : public PlaylistContainerCallback {
+public:
+    PlaylistContainerCallbackJNI(JNIEnv *env, jobject playlistContainer) :
+        mEnv(NULL) {
+        mPlaylistContainer = env->NewGlobalRef(playlistContainer);
+        env->GetJavaVM(&mVm);
+    }
+
+    ~PlaylistContainerCallbackJNI() {
+        JNIEnv *env = getEnv();
+        if (env) {
+            env->DeleteGlobalRef(mPlaylistContainer);
+        }
+    }
+
+    void onContainerLoaded() {
+        LOGV(__func__);
+        getEnv()->CallVoidMethod(mPlaylistContainer, sPlaylistContainerOnContainerLoaded);
+    }
+
+private:
+    JNIEnv *getEnv() {
+        // TODO support multiple threads
+        if (!mEnv) {
+            LOGV("Initializing JNI env for thread: %d", pthread_self());
+            JavaVMAttachArgs args;
+            args.version = JNI_VERSION_1_6;
+            args.name = NULL;
+            args.group = NULL;
+            mVm->AttachCurrentThread(&mEnv, &args);
+        }
+        return mEnv;
+    }
+private:
+    jobject mPlaylistContainer;
+    JavaVM *mVm;
+    JNIEnv *mEnv;
+};
 
 PlaylistContainer *getNativePlaylistContainer(JNIEnv *env, jobject object) {
     const jint handle = env->GetIntField(object, sPlaylistContainerHandleField);
@@ -22,6 +63,17 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_PlaylistContainer, nativeInitClas
     if (sPlaylistContainerHandleField == 0) {
         sPlaylistContainerHandleField = env->GetFieldID(klass, "mHandle", "I");
     }
+    if (sPlaylistContainerOnContainerLoaded == 0) {
+        sPlaylistContainerOnContainerLoaded = env->GetMethodID(klass, "onContainerLoaded", "()V");
+    }
+}
+
+JNI_METHOD(void, com_wigwamlabs_spotify_PlaylistContainer, nativeInitInstance) {
+    LOGV("nativeInitInstance()");
+
+    PlaylistContainer *container = getNativePlaylistContainer(env, self);
+    PlaylistContainerCallbackJNI *callback = new PlaylistContainerCallbackJNI(env, self);
+    container->setCallback(callback);
 }
 
 JNI_METHOD(void, com_wigwamlabs_spotify_PlaylistContainer, nativeDestroy) {

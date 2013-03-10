@@ -1,5 +1,8 @@
 package com.wigwamlabs.spotify;
 
+import android.util.Log;
+
+import proguard.annotation.Keep;
 import proguard.annotation.KeepName;
 
 public class PlaylistContainer {
@@ -12,9 +15,12 @@ public class PlaylistContainer {
 
     public PlaylistContainer(int handle) {
         mHandle = handle;
+        nativeInitInstance();
     }
 
     private static native void nativeInitClass();
+
+    private native void nativeInitInstance();
 
     private native void nativeDestroy();
 
@@ -27,6 +33,11 @@ public class PlaylistContainer {
             nativeDestroy();
             mHandle = 0;
         }
+    }
+
+    @Keep
+    void onContainerLoaded() {
+        Log.d("XXX", "onContainerLoaded()");
     }
 
     public int getCount() {

@@ -43,7 +43,6 @@ JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetName) {
     Playlist *playlist = getNativePlaylist(env, self);
 
     const char *nameStr = playlist->getName();
-    LOGV("Name: %s", nameStr);
 
     jstring name = env->NewStringUTF(nameStr);
 
