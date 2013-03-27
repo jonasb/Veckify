@@ -1,4 +1,4 @@
-#define LOG_TAG "com_wigwamlabs_spotify_app_SpotifyContext"
+#define LOG_TAG "com_wigwamlabs_spotify_SpotifyContext"
 //#define LOG_NDEBUG 0
 #include "log.h"
 
@@ -14,7 +14,7 @@ Context *getNativeContext(JNIEnv *env, jobject object) {
     return reinterpret_cast<Context *>(handle);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifyContext_nativeInitClass(JNIEnv *env, jclass klass) {
+extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_SpotifyContext_nativeInitClass(JNIEnv *env, jclass klass) {
     LOGV("nativeInitClass()");
 
     if (sContextHandleField == 0) {
@@ -22,13 +22,13 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifyContext
     }
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_app_SpotifyContext_nativeCreate(JNIEnv *env, jobject self) {
+extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_SpotifyContext_nativeCreate(JNIEnv *env, jobject self) {
     LOGV("nativeCreate()");
 
     return reinterpret_cast<jint>(new Context);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_app_SpotifyContext_nativeDestroy(JNIEnv *env, jobject self) {
+extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_SpotifyContext_nativeDestroy(JNIEnv *env, jobject self) {
     LOGV("nativeDestroy()");
 
     Context *context = getNativeContext(env, self);

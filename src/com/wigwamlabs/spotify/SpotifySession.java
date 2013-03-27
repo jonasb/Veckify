@@ -1,10 +1,9 @@
-package com.wigwamlabs.spotify.app;
+package com.wigwamlabs.spotify;
 
 import android.content.Context;
 import android.os.Handler;
 import android.provider.Settings;
 
-import com.wigwamlabs.spotify.PlaylistContainer;
 import proguard.annotation.Keep;
 import proguard.annotation.KeepName;
 
@@ -91,7 +90,7 @@ public class SpotifySession {
         nativeInitClass();
     }
 
-    interface Callback {
+    public interface Callback {
         void onConnectionStateUpdated(int state);
     }
 }

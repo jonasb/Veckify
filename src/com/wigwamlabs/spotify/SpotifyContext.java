@@ -1,4 +1,4 @@
-package com.wigwamlabs.spotify.app;
+package com.wigwamlabs.spotify;
 
 import proguard.annotation.KeepName;
 

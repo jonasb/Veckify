@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.PlaylistContainerItem;
+import com.wigwamlabs.spotify.SpotifyContext;
+import com.wigwamlabs.spotify.SpotifySession;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
 public class MainActivity extends Activity implements SpotifySession.Callback {
