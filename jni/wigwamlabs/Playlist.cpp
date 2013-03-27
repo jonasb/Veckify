@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include "Playlist.h"
+#include <string.h>
 
 namespace wigwamlabs {
 
@@ -30,6 +31,7 @@ Playlist::Playlist(sp_playlist *playlist) :
     mPlaylist(playlist) {
     sp_playlist_add_ref(playlist);
 
+    memset(&mCallbacks, 0, sizeof(sp_playlist_callbacks));
     mCallbacks.tracks_added = onTracksAdded;
     mCallbacks.tracks_removed = onTracksRemoved;
     mCallbacks.tracks_moved = NULL;

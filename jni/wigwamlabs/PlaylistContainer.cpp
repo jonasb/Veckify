@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include "PlaylistContainer.h"
+#include <string.h>
 #include "Playlist.h"
 #include "FolderStart.h"
 #include "FolderEnd.h"
@@ -31,6 +32,7 @@ PlaylistContainer::PlaylistContainer(sp_playlistcontainer *container) :
     mContainer(container),
     mCallback(NULL) {
 
+    memset(&mCallbacks, 0, sizeof(sp_playlistcontainer_callbacks));
     mCallbacks.playlist_added = onPlaylistAdded;
     mCallbacks.playlist_removed = onPlaylistRemoved;
     mCallbacks.playlist_moved = onPlaylistMoved;
