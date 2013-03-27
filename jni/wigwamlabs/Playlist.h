@@ -7,7 +7,7 @@ namespace wigwamlabs {
 
 class Playlist {
 public:
-    Playlist(sp_playlist *playlist, bool owner);
+    Playlist(sp_playlist *playlist);
     sp_error destroy();
 
     const char *getName();
@@ -15,7 +15,6 @@ public:
 private:
     sp_playlist *mPlaylist;
     sp_playlist_callbacks mCallbacks;
-    bool mOwner;
 };
 
 }

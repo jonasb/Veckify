@@ -6,6 +6,9 @@
 namespace wigwamlabs {
 
 class Playlist;
+class FolderStart;
+class FolderEnd;
+class Placeholder;
 
 class PlaylistContainerCallback {
 public:
@@ -21,7 +24,11 @@ public:
     void setCallback(PlaylistContainerCallback *callback);
 
     int getCount();
+    sp_playlist_type getPlaylistType(int index);
     Playlist *getPlaylist(int index);
+    FolderStart *getFolderStart(int index);
+    FolderEnd *getFolderEnd(int index);
+    Placeholder *getPlaceholder(int index);
 
 private:
     static void onPlaylistAdded(sp_playlistcontainer *container, sp_playlist *playlist, int position, void *self);

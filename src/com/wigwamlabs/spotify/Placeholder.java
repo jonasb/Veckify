@@ -2,7 +2,7 @@ package com.wigwamlabs.spotify;
 
 import proguard.annotation.KeepName;
 
-public class Playlist implements PlaylistContainerItem {
+public class Placeholder implements PlaylistContainerItem {
     @KeepName
     private int mHandle;
 
@@ -10,7 +10,7 @@ public class Playlist implements PlaylistContainerItem {
         nativeInitClass();
     }
 
-    Playlist(int handle) {
+    public Placeholder(int handle) {
         mHandle = handle;
     }
 
@@ -18,17 +18,11 @@ public class Playlist implements PlaylistContainerItem {
 
     private native void nativeDestroy();
 
-    private native String nativeGetName();
-
     public void destroy() {
         if (mHandle != 0) {
             nativeDestroy();
             mHandle = 0;
         }
-    }
-
-    public String getName() {
-        return nativeGetName();
     }
 
     public int getId() {

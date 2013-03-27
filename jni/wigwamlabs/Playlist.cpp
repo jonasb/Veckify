@@ -19,16 +19,16 @@ void onPlaylistRenamed(sp_playlist *playlist, void *self) {
 }
 
 void onPlaylistStateChanged(sp_playlist *playlist, void *self) {
-    LOGV("%s", __func__);
+    LOGV("onPlaylistStateChanged()");
 }
 
 void onPlaylistUpdateInProgress(sp_playlist *playlist, bool done, void *self) {
     LOGV("onPlaylistUpdateInProgress()");
 }
 
-Playlist::Playlist(sp_playlist *playlist, bool owner) :
-    mPlaylist(playlist),
-    mOwner(owner) {
+Playlist::Playlist(sp_playlist *playlist) :
+    mPlaylist(playlist) {
+    sp_playlist_add_ref(playlist);
 
     mCallbacks.tracks_added = onTracksAdded;
     mCallbacks.tracks_removed = onTracksRemoved;
@@ -52,9 +52,7 @@ sp_error Playlist::destroy() {
     sp_error error = SP_ERROR_OK;
     if (mPlaylist) {
         /* ignore = */ sp_playlist_remove_callbacks(mPlaylist, &mCallbacks, this);
-        if (mOwner) {
-            error = sp_playlist_release(mPlaylist);
-        }
+        error = sp_playlist_release(mPlaylist);
         mPlaylist = NULL;
     }
     return error;

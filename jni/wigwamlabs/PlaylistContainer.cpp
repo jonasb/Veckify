@@ -4,6 +4,9 @@
 
 #include "PlaylistContainer.h"
 #include "Playlist.h"
+#include "FolderStart.h"
+#include "FolderEnd.h"
+#include "Placeholder.h"
 
 namespace wigwamlabs {
 
@@ -33,7 +36,7 @@ PlaylistContainer::PlaylistContainer(sp_playlistcontainer *container) :
     mCallbacks.playlist_moved = onPlaylistMoved;
     mCallbacks.container_loaded = onContainerLoaded;
 
-    sp_playlistcontainer_add_callbacks(mContainer, &mCallbacks, this);
+    /* ignore = */ sp_playlistcontainer_add_callbacks(mContainer, &mCallbacks, this);
 }
 
 PlaylistContainer::~PlaylistContainer() {
@@ -60,12 +63,32 @@ int PlaylistContainer::getCount() {
     return sp_playlistcontainer_num_playlists(mContainer);
 }
 
+sp_playlist_type PlaylistContainer::getPlaylistType(int index) {
+    return sp_playlistcontainer_playlist_type(mContainer, index);
+}
+
 Playlist *PlaylistContainer::getPlaylist(int index) {
     sp_playlist *playlist = sp_playlistcontainer_playlist(mContainer, index);
     if (playlist == NULL) {
         return NULL;
     }
-    return new Playlist(playlist, false);
+    return new Playlist(playlist);
+}
+
+FolderStart *PlaylistContainer::getFolderStart(int index) {
+    sp_uint64 id = sp_playlistcontainer_playlist_folder_id(mContainer, index);
+    char buf[64];
+    sp_playlistcontainer_playlist_folder_name(mContainer, index, buf, sizeof(buf));
+    return new FolderStart(id, buf);
+}
+
+FolderEnd *PlaylistContainer::getFolderEnd(int index) {
+    sp_uint64 id = sp_playlistcontainer_playlist_folder_id(mContainer, index);
+    return new FolderEnd(id);
+}
+
+Placeholder *PlaylistContainer::getPlaceholder(int index) {
+    return new Placeholder();
 }
 
 } // namespace wigwamlabs

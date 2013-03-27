@@ -96,12 +96,50 @@ JNI_METHOD(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetCount) {
     return container->getCount();
 }
 
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetPlaylistType, jint index) {
+    LOGV("nativeGetPlaylistType(%d)", index);
+
+    PlaylistContainer *container = getNativePlaylistContainer(env, self);
+
+    return container->getPlaylistType(index);
+}
+
 JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetPlaylist, jint index) {
     LOGV("nativeGetPlaylist(%d)", index);
 
     PlaylistContainer *container = getNativePlaylistContainer(env, self);
 
-    Playlist *playlist = container->getPlaylist(index);
+    Playlist *item = container->getPlaylist(index);
 
-    return reinterpret_cast<jint>(playlist);
+    return reinterpret_cast<jint>(item);
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetFolderStart, jint index) {
+    LOGV("nativeGetFolderStart(%d)", index);
+
+    PlaylistContainer *container = getNativePlaylistContainer(env, self);
+
+    FolderStart *item = container->getFolderStart(index);
+
+    return reinterpret_cast<jint>(item);
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetFolderEnd, jint index) {
+    LOGV("nativeGetFolderEnd(%d)", index);
+
+    PlaylistContainer *container = getNativePlaylistContainer(env, self);
+
+    FolderEnd *item = container->getFolderEnd(index);
+
+    return reinterpret_cast<jint>(item);
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetPlaceholder, jint index) {
+    LOGV("nativeGetPlaceholder(%d)", index);
+
+    PlaylistContainer *container = getNativePlaylistContainer(env, self);
+
+    Placeholder *item = container->getPlaceholder(index);
+
+    return reinterpret_cast<jint>(item);
 }

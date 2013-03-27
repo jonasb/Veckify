@@ -2,7 +2,7 @@ package com.wigwamlabs.spotify;
 
 import proguard.annotation.KeepName;
 
-public class Playlist implements PlaylistContainerItem {
+public class FolderStart implements PlaylistContainerItem {
     @KeepName
     private int mHandle;
 
@@ -10,7 +10,7 @@ public class Playlist implements PlaylistContainerItem {
         nativeInitClass();
     }
 
-    Playlist(int handle) {
+    public FolderStart(int handle) {
         mHandle = handle;
     }
 
