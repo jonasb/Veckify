@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include "Playlist.h"
+#include "Track.h"
 #include <string.h>
 
 namespace wigwamlabs {
@@ -49,6 +50,10 @@ Playlist::Playlist(sp_playlist *playlist) :
     /* ignore = */ sp_playlist_add_callbacks(playlist, &mCallbacks, this);
 }
 
+Playlist *Playlist::clone() {
+    return new Playlist(mPlaylist);
+}
+
 sp_error Playlist::destroy() {
     LOGV("destroy()");
     sp_error error = SP_ERROR_OK;
@@ -62,6 +67,18 @@ sp_error Playlist::destroy() {
 
 const char *Playlist::getName() {
     return sp_playlist_name(mPlaylist);
+}
+
+int Playlist::getCount() {
+    return sp_playlist_num_tracks(mPlaylist);
+}
+
+Track *Playlist::getTrack(int index) {
+    sp_track *track = sp_playlist_track(mPlaylist, index);
+    if (track == NULL) {
+        return NULL;
+    }
+    return new Track(track);
 }
 
 } // namespace wigwamlabs

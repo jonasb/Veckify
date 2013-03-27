@@ -5,12 +5,17 @@
 
 namespace wigwamlabs {
 
+class Track;
+
 class Playlist {
 public:
     Playlist(sp_playlist *playlist);
+    Playlist *clone();
     sp_error destroy();
 
     const char *getName();
+    int getCount();
+    Track *getTrack(int index);
 
 private:
     sp_playlist *mPlaylist;

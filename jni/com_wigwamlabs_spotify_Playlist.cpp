@@ -37,6 +37,15 @@ JNI_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeDestroy) {
     }
 }
 
+JNI_METHOD(jint, com_wigwamlabs_spotify_Playlist, nativeClone) {
+    LOGV("nativeClone()");
+
+    Playlist *playlist = getNativePlaylist(env, self);
+    Playlist *clone = playlist->clone();
+
+    return reinterpret_cast<jint>(clone);
+}
+
 JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetName) {
     LOGV("nativeGetName()");
 
@@ -47,4 +56,24 @@ JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetName) {
     jstring name = env->NewStringUTF(nameStr);
 
     return name;
+}
+
+JNI_METHOD(jint, com_wigwamlabs_spotify_Playlist, nativeGetCount) {
+    LOGV("nativeGetCount()");
+
+    Playlist *playlist = getNativePlaylist(env, self);
+
+    int count = playlist->getCount();
+    LOGV("count = %d", count);
+    return count;
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Playlist, nativeGetTrack, jint index) {
+    LOGV("nativeGetTrack(%d)", index);
+
+    Playlist *playlist = getNativePlaylist(env, self);
+
+    Track *track = playlist->getTrack(index);
+
+    return reinterpret_cast<jint>(track);
 }

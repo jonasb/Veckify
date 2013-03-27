@@ -13,7 +13,7 @@ import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.PlaylistContainerItem;
 import com.wigwamlabs.spotify.SpotifyContext;
 import com.wigwamlabs.spotify.SpotifySession;
-import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
+import com.wigwamlabs.spotify.ui.PlaylistAdapter;import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
 public class MainActivity extends Activity implements SpotifySession.Callback {
 
@@ -22,9 +22,10 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     private TextView mConnectionState;
     private View mLoginButton;
     private View mGetPlaylistsButton;
-    private ListView mPlaylists;
-    private ListView mPlaylist;
-    private PlaylistContainer mContainer;
+    private ListView mPlaylistsList;
+    private ListView mPlaylistList;
+    private PlaylistContainer mPlaylistContainer;
+    private Playlist mPlaylist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +48,14 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
             }
         });
 
-        mPlaylists = (ListView) findViewById(R.id.playlists);
-        mPlaylists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mPlaylistsList = (ListView) findViewById(R.id.playlists);
+        mPlaylistsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 onPlaylistClicked(((PlaylistContainerAdapter) parent.getAdapter()).getItem(position));
             }
         });
 
-        mPlaylist = (ListView) findViewById(R.id.playlist);
+        mPlaylistList = (ListView) findViewById(R.id.playlist);
 
         mSpotifyContext = new SpotifyContext();
     }
@@ -116,19 +117,26 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     }
 
     private void getPlaylists() {
-        if (mContainer != null) {
-            mContainer.destroy();
-            mContainer = null;
-            //TODO this destroys all opened playlists
+        if (mPlaylistContainer != null) {
+            mPlaylistContainer.destroy();
+            mPlaylistContainer = null;
         }
-        mContainer = mSpotifySession.getPlaylistContainer();
-        mPlaylists.setAdapter(new PlaylistContainerAdapter(this, mContainer));
+        mPlaylistContainer = mSpotifySession.getPlaylistContainer();
+        mPlaylistsList.setAdapter(new PlaylistContainerAdapter(this, mPlaylistContainer));
     }
 
     private void onPlaylistClicked(PlaylistContainerItem item) {
         Log.d("XXX", "Clicked: " + item);
         if (item instanceof Playlist) {
-            Log.d("XXX", "name: " + ((Playlist) item).getName());
+            final Playlist playlist = (Playlist) item;
+            Log.d("XXX", "name: " + playlist.getName());
+
+            if (mPlaylist != null) {
+                mPlaylist.destroy();
+                mPlaylist = null;
+            }
+            mPlaylist = playlist.clone();
+            mPlaylistList.setAdapter(new PlaylistAdapter(this, mPlaylist));
         }
     }
 

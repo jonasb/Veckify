@@ -14,6 +14,7 @@ LOCAL_SRC_FILES := \
     com_wigwamlabs_spotify_PlaylistContainer.cpp \
     com_wigwamlabs_spotify_SpotifyContext.cpp \
     com_wigwamlabs_spotify_SpotifySession.cpp \
+    com_wigwamlabs_spotify_Track.cpp \
     wigwamlabs/Context.cpp \
     wigwamlabs/FolderEnd.cpp \
     wigwamlabs/FolderStart.cpp \
@@ -21,6 +22,7 @@ LOCAL_SRC_FILES := \
     wigwamlabs/Playlist.cpp \
     wigwamlabs/PlaylistContainer.cpp \
     wigwamlabs/Session.cpp \
+    wigwamlabs/Track.cpp \
 #
 LOCAL_SHARED_LIBRARIES += \
     libspotify

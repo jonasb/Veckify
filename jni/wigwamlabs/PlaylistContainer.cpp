@@ -31,6 +31,7 @@ void PlaylistContainer::onContainerLoaded(sp_playlistcontainer *container, void 
 PlaylistContainer::PlaylistContainer(sp_playlistcontainer *container) :
     mContainer(container),
     mCallback(NULL) {
+    sp_playlistcontainer_add_ref(mContainer);
 
     memset(&mCallbacks, 0, sizeof(sp_playlistcontainer_callbacks));
     mCallbacks.playlist_added = onPlaylistAdded;
@@ -50,7 +51,7 @@ sp_error PlaylistContainer::destroy() {
     sp_error error = SP_ERROR_OK;
     if (mContainer) {
         sp_playlistcontainer_remove_callbacks(mContainer, &mCallbacks, this);
-        //TODO crashes sometimes, should not release when comes from session?  error = sp_playlistcontainer_release(mContainer);
+        error = sp_playlistcontainer_release(mContainer);
         mContainer = NULL;
     }
     return error;
