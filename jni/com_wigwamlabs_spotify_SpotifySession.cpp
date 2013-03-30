@@ -11,6 +11,7 @@
 using namespace wigwamlabs;
 
 jfieldID sSessionHandleField = 0;
+jmethodID sSessionOnMetadataUpdatedMethod = 0;
 jmethodID sSessionOnConnectionStateUpdatedMethod = 0;
 
 class SessionCallbackJNI : public SessionCallback {
@@ -26,6 +27,10 @@ public:
         if (env) {
             env->DeleteGlobalRef(mSession);
         }
+    }
+
+    void onMetadataUpdated() {
+        getEnv()->CallVoidMethod(mSession, sSessionOnMetadataUpdatedMethod);
     }
 
     void onConnectionStateUpdated(int state) {
@@ -61,6 +66,9 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_SpotifySession_nat
 
     if (sSessionHandleField == 0) {
         sSessionHandleField = env->GetFieldID(klass, "mHandle", "I");
+    }
+    if (sSessionOnMetadataUpdatedMethod == 0) {
+        sSessionOnMetadataUpdatedMethod = env->GetMethodID(klass, "onMetadataUpdated", "()V");
     }
     if (sSessionOnConnectionStateUpdatedMethod == 0) {
         sSessionOnConnectionStateUpdatedMethod = env->GetMethodID(klass, "onConnectionStateUpdated", "(I)V");

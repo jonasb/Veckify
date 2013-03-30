@@ -3,6 +3,7 @@ package com.wigwamlabs.spotify;
 import android.content.Context;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 
 import proguard.annotation.Keep;
 import proguard.annotation.KeepName;
@@ -70,6 +71,11 @@ public class SpotifySession {
     private native void nativeLogin(String username, String password, boolean rememberMe);
 
     private native int nativeGetPlaylistContainer();
+
+    @Keep
+    void onMetadataUpdated() {
+        Log.d("XXX", "onMetadataUpdated()");
+    }
 
     @Keep
     void onConnectionStateUpdated(int state) {

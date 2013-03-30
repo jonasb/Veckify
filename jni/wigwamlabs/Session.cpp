@@ -30,6 +30,12 @@ void Session::onLoggedOut(sp_session *session) {
     getSelf(session)->onLoggedOut();
 }
 
+void Session::onMetadataUpdated(sp_session *session) {
+    LOGV("%s", __func__);
+    Session *self = getSelf(session);
+    self->mCallback->onMetadataUpdated();
+}
+
 void Session::onConnectionError(sp_session *session, sp_error error) {
     getSelf(session)->onConnectionError(error);
 }
@@ -70,6 +76,7 @@ Session *Session::create(Context *context, SessionCallback *callback, const char
     memset(&callbacks, 0, sizeof(sp_session_callbacks));
     callbacks.logged_in = onLoggedIn;
     callbacks.logged_out = onLoggedOut;
+    callbacks.metadata_updated = onMetadataUpdated;
     callbacks.connection_error = onConnectionError;
     callbacks.message_to_user = onMessageToUser;
     callbacks.notify_main_thread = onNotifyMainThread;

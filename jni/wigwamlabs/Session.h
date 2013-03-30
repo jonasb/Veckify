@@ -11,6 +11,7 @@ class PlaylistContainer;
 
 class SessionCallback {
 public:
+    virtual void onMetadataUpdated() = 0;
     virtual void onConnectionStateUpdated(int state) = 0;
 };
 
@@ -26,6 +27,7 @@ private:
     static void *mainThreadLoop(void *self);
     static void onLoggedIn(sp_session *session, sp_error error);
     static void onLoggedOut(sp_session *session);
+    static void onMetadataUpdated(sp_session *session);
     static void onConnectionError(sp_session *session, sp_error error);
     static void onMessageToUser(sp_session *session, const char *message);
     static void onNotifyMainThread(sp_session *session);
