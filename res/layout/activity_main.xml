@@ -56,4 +56,10 @@
         android:layout_height="0px"
         android:layout_weight="1.0" />
 
+    <Button
+        android:id="@+id/loadTrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load track" />
+
 </LinearLayout>

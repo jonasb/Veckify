@@ -24,6 +24,17 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Track, nativeInitClass) {
     }
 }
 
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Track, nativeCreate, jstring link) {
+    LOGV("nativeCreate()");
+    const char *linkStr = env->GetStringUTFChars(link, NULL);
+
+    Track *instance = Track::create(linkStr);
+
+    env->ReleaseStringUTFChars(link, linkStr);
+
+    return reinterpret_cast<jint>(instance);
+}
+
 JNI_METHOD(void, com_wigwamlabs_spotify_Track, nativeDestroy) {
     LOGV("nativeDestroy()");
 

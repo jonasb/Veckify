@@ -7,6 +7,7 @@ namespace wigwamlabs {
 
 class Track {
 public:
+    static Track *create(const char *linkStr);
     Track(sp_track *track);
     sp_error destroy();
     ~Track();

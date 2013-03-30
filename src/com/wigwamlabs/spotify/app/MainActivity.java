@@ -13,6 +13,7 @@ import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.PlaylistContainerItem;
 import com.wigwamlabs.spotify.SpotifyContext;
 import com.wigwamlabs.spotify.SpotifySession;
+import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
 public class MainActivity extends Activity implements SpotifySession.Callback {
@@ -26,6 +27,7 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     private ListView mPlaylistList;
     private PlaylistContainer mPlaylistContainer;
     private Playlist mPlaylist;
+    private Track mTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,13 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         });
 
         mPlaylistList = (ListView) findViewById(R.id.playlist);
+
+        final View loadTrackButton = findViewById(R.id.loadTrack);
+        loadTrackButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                loadTrack();
+            }
+        });
 
         mSpotifyContext = new SpotifyContext();
     }
@@ -138,6 +147,15 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
             mPlaylist = playlist.clone();
             mPlaylistList.setAdapter(new PlaylistAdapter(this, mPlaylist));
         }
+    }
+
+    private void loadTrack() {
+        if (mTrack != null) {
+            mTrack.destroy();
+            mTrack = null;
+        }
+        mTrack = new Track("spotify:track:0DcrhZ12WcCqruCs8ibXSf");
+        Log.d("XXX", "Track name: " + mTrack.getName());
     }
 
 }

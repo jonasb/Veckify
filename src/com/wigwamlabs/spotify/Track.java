@@ -10,11 +10,17 @@ public class Track {
         nativeInitClass();
     }
 
-    public Track(int handle) {
+    Track(int handle) {
         mHandle = handle;
     }
 
+    public Track(String uri) {
+        mHandle = nativeCreate(uri);
+    }
+
     private static native void nativeInitClass();
+
+    private native int nativeCreate(String uri);
 
     private native void nativeDestroy();
 
