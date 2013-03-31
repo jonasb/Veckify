@@ -80,9 +80,11 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
         return mPlaylist.getCount() == 0;
     }
 
-    public void onChanged() {
-        if (mObserver != null) {
-            mObserver.onChanged();
+    public void onPlaylistUpdateInProgress(boolean done) {
+        if (done) {
+            if (mObserver != null) {
+                mObserver.onChanged();
+            }
         }
     }
 }

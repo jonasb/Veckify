@@ -16,10 +16,6 @@ void onPlaylistStateChanged(sp_playlist *playlist, void *self) {
     LOGV("onPlaylistStateChanged()");
 }
 
-void onPlaylistUpdateInProgress(sp_playlist *playlist, bool done, void *self) {
-    LOGV("onPlaylistUpdateInProgress(%d)", done);
-}
-
 Playlist::Playlist(sp_playlist *playlist) :
     mPlaylist(playlist),
     mCallback(NULL) {
@@ -111,6 +107,14 @@ void Playlist::onTracksMoved(sp_playlist *playlist, const int *tracks, int numTr
     PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
     if (callback) {
         callback->onTracksMoved(tracks, numTracks, newPosition);
+    }
+}
+
+void Playlist::onPlaylistUpdateInProgress(sp_playlist *playlist, bool done, void *self) {
+    LOGV("%s (%d)", __func__, done);
+    PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
+    if (callback) {
+        callback->onPlaylistUpdateInProgress(done);
     }
 }
 

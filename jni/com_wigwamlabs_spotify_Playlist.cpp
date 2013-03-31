@@ -12,6 +12,7 @@ using namespace wigwamlabs;
 
 jfieldID sPlaylistHandleField = 0;
 jmethodID sPlaylistOnTracksMovedMethod = 0;
+jmethodID sPlaylistOnPlaylistUpdateInProgressMethod = 0;
 
 class PlaylistCallbackJNI : public PlaylistCallback {
 public:
@@ -35,6 +36,11 @@ public:
             env->DeleteLocalRef(array);
         }
     }
+
+    void onPlaylistUpdateInProgress(bool done) {
+        LOGV("%s (%d)", __func__, done);
+        mProvider->getEnv()->CallVoidMethod(mPlaylist, sPlaylistOnPlaylistUpdateInProgressMethod, done);
+    }
 private:
     JNIEnvProvider *mProvider;
     jobject mPlaylist;
@@ -53,6 +59,9 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeInitClass) {
     }
     if (sPlaylistOnTracksMovedMethod == 0) {
         sPlaylistOnTracksMovedMethod = env->GetMethodID(klass, "onTracksMoved", "([II)V");
+    }
+    if (sPlaylistOnPlaylistUpdateInProgressMethod == 0) {
+        sPlaylistOnPlaylistUpdateInProgressMethod = env->GetMethodID(klass, "onPlaylistUpdateInProgress", "(Z)V");
     }
 }
 

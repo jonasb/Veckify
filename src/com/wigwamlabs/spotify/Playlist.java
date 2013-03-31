@@ -56,14 +56,22 @@ public class Playlist extends NativeItemCollection<Track> {
         mHandler.post(new Runnable() {
             public void run() {
                 Playlist.this.onItemsMoved(oldPositions, newPosition);
-                if (mCallback != null) {  //TODO only call when update is finished
-                    mCallback.onChanged();
+            }
+        });
+    }
+
+    @Keep
+    private void onPlaylistUpdateInProgress(final boolean done) {
+        mHandler.post(new Runnable() {
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onPlaylistUpdateInProgress(done);
                 }
             }
         });
     }
 
     public interface Callback {
-        void onChanged();
+        void onPlaylistUpdateInProgress(boolean done);
     }
 }
