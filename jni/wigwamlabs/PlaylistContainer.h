@@ -12,6 +12,7 @@ class Placeholder;
 
 class PlaylistContainerCallback {
 public:
+    virtual void onPlaylistMoved(int oldPosition, int newPosition) = 0;
     virtual void onContainerLoaded() = 0;
 };
 

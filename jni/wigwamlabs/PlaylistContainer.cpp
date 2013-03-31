@@ -11,23 +11,6 @@
 
 namespace wigwamlabs {
 
-void PlaylistContainer::onPlaylistAdded(sp_playlistcontainer *container, sp_playlist *playlist, int position, void *self) {
-    LOGV("onPlaylistAdded()");
-}
-
-void PlaylistContainer::onPlaylistRemoved(sp_playlistcontainer *container, sp_playlist *playlist, int position, void *self) {
-    LOGV("onPlaylistRemoved()");
-}
-
-void PlaylistContainer::onPlaylistMoved(sp_playlistcontainer *container, sp_playlist *playlist, int position, int newPosition, void *self) {
-    LOGV("onPlaylistMoved()");
-}
-
-void PlaylistContainer::onContainerLoaded(sp_playlistcontainer *container, void *self) {
-    LOGV("onContainerLoaded()");
-    static_cast<PlaylistContainer *>(self)->mCallback->onContainerLoaded();
-}
-
 PlaylistContainer::PlaylistContainer(sp_playlistcontainer *container) :
     mContainer(container),
     mCallback(NULL) {
@@ -60,6 +43,38 @@ sp_error PlaylistContainer::destroy() {
 void PlaylistContainer::setCallback(PlaylistContainerCallback *callback) {
     //assert(!mCallback);
     mCallback = callback;
+}
+
+void PlaylistContainer::onPlaylistAdded(sp_playlistcontainer *container, sp_playlist *playlist, int position, void *self) {
+    LOGV("onPlaylistAdded(%d)", position);
+    PlaylistContainerCallback *callback = static_cast<PlaylistContainer *>(self)->mCallback;
+    if (callback) {
+        callback->onPlaylistMoved(-1, position);
+    }
+}
+
+void PlaylistContainer::onPlaylistRemoved(sp_playlistcontainer *container, sp_playlist *playlist, int position, void *self) {
+    LOGV("onPlaylistRemoved(%d)", position);
+    PlaylistContainerCallback *callback = static_cast<PlaylistContainer *>(self)->mCallback;
+    if (callback) {
+        callback->onPlaylistMoved(position, -1);
+    }
+}
+
+void PlaylistContainer::onPlaylistMoved(sp_playlistcontainer *container, sp_playlist *playlist, int position, int newPosition, void *self) {
+    LOGV("onPlaylistMoved(%d, %d)", position, newPosition);
+    PlaylistContainerCallback *callback = static_cast<PlaylistContainer *>(self)->mCallback;
+    if (callback) {
+        callback->onPlaylistMoved(position, newPosition);
+    }
+}
+
+void PlaylistContainer::onContainerLoaded(sp_playlistcontainer *container, void *self) {
+    LOGV("onContainerLoaded()");
+    PlaylistContainerCallback *callback = static_cast<PlaylistContainer *>(self)->mCallback;
+    if (callback) {
+        callback->onContainerLoaded();
+    }
 }
 
 int PlaylistContainer::getCount() {

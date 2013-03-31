@@ -14,7 +14,8 @@ import com.wigwamlabs.spotify.PlaylistContainerItem;
 import com.wigwamlabs.spotify.SpotifyContext;
 import com.wigwamlabs.spotify.SpotifySession;
 import com.wigwamlabs.spotify.Track;
-import com.wigwamlabs.spotify.ui.PlaylistAdapter;import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
+import com.wigwamlabs.spotify.ui.PlaylistAdapter;
+import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
 public class MainActivity extends Activity implements SpotifySession.Callback {
 

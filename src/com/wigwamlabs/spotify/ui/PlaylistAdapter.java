@@ -8,10 +8,7 @@ import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.wigwamlabs.spotify.FolderEnd;
-import com.wigwamlabs.spotify.FolderStart;
 import com.wigwamlabs.spotify.Playlist;
-import com.wigwamlabs.spotify.PlaylistContainerItem;
 import com.wigwamlabs.spotify.Track;
 
 public class PlaylistAdapter implements ListAdapter {

@@ -5,6 +5,7 @@
 #include <jni.h>
 #include <pthread.h>
 #include "ExceptionUtils.h"
+#include "JNIEnvProvider.h"
 #include "utils.h"
 #include "wigwamlabs/Session.h"
 
@@ -17,43 +18,25 @@ jmethodID sSessionOnConnectionStateUpdatedMethod = 0;
 class SessionCallbackJNI : public SessionCallback {
 public:
     SessionCallbackJNI(JNIEnv *env, jobject session) :
-        mEnv(NULL) {
+        mProvider(JNIEnvProvider::instance(env)) {
         mSession = env->NewGlobalRef(session);
-        env->GetJavaVM(&mVm);
     }
 
     ~SessionCallbackJNI() {
-        JNIEnv *env = getEnv();
-        if (env) {
-            env->DeleteGlobalRef(mSession);
-        }
+        mProvider->getEnv()->DeleteGlobalRef(mSession);
     }
 
     void onMetadataUpdated() {
-        getEnv()->CallVoidMethod(mSession, sSessionOnMetadataUpdatedMethod);
+        mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnMetadataUpdatedMethod);
     }
 
     void onConnectionStateUpdated(int state) {
-        getEnv()->CallVoidMethod(mSession, sSessionOnConnectionStateUpdatedMethod, state);
+        mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnConnectionStateUpdatedMethod, state);
     }
 
 private:
-    JNIEnv *getEnv() {
-        // TODO support multiple threads
-        if (!mEnv) {
-            LOGV("Initializing JNI env for thread: %d", pthread_self());
-            JavaVMAttachArgs args;
-            args.version = JNI_VERSION_1_6;
-            args.name = NULL;
-            args.group = NULL;
-            mVm->AttachCurrentThread(&mEnv, &args);
-        }
-        return mEnv;
-    }
-private:
     jobject mSession;
-    JavaVM *mVm;
-    JNIEnv *mEnv;
+    JNIEnvProvider *mProvider;
 };
 
 Session *getNativeSession(JNIEnv *env, jobject object) {

@@ -6,50 +6,39 @@
 #include <pthread.h>
 #include "utils.h"
 #include "ExceptionUtils.h"
+#include "JNIEnvProvider.h"
 #include "wigwamlabs/PlaylistContainer.h"
 
 using namespace wigwamlabs;
 
 jfieldID sPlaylistContainerHandleField = 0;
-jmethodID sPlaylistContainerOnContainerLoaded = 0;
+jmethodID sPlaylistContainerOnContainerLoadedMethod = 0;
+jmethodID sPlaylistContainerOnPlaylistMovedMethod = 0;
 
 class PlaylistContainerCallbackJNI : public PlaylistContainerCallback {
 public:
     PlaylistContainerCallbackJNI(JNIEnv *env, jobject playlistContainer) :
-        mEnv(NULL) {
+        mProvider(JNIEnvProvider::instance(env)) {
         mPlaylistContainer = env->NewGlobalRef(playlistContainer);
-        env->GetJavaVM(&mVm);
     }
 
     ~PlaylistContainerCallbackJNI() {
-        JNIEnv *env = getEnv();
-        if (env) {
-            env->DeleteGlobalRef(mPlaylistContainer);
-        }
+        mProvider->getEnv()->DeleteGlobalRef(mPlaylistContainer);
+    }
+
+    void onPlaylistMoved(int oldPosition, int newPosition) {
+        LOGV("%s (%d -> %d)", __func__, oldPosition, newPosition);
+        mProvider->getEnv()->CallVoidMethod(mPlaylistContainer, sPlaylistContainerOnPlaylistMovedMethod, oldPosition, newPosition);
     }
 
     void onContainerLoaded() {
-        LOGV(__func__);
-        getEnv()->CallVoidMethod(mPlaylistContainer, sPlaylistContainerOnContainerLoaded);
+        LOGV("%s", __func__);
+        mProvider->getEnv()->CallVoidMethod(mPlaylistContainer, sPlaylistContainerOnContainerLoadedMethod);
     }
 
 private:
-    JNIEnv *getEnv() {
-        // TODO support multiple threads
-        if (!mEnv) {
-            LOGV("Initializing JNI env for thread: %d", pthread_self());
-            JavaVMAttachArgs args;
-            args.version = JNI_VERSION_1_6;
-            args.name = NULL;
-            args.group = NULL;
-            mVm->AttachCurrentThread(&mEnv, &args);
-        }
-        return mEnv;
-    }
-private:
+    JNIEnvProvider *mProvider;
     jobject mPlaylistContainer;
-    JavaVM *mVm;
-    JNIEnv *mEnv;
 };
 
 PlaylistContainer *getNativePlaylistContainer(JNIEnv *env, jobject object) {
@@ -63,8 +52,11 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_PlaylistContainer, nativeInitClas
     if (sPlaylistContainerHandleField == 0) {
         sPlaylistContainerHandleField = env->GetFieldID(klass, "mHandle", "I");
     }
-    if (sPlaylistContainerOnContainerLoaded == 0) {
-        sPlaylistContainerOnContainerLoaded = env->GetMethodID(klass, "onContainerLoaded", "()V");
+    if (sPlaylistContainerOnContainerLoadedMethod == 0) {
+        sPlaylistContainerOnContainerLoadedMethod = env->GetMethodID(klass, "onContainerLoaded", "()V");
+    }
+    if (sPlaylistContainerOnPlaylistMovedMethod == 0) {
+        sPlaylistContainerOnPlaylistMovedMethod = env->GetMethodID(klass, "onPlaylistMoved", "(II)V");
     }
 }
 

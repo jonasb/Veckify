@@ -7,6 +7,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libspotify-jni
 LOCAL_SRC_FILES := \
     ExceptionUtils.cpp \
+    JNIEnvProvider.cpp \
     com_wigwamlabs_spotify_FolderEnd.cpp \
     com_wigwamlabs_spotify_FolderStart.cpp \
     com_wigwamlabs_spotify_Placeholder.cpp \

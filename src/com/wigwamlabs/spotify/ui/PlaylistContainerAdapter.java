@@ -14,7 +14,7 @@ import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.PlaylistContainerItem;
 
-public class PlaylistContainerAdapter implements ListAdapter {
+public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.Callback {
     private final Context mContext;
     private final PlaylistContainer mContainer;
     private DataSetObserver mObserver;
@@ -22,6 +22,7 @@ public class PlaylistContainerAdapter implements ListAdapter {
     public PlaylistContainerAdapter(Context context, PlaylistContainer container) {
         mContext = context;
         mContainer = container;
+        mContainer.setCallback(this);
     }
 
     public boolean areAllItemsEnabled() {
@@ -89,5 +90,11 @@ public class PlaylistContainerAdapter implements ListAdapter {
 
     public boolean isEmpty() {
         return mContainer.getCount() == 0;
+    }
+
+    public void onContainerLoaded() {
+        if (mObserver != null) {
+            mObserver.onChanged();
+        }
     }
 }

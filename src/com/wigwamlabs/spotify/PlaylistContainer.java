@@ -1,5 +1,6 @@
 package com.wigwamlabs.spotify;
 
+import android.os.Handler;
 import android.util.Log;
 
 import proguard.annotation.Keep;
@@ -12,9 +13,11 @@ public class PlaylistContainer {
     private static final int TYPE_START_FOLDER = 1;
     private static final int TYPE_END_FOLDER = 2;
     private static final int TYPE_PLACEHOLDER = 3;
+    private final Handler mHandler = new Handler();
     @KeepName
     private int mHandle;
     private ArrayList<PlaylistContainerItem> mItems;
+    private Callback mCallback;
 
     static {
         nativeInitClass();
@@ -58,11 +61,43 @@ public class PlaylistContainer {
         }
     }
 
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
+
+    @Keep
+    void onPlaylistMoved(final int oldPosition, final int newPosition) {
+        Log.d("XXX", "onPlaylistMoved(" + oldPosition + ", " + newPosition + ")");
+
+        mHandler.post(new Runnable() {
+            public void run() {
+                if (mItems != null) {
+                    //TODO Probably not correct, seems as if new position is before change
+                    PlaylistContainerItem old = null;
+                    if (oldPosition >= 0) {
+                        old = mItems.remove(oldPosition);
+                    }
+                    if (newPosition >= 0) {
+                        mItems.add(newPosition, old);
+                    }
+                }
+            }
+        });
+    }
+
     @Keep
     void onContainerLoaded() {
-        Log.d("XXX", "onContainerLoaded()");
+        Log.d("XXX", "onContainerLoaded() callback = " + mCallback);
 
-        initList();
+        mHandler.post(new Runnable() {
+            public void run() {
+                initList();
+
+                if (mCallback != null) {
+                    mCallback.onContainerLoaded();
+                }
+            }
+        });
     }
 
     private void initList() {
@@ -114,5 +149,9 @@ public class PlaylistContainer {
         }
         mItems.set(index, item);
         return item;
+    }
+
+    public interface Callback {
+        void onContainerLoaded();
     }
 }
