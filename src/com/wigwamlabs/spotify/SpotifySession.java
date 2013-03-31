@@ -6,21 +6,19 @@ import android.provider.Settings;
 import android.util.Log;
 
 import proguard.annotation.Keep;
-import proguard.annotation.KeepName;
 
-public class SpotifySession {
+public class SpotifySession extends NativeItem {
     public static final int CONNECTION_STATE_LOGGED_OUT = 0;
     public static final int CONNECTION_STATE_LOGGED_IN = 1;
     public static final int CONNECTION_STATE_DISCONNECTED = 2;
     public static final int CONNECTION_STATE_UNDEFINED = 3;
     public static final int CONNECTION_STATE_OFFLINE = 4;
     private static final Handler mHandler = new Handler();
-    @KeepName
-    private int mHandle;
     private int mState;
     private Callback mCallback;
 
     public SpotifySession(Context context, SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId) {
+        super(0);
         if (settingsPath == null) {
             settingsPath = context.getFilesDir().getAbsolutePath();
         }
@@ -30,17 +28,10 @@ public class SpotifySession {
         if (deviceId == null) {
             deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         }
-        mHandle = nativeCreate(spotifyContext, settingsPath, cachePath, deviceId);
+        setHandle(nativeCreate(spotifyContext, settingsPath, cachePath, deviceId));
     }
 
     private static native void nativeInitClass();
-
-    public void destroy() {
-        if (mHandle != 0) {
-            nativeDestroy();
-            mHandle = 0;
-        }
-    }
 
     public boolean relogin() {
         return nativeRelogin();
@@ -60,7 +51,7 @@ public class SpotifySession {
 
     private native int nativeCreate(SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId);
 
-    private native void nativeDestroy();
+    native void nativeDestroy();
 
     private native boolean nativeRelogin();
 

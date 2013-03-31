@@ -44,11 +44,11 @@ public class PlaylistAdapter implements ListAdapter {
     }
 
     public Track getItem(int position) {
-        return mPlaylist.getTrack(position);
+        return mPlaylist.getItem(position);
     }
 
     public long getItemId(int position) {
-        final Track item = mPlaylist.getTrack(position);
+        final Track item = mPlaylist.getItem(position);
         return item.getId();
     }
 

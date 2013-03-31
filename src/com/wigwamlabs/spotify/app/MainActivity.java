@@ -8,9 +8,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
-import com.wigwamlabs.spotify.PlaylistContainerItem;
 import com.wigwamlabs.spotify.SpotifyContext;
 import com.wigwamlabs.spotify.SpotifySession;
 import com.wigwamlabs.spotify.Track;
@@ -59,6 +59,11 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         });
 
         mPlaylistList = (ListView) findViewById(R.id.playlist);
+        mPlaylistList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onTrackClicked(((PlaylistAdapter) parent.getAdapter()).getItem(position));
+            }
+        });
 
         final View loadTrackButton = findViewById(R.id.loadTrack);
         loadTrackButton.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +140,7 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         mPlaylistsList.setAdapter(new PlaylistContainerAdapter(this, mPlaylistContainer));
     }
 
-    private void onPlaylistClicked(PlaylistContainerItem item) {
+    private void onPlaylistClicked(NativeItem item) {
         Log.d("XXX", "Clicked: " + item);
         if (item instanceof Playlist) {
             final Playlist playlist = (Playlist) item;
@@ -148,6 +153,10 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
             mPlaylist = playlist.clone();
             mPlaylistList.setAdapter(new PlaylistAdapter(this, mPlaylist));
         }
+    }
+
+    private void onTrackClicked(Track item) {
+        Log.d("XXX", "Clicked: " + item);
     }
 
     private void loadTrack() {

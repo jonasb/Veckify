@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import com.wigwamlabs.spotify.FolderEnd;
 import com.wigwamlabs.spotify.FolderStart;
+import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
-import com.wigwamlabs.spotify.PlaylistContainerItem;
 
 public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.Callback {
     private final Context mContext;
@@ -47,12 +47,12 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
         return mContainer.getCount();
     }
 
-    public PlaylistContainerItem getItem(int position) {
-        return mContainer.getPlaylist(position);
+    public NativeItem getItem(int position) {
+        return mContainer.getItem(position);
     }
 
     public long getItemId(int position) {
-        final PlaylistContainerItem item = mContainer.getPlaylist(position);
+        final NativeItem item = mContainer.getItem(position);
         return item.getId();
     }
 
@@ -66,7 +66,7 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
             view = new TextView(mContext);
             view.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
-        final PlaylistContainerItem item = getItem(position);
+        final NativeItem item = getItem(position);
         if (item instanceof Playlist) {
             view.setText(((Playlist) item).getName());
         } else if (item instanceof FolderStart) {

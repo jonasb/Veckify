@@ -1,17 +1,12 @@
 package com.wigwamlabs.spotify;
 
-import proguard.annotation.KeepName;
-
-public class Playlist implements PlaylistContainerItem {
-    @KeepName
-    private int mHandle;
-
+public class Playlist extends NativeItemCollection<Track> {
     static {
         nativeInitClass();
     }
 
     Playlist(int handle) {
-        mHandle = handle;
+        super(handle);
     }
 
     public Playlist clone() {
@@ -21,37 +16,23 @@ public class Playlist implements PlaylistContainerItem {
 
     private static native void nativeInitClass();
 
-    private native void nativeDestroy();
+    native void nativeDestroy();
 
     private native int nativeClone();
 
     private native String nativeGetName();
 
-    private native int nativeGetCount();
+    native int nativeGetCount();
 
     private native int nativeGetTrack(int position);
 
-    public void destroy() {
-        if (mHandle != 0) {
-            nativeDestroy();
-            mHandle = 0;
-        }
+    @Override
+    Track createNewItem(int index) {
+        final int handle = nativeGetTrack(index);
+        return new Track(handle);
     }
 
     public String getName() {
         return nativeGetName();
-    }
-
-    public int getId() {
-        return mHandle;
-    }
-
-    public int getCount() {
-        return nativeGetCount();
-    }
-
-    public Track getTrack(int position) {
-        final int handle = nativeGetTrack(position);
-        return new Track(handle);
     }
 }
