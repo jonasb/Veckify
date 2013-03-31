@@ -8,6 +8,7 @@ import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.wigwamlabs.spotify.Artist;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.Track;
 
@@ -64,7 +65,16 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
             view.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
         final Track item = getItem(position);
-        view.setText(item.getName());
+        final Artist[] artists = item.getArtists();
+        StringBuilder sb = new StringBuilder();
+        sb.append(item.getName());
+        String delimiter = ": ";
+        for (Artist artist : artists) {
+            sb.append(delimiter);
+            delimiter = ", ";
+            sb.append(artist.getName());
+        }
+        view.setText(sb.toString());
         return view;
     }
 

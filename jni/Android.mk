@@ -8,6 +8,7 @@ LOCAL_MODULE := libspotify-jni
 LOCAL_SRC_FILES := \
     ExceptionUtils.cpp \
     JNIEnvProvider.cpp \
+    com_wigwamlabs_spotify_Artist.cpp \
     com_wigwamlabs_spotify_FolderEnd.cpp \
     com_wigwamlabs_spotify_FolderStart.cpp \
     com_wigwamlabs_spotify_Placeholder.cpp \
@@ -16,6 +17,7 @@ LOCAL_SRC_FILES := \
     com_wigwamlabs_spotify_SpotifyContext.cpp \
     com_wigwamlabs_spotify_SpotifySession.cpp \
     com_wigwamlabs_spotify_Track.cpp \
+    wigwamlabs/Artist.cpp \
     wigwamlabs/Context.cpp \
     wigwamlabs/FolderEnd.cpp \
     wigwamlabs/FolderStart.cpp \

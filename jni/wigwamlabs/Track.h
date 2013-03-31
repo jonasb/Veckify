@@ -5,6 +5,8 @@
 
 namespace wigwamlabs {
 
+class Artist;
+
 class Track {
 public:
     static Track *create(const char *linkStr);
@@ -13,6 +15,8 @@ public:
     ~Track();
 
     const char *getName() const;
+    int getArtistCount() const;
+    Artist *getArtist(int index) const;
 
 private:
     sp_track *mTrack;

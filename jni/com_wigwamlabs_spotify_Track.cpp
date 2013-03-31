@@ -59,3 +59,20 @@ JNI_METHOD(jstring, com_wigwamlabs_spotify_Track, nativeGetName) {
 
     return name;
 }
+
+JNI_METHOD(jint, com_wigwamlabs_spotify_Track, nativeGetArtistCount) {
+    LOGV("nativeGetArtistCount()");
+
+    Track *track = getNativeTrack(env, self);
+    return track->getArtistCount();
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Track, nativeGetArtist, jint index) {
+    LOGV("nativeGetArtist(%d)", index);
+
+    Track *track = getNativeTrack(env, self);
+
+    Artist *artist = track->getArtist(index);
+
+    return reinterpret_cast<jint>(artist);
+}

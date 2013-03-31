@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include "Track.h"
+#include "Artist.h"
 
 namespace wigwamlabs {
 
@@ -41,6 +42,15 @@ Track::~Track() {
 
 const char *Track::getName() const {
     return sp_track_name(mTrack);
+}
+
+int Track::getArtistCount() const {
+    return sp_track_num_artists(mTrack);
+}
+
+Artist *Track::getArtist(int index) const {
+    sp_artist *artist = sp_track_artist(mTrack, index);
+    return new Artist(artist);
 }
 
 } // namespace wigwamlabs
