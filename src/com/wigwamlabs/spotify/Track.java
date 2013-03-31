@@ -16,9 +16,16 @@ public class Track extends NativeItem {
         setHandle(nativeCreate(uri));
     }
 
+    public Track clone() {
+        int handle = nativeClone();
+        return new Track(handle);
+    }
+
     private static native void nativeInitClass();
 
     private native int nativeCreate(String uri);
+
+    private native int nativeClone();
 
     native void nativeDestroy();
 

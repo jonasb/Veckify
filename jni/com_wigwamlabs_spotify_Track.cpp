@@ -35,6 +35,15 @@ JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Track, nativeCreate, jstring link) 
     return reinterpret_cast<jint>(instance);
 }
 
+JNI_METHOD(jint, com_wigwamlabs_spotify_Track, nativeClone) {
+    LOGV("nativeClone()");
+
+    Track *track = getNativeTrack(env, self);
+    Track *clone = track->clone();
+
+    return reinterpret_cast<jint>(clone);
+}
+
 JNI_METHOD(void, com_wigwamlabs_spotify_Track, nativeDestroy) {
     LOGV("nativeDestroy()");
 

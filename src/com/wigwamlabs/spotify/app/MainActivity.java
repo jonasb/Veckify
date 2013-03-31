@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.wigwamlabs.spotify.Artist;
 import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
@@ -23,12 +24,17 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     private SpotifySession mSpotifySession;
     private TextView mConnectionState;
     private View mLoginButton;
+
+    private PlaylistContainer mPlaylistContainer;
     private View mGetPlaylistsButton;
     private ListView mPlaylistsList;
-    private ListView mPlaylistList;
-    private PlaylistContainer mPlaylistContainer;
+
     private Playlist mPlaylist;
+    private ListView mPlaylistList;
+
     private Track mTrack;
+    private TextView mTrackName;
+    private TextView mTrackArtists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +71,8 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
             }
         });
 
-        final View loadTrackButton = findViewById(R.id.loadTrack);
-        loadTrackButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                loadTrack();
-            }
-        });
+        mTrackName = (TextView) findViewById(R.id.trackName);
+        mTrackArtists = (TextView) findViewById(R.id.trackArtists);
 
         mSpotifyContext = new SpotifyContext();
     }
@@ -144,7 +146,6 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         Log.d("XXX", "Clicked: " + item);
         if (item instanceof Playlist) {
             final Playlist playlist = (Playlist) item;
-            Log.d("XXX", "name: " + playlist.getName());
 
             if (mPlaylist != null) {
                 mPlaylist.destroy();
@@ -156,16 +157,21 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     }
 
     private void onTrackClicked(Track item) {
-        Log.d("XXX", "Clicked: " + item);
-    }
-
-    private void loadTrack() {
         if (mTrack != null) {
             mTrack.destroy();
             mTrack = null;
         }
-        mTrack = new Track("spotify:track:0DcrhZ12WcCqruCs8ibXSf");
-        Log.d("XXX", "Track name: " + mTrack.getName());
+        mTrack = item.clone();
+
+        mTrackName.setText(mTrack.getName());
+        StringBuilder sb = new StringBuilder();
+        for (Artist artist : mTrack.getArtists()) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(artist.getName());
+        }
+        mTrackArtists.setText(sb.toString());
     }
 
 }

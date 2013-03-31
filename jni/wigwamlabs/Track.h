@@ -11,6 +11,7 @@ class Track {
 public:
     static Track *create(const char *linkStr);
     Track(sp_track *track);
+    Track *clone();
     sp_error destroy();
     ~Track();
 

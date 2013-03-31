@@ -29,6 +29,10 @@ Track::Track(sp_track *track) :
     sp_track_add_ref(track);
 }
 
+Track *Track::clone() {
+    return new Track(mTrack);
+}
+
 sp_error Track::destroy() {
     LOGV("destroy()");
     if (mTrack) {
