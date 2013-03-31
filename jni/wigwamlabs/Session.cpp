@@ -85,6 +85,7 @@ Session *Session::create(Context *context, SessionCallback *callback, const char
 
     // config
     sp_session_config config;
+    memset(&config, 0, sizeof(sp_session_config));
     config.api_version = SPOTIFY_API_VERSION;
     config.cache_location = cachePath;
     config.settings_location = settingsPath;
@@ -95,7 +96,7 @@ Session *Session::create(Context *context, SessionCallback *callback, const char
     config.userdata = self;
     config.compress_playlists = true;
     config.dont_save_metadata_for_playlists = false;
-    config.initially_unload_playlists = true;
+    config.initially_unload_playlists = false;
     config.device_id = deviceId;
     config.proxy = NULL;
     config.proxy_username = NULL;
