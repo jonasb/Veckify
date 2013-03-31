@@ -26,7 +26,16 @@ public:
     }
 
     void onTracksMoved(const int *oldPositions, int oldPositionCount, int newPosition) {
-        LOGV("%s (x%d -> %d)", __func__, oldPositionCount, newPosition);
+#if !LOG_NDEBUG
+        switch (oldPositionCount) {
+        case 0: LOGV("%s ([], %d)", __func__, newPosition); break;
+        case 1: LOGV("%s ([%d], %d)", __func__, oldPositions[0], newPosition); break;
+        case 2: LOGV("%s ([%d, %d], %d)", __func__, oldPositions[0], oldPositions[1], newPosition); break;
+        case 3: LOGV("%s ([%d, %d, %d], %d)", __func__, oldPositions[0], oldPositions[1], oldPositions[2], newPosition); break;
+        case 4: LOGV("%s ([%d, %d, %d, %d], %d)", __func__, oldPositions[0], oldPositions[1], oldPositions[2], oldPositions[3], newPosition); break;
+        default: LOGV("%s ([%d, %d, %d, %d, %d + %d more], %d)", __func__, oldPositions[0], oldPositions[1], oldPositions[2], oldPositions[3], oldPositions[4], (oldPositionCount - 5), newPosition); break;
+        }
+#endif
         JNIEnv *env = mProvider->getEnv();
         jintArray array = env->NewIntArray(oldPositionCount);
         if (array) {

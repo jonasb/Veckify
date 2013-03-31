@@ -4,7 +4,7 @@
 #include <android/log.h>
 
 #ifndef LOG_NDEBUG
-#define LOG_NDEBUG 0
+#define LOG_NDEBUG 1
 #endif
 
 #ifndef LOG_TAG
