@@ -1,7 +1,6 @@
 package com.wigwamlabs.spotify;
 
 import android.os.Handler;
-import android.util.Log;
 
 import proguard.annotation.Keep;
 import proguard.annotation.KeepName;
@@ -67,18 +66,26 @@ public class PlaylistContainer {
 
     @Keep
     void onPlaylistMoved(final int oldPosition, final int newPosition) {
-        Log.d("XXX", "onPlaylistMoved(" + oldPosition + ", " + newPosition + ")");
-
         mHandler.post(new Runnable() {
             public void run() {
                 if (mItems != null) {
-                    //TODO Probably not correct, seems as if new position is before change
-                    PlaylistContainerItem old = null;
-                    if (oldPosition >= 0) {
+                    final PlaylistContainerItem old;
+                    if (oldPosition >= 0) { // move or remove
                         old = mItems.remove(oldPosition);
+                    } else { // new
+                        old = null;
                     }
-                    if (newPosition >= 0) {
-                        mItems.add(newPosition, old);
+
+                    if (newPosition >= 0) { // move or add
+                        int pos = newPosition;
+                        if (newPosition > oldPosition && oldPosition >= 0) { // moving downwards
+                            pos--; // the index is reported as too big
+                        }
+                        mItems.add(pos, old);
+                    } else { // remove
+                        if (old != null) {
+                            old.destroy();
+                        }
                     }
                 }
             }
@@ -87,8 +94,6 @@ public class PlaylistContainer {
 
     @Keep
     void onContainerLoaded() {
-        Log.d("XXX", "onContainerLoaded() callback = " + mCallback);
-
         mHandler.post(new Runnable() {
             public void run() {
                 initList();
