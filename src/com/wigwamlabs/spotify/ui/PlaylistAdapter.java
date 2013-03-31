@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.Track;
 
-public class PlaylistAdapter implements ListAdapter {
+public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
     private final Context mContext;
     private final Playlist mPlaylist;
     private DataSetObserver mObserver;
@@ -19,6 +19,7 @@ public class PlaylistAdapter implements ListAdapter {
     public PlaylistAdapter(Context context, Playlist playlist) {
         mContext = context;
         mPlaylist = playlist;
+        mPlaylist.setCallback(this);
     }
 
     public boolean areAllItemsEnabled() {
@@ -77,5 +78,11 @@ public class PlaylistAdapter implements ListAdapter {
 
     public boolean isEmpty() {
         return mPlaylist.getCount() == 0;
+    }
+
+    public void onChanged() {
+        if (mObserver != null) {
+            mObserver.onChanged();
+        }
     }
 }

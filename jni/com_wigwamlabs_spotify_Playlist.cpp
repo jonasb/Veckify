@@ -5,11 +5,40 @@
 #include <jni.h>
 #include "utils.h"
 #include "ExceptionUtils.h"
+#include "JNIEnvProvider.h"
 #include "wigwamlabs/Playlist.h"
 
 using namespace wigwamlabs;
 
 jfieldID sPlaylistHandleField = 0;
+jmethodID sPlaylistOnTracksMovedMethod = 0;
+
+class PlaylistCallbackJNI : public PlaylistCallback {
+public:
+    PlaylistCallbackJNI(JNIEnv *env, jobject playlist) :
+        mProvider(JNIEnvProvider::instance(env)) {
+        mPlaylist = env->NewGlobalRef(playlist);
+    }
+
+    ~PlaylistCallbackJNI() {
+        mProvider->getEnv()->DeleteGlobalRef(mPlaylist);
+    }
+
+    void onTracksMoved(const int *oldPositions, int oldPositionCount, int newPosition) {
+        LOGV("%s (x%d -> %d)", __func__, oldPositionCount, newPosition);
+        JNIEnv *env = mProvider->getEnv();
+        jintArray array = env->NewIntArray(oldPositionCount);
+        if (array) {
+            env->SetIntArrayRegion(array, 0, oldPositionCount, oldPositions);
+            env->CallVoidMethod(mPlaylist, sPlaylistOnTracksMovedMethod, array, newPosition);
+
+            env->DeleteLocalRef(array);
+        }
+    }
+private:
+    JNIEnvProvider *mProvider;
+    jobject mPlaylist;
+};
 
 Playlist *getNativePlaylist(JNIEnv *env, jobject object) {
     const jint handle = env->GetIntField(object, sPlaylistHandleField);
@@ -22,6 +51,17 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeInitClass) {
     if (sPlaylistHandleField == 0) {
         sPlaylistHandleField = env->GetFieldID(klass, "mHandle", "I");
     }
+    if (sPlaylistOnTracksMovedMethod == 0) {
+        sPlaylistOnTracksMovedMethod = env->GetMethodID(klass, "onTracksMoved", "([II)V");
+    }
+}
+
+JNI_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeInitInstance) {
+    LOGV("nativeInitInstance()");
+
+    Playlist *playlist = getNativePlaylist(env, self);
+    PlaylistCallbackJNI *callback = new PlaylistCallbackJNI(env, self);
+    playlist->setCallback(callback);
 }
 
 JNI_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeDestroy) {

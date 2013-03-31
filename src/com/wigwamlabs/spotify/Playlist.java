@@ -1,12 +1,21 @@
 package com.wigwamlabs.spotify;
 
+import android.os.Handler;
+
+import proguard.annotation.Keep;
+
 public class Playlist extends NativeItemCollection<Track> {
     static {
         nativeInitClass();
     }
 
+    private final Handler mHandler = new Handler();
+    private Callback mCallback;
+
     Playlist(int handle) {
         super(handle);
+
+        nativeInitInstance();
     }
 
     public Playlist clone() {
@@ -15,6 +24,8 @@ public class Playlist extends NativeItemCollection<Track> {
     }
 
     private static native void nativeInitClass();
+
+    private native void nativeInitInstance();
 
     native void nativeDestroy();
 
@@ -34,5 +45,25 @@ public class Playlist extends NativeItemCollection<Track> {
 
     public String getName() {
         return nativeGetName();
+    }
+
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
+
+    @Keep
+    private void onTracksMoved(final int[] oldPositions, final int newPosition) {
+        mHandler.post(new Runnable() {
+            public void run() {
+                Playlist.this.onItemsMoved(oldPositions, newPosition);
+                if (mCallback != null) {  //TODO only call when update is finished
+                    mCallback.onChanged();
+                }
+            }
+        });
+    }
+
+    public interface Callback {
+        void onChanged();
     }
 }

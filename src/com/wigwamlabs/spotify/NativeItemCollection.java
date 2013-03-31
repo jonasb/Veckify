@@ -57,8 +57,11 @@ public abstract class NativeItemCollection<T extends NativeItem> extends NativeI
 
     abstract T createNewItem(int index);
 
+    void onItemsMoved(int oldPosition, int newPosition) {
+        if (oldPosition == newPosition) {
+            return;
+        }
 
-    public void onItemsMoved(int oldPosition, int newPosition) {
         if (mItems != null) {
             final T oldItem;
             if (oldPosition >= 0) { // move or remove
@@ -80,4 +83,41 @@ public abstract class NativeItemCollection<T extends NativeItem> extends NativeI
             }
         }
     }
+
+    void onItemsMoved(int[] oldPositions, int newPosition) {
+        if (mItems != null) {
+            final int count = oldPositions.length;
+            for (int i = 0; i < count; i++) {
+                final int oldPosition = oldPositions[i];
+                onItemsMoved(oldPosition, newPosition);
+
+                boolean added = (oldPosition < 0);
+                boolean moved = (oldPosition >= 0 && newPosition >= 0);
+                boolean movedLeft = (moved && newPosition < oldPosition);
+                boolean movedNowhere = (moved && newPosition == oldPosition);
+                boolean removed = (newPosition < 0);
+
+                // adjust future source positions
+                if (moved || removed) {
+                    for (int j = i + 1; j < count; j++) {
+                        final int futureOldPosition = oldPositions[j];
+                        if (oldPosition < futureOldPosition && // item to the left
+                                (removed || (newPosition > futureOldPosition))) { //removed or moved to right of future
+                            oldPositions[j] = futureOldPosition - 1;
+                        } else if (moved &&
+                                (oldPosition > futureOldPosition && // item to the right of future
+                                        (newPosition <= futureOldPosition))) {// moved to the left of future
+                            oldPositions[j] = futureOldPosition + 1;
+                        }
+                    }
+                }
+
+                // adjust target position
+                if (added || movedLeft || movedNowhere) {
+                    newPosition++;
+                }
+            }
+        }
+    }
+
 }

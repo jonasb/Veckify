@@ -8,14 +8,6 @@
 
 namespace wigwamlabs {
 
-void onTracksAdded(sp_playlist *playlist, sp_track * const *tracks, int numTracks, int position, void *self) {
-    LOGV("onTracksAdded()");
-}
-
-void onTracksRemoved(sp_playlist *playlist, const int *tracks, int numTracks, void *self) {
-    LOGV("onTracksRemoved()");
-}
-
 void onPlaylistRenamed(sp_playlist *playlist, void *self) {
     LOGV("onPlaylistRenamed()");
 }
@@ -25,17 +17,18 @@ void onPlaylistStateChanged(sp_playlist *playlist, void *self) {
 }
 
 void onPlaylistUpdateInProgress(sp_playlist *playlist, bool done, void *self) {
-    LOGV("onPlaylistUpdateInProgress()");
+    LOGV("onPlaylistUpdateInProgress(%d)", done);
 }
 
 Playlist::Playlist(sp_playlist *playlist) :
-    mPlaylist(playlist) {
+    mPlaylist(playlist),
+    mCallback(NULL) {
     sp_playlist_add_ref(playlist);
 
     memset(&mCallbacks, 0, sizeof(sp_playlist_callbacks));
     mCallbacks.tracks_added = onTracksAdded;
     mCallbacks.tracks_removed = onTracksRemoved;
-    mCallbacks.tracks_moved = NULL;
+    mCallbacks.tracks_moved = onTracksMoved;
     mCallbacks.playlist_renamed = onPlaylistRenamed;
     mCallbacks.playlist_state_changed = onPlaylistStateChanged;
     mCallbacks.playlist_update_in_progress = onPlaylistUpdateInProgress;
@@ -65,6 +58,15 @@ sp_error Playlist::destroy() {
     return error;
 }
 
+Playlist::~Playlist() {
+    delete mCallback;
+}
+
+void Playlist::setCallback(PlaylistCallback *callback) {
+    //assert(!mCallback);
+    mCallback = callback;
+}
+
 const char *Playlist::getName() {
     return sp_playlist_name(mPlaylist);
 }
@@ -79,6 +81,37 @@ Track *Playlist::getTrack(int index) {
         return NULL;
     }
     return new Track(track);
+}
+
+void Playlist::onTracksAdded(sp_playlist *playlist, sp_track * const *tracks, int numTracks, int position, void *self) {
+    LOGV("%s count: %d, position: %d", __func__, numTracks, position);
+    PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
+    if (callback) {
+        int *trackPositions = new int[numTracks];
+        for (int i = 0; i < numTracks; i++) {
+            trackPositions[i] = -1;
+        }
+
+        callback->onTracksMoved(trackPositions, numTracks, position);
+
+        delete[] trackPositions;
+    }
+}
+
+void Playlist::onTracksRemoved(sp_playlist *playlist, const int *tracks, int numTracks, void *self) {
+    LOGV("%s count: %d", __func__, numTracks);
+    PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
+    if (callback) {
+        callback->onTracksMoved(tracks, numTracks, -1);
+    }
+}
+
+void Playlist::onTracksMoved(sp_playlist *playlist, const int *tracks, int numTracks, int newPosition, void *self) {
+    LOGV("%s count: %d, newPosition: %d", __func__, numTracks, newPosition);
+    PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
+    if (callback) {
+        callback->onTracksMoved(tracks, numTracks, newPosition);
+    }
 }
 
 } // namespace wigwamlabs
