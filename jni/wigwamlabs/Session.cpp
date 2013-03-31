@@ -168,13 +168,7 @@ void *Session::mainThreadLoop() {
             }
         } else {
             struct timespec ts;
-#if _POSIX_TIMERS > 0
             clock_gettime(CLOCK_REALTIME, &ts);
-#else
-            struct timeval tv;
-            gettimeofday(&tv, NULL);
-            TIMEVAL_TO_TIMESPEC(&tv, &ts);
-#endif
             ts.tv_sec += nextTimeout / 1000;
             ts.tv_nsec += (nextTimeout % 1000) * 1000000;
 
