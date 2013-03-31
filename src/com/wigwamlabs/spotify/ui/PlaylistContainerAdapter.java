@@ -14,7 +14,7 @@ import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 
-public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.Callback {
+public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.Callback, Playlist.Callback {
     private final Context mContext;
     private final PlaylistContainer mContainer;
     private DataSetObserver mObserver;
@@ -68,7 +68,9 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
         }
         final NativeItem item = getItem(position);
         if (item instanceof Playlist) {
-            view.setText(((Playlist) item).getName());
+            final Playlist playlist = (Playlist) item;
+            view.setText(playlist.getName());
+            playlist.setCallback(this);
         } else if (item instanceof FolderStart) {
             view.setText(((FolderStart) item).getName());
         } else if (item instanceof FolderEnd) {
@@ -93,6 +95,15 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
     }
 
     public void onContainerLoaded() {
+        if (mObserver != null) {
+            mObserver.onChanged();
+        }
+    }
+
+    public void onPlaylistUpdateInProgress(boolean done) {
+    }
+
+    public void onPlaylistRenamed() {
         if (mObserver != null) {
             mObserver.onChanged();
         }

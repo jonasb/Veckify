@@ -270,7 +270,7 @@ void Session::onLogMessage(const char *data) {
 }
 
 void Session::onConnectionStateUpdated() {
-    LOGV("onConnectionStateUpdated() %d", pthread_self());
+    LOGV("onConnectionStateUpdated()");
 
     mCallback->onConnectionStateUpdated(sp_session_connectionstate(mSession));
 }

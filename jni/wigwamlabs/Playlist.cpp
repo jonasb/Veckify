@@ -8,10 +8,6 @@
 
 namespace wigwamlabs {
 
-void onPlaylistRenamed(sp_playlist *playlist, void *self) {
-    LOGV("onPlaylistRenamed()");
-}
-
 void onPlaylistStateChanged(sp_playlist *playlist, void *self) {
     LOGV("onPlaylistStateChanged()");
 }
@@ -107,6 +103,14 @@ void Playlist::onTracksMoved(sp_playlist *playlist, const int *tracks, int numTr
     PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
     if (callback) {
         callback->onTracksMoved(tracks, numTracks, newPosition);
+    }
+}
+
+void Playlist::onPlaylistRenamed(sp_playlist *playlist, void *self) {
+    LOGV("%s", __func__);
+    PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
+    if (callback) {
+        callback->onPlaylistRenamed();
     }
 }
 

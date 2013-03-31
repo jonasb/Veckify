@@ -10,6 +10,7 @@ class Track;
 class PlaylistCallback {
 public:
     virtual void onTracksMoved(const int *oldPositions, int oldPositionCount, int newPosition) = 0;
+    virtual void onPlaylistRenamed() = 0;
     virtual void onPlaylistUpdateInProgress(bool done) = 0;
 };
 
@@ -29,6 +30,7 @@ private:
     static void onTracksAdded(sp_playlist *playlist, sp_track * const *tracks, int numTracks, int position, void *self);
     static void onTracksRemoved(sp_playlist *playlist, const int *tracks, int numTracks, void *self);
     static void onTracksMoved(sp_playlist *playlist, const int *tracks, int numTracks, int newPosition, void *self);
+    static void onPlaylistRenamed(sp_playlist *playlist, void *self);
     static void onPlaylistUpdateInProgress(sp_playlist *playlist, bool done, void *self);
 private:
     sp_playlist *mPlaylist;

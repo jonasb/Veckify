@@ -61,7 +61,24 @@ public class Playlist extends NativeItemCollection<Track> {
     }
 
     @Keep
+    private void onPlaylistRenamed() {
+        if (mCallback == null) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onPlaylistRenamed();
+                }
+            }
+        });
+    }
+
+    @Keep
     private void onPlaylistUpdateInProgress(final boolean done) {
+        if (mCallback == null) {
+            return;
+        }
         mHandler.post(new Runnable() {
             public void run() {
                 if (mCallback != null) {
@@ -73,5 +90,7 @@ public class Playlist extends NativeItemCollection<Track> {
 
     public interface Callback {
         void onPlaylistUpdateInProgress(boolean done);
+
+        void onPlaylistRenamed();
     }
 }

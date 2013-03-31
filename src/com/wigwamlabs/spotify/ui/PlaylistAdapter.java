@@ -87,4 +87,7 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
             }
         }
     }
+
+    public void onPlaylistRenamed() {
+    }
 }
