@@ -16,6 +16,7 @@ public class SpotifySession extends NativeItem {
     private static final Handler mHandler = new Handler();
     private int mState;
     private Callback mCallback;
+    private Player mPlayer;
 
     public SpotifySession(Context context, SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId) {
         super(0);
@@ -29,6 +30,16 @@ public class SpotifySession extends NativeItem {
             deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         }
         setHandle(nativeCreate(spotifyContext, settingsPath, cachePath, deviceId));
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        if (mPlayer != null) {
+            mPlayer.destroy();
+            mPlayer = null;
+        }
     }
 
     private static native void nativeInitClass();
@@ -62,6 +73,16 @@ public class SpotifySession extends NativeItem {
     private native void nativeLogin(String username, String password, boolean rememberMe);
 
     private native int nativeGetPlaylistContainer();
+
+    private native int nativeGetPlayer();
+
+    public Player getPlayer() {
+        if (mPlayer == null) {
+            int handle = nativeGetPlayer();
+            mPlayer = new Player(handle);
+        }
+        return mPlayer;
+    }
 
     @Keep
     void onMetadataUpdated() {

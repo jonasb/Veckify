@@ -15,9 +15,11 @@ public:
     sp_error destroy();
     ~Track();
 
+    sp_track *getTrack();
     const char *getName() const;
     int getArtistCount() const;
     Artist *getArtist(int index) const;
+    int getDurationMs() const;
 
 private:
     sp_track *mTrack;

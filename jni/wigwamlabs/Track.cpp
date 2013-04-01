@@ -44,6 +44,10 @@ sp_error Track::destroy() {
 Track::~Track() {
 }
 
+sp_track *Track::getTrack() {
+    return mTrack;
+}
+
 const char *Track::getName() const {
     return sp_track_name(mTrack);
 }
@@ -57,5 +61,8 @@ Artist *Track::getArtist(int index) const {
     return new Artist(artist);
 }
 
-} // namespace wigwamlabs
+int Track::getDurationMs() const {
+    return sp_track_duration(mTrack);
+}
 
+} // namespace wigwamlabs

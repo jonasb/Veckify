@@ -8,6 +8,7 @@ namespace wigwamlabs {
 
 class Context;
 class PlaylistContainer;
+class Player;
 
 class SessionCallback {
 public:
@@ -20,9 +21,11 @@ public:
     static Session *create(Context *context, SessionCallback *callback, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError);
     sp_error destroy();
     ~Session();
+
     bool relogin();
     sp_error login(const char *username, const char *password, bool rememberMe);
     PlaylistContainer *getPlaylistContainer();
+    Player *getPlayer();
 private:
     static void *mainThreadLoop(void *self);
     static void onLoggedIn(sp_session *session, sp_error error);
@@ -31,7 +34,9 @@ private:
     static void onConnectionError(sp_session *session, sp_error error);
     static void onMessageToUser(sp_session *session, const char *message);
     static void onNotifyMainThread(sp_session *session);
+    static int onMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int numFrames);
     static void onLogMessage(sp_session *session, const char *data);
+    static void onEndOfTrack(sp_session *session);
     static void onConnectionStateUpdated(sp_session *session);
 
     Session(Context *context, SessionCallback *callback);
@@ -53,6 +58,7 @@ private:
     pthread_cond_t mMainNotifyCond;
     int mMainNotifyDo;
     bool mMainThreadRunning;
+    Player *mPlayer;
 };
 
 }

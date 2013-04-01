@@ -6,10 +6,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.wigwamlabs.spotify.Artist;
 import com.wigwamlabs.spotify.NativeItem;
+import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.SpotifyContext;
@@ -24,17 +26,16 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     private SpotifySession mSpotifySession;
     private TextView mConnectionState;
     private View mLoginButton;
-
     private PlaylistContainer mPlaylistContainer;
     private View mGetPlaylistsButton;
     private ListView mPlaylistsList;
-
     private Playlist mPlaylist;
     private ListView mPlaylistList;
-
     private Track mTrack;
     private TextView mTrackName;
     private TextView mTrackArtists;
+    private Player mPlayer;
+    private SeekBar mSeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,19 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         mTrackName = (TextView) findViewById(R.id.trackName);
         mTrackArtists = (TextView) findViewById(R.id.trackArtists);
 
+        mSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                onSeekToPosition(seekBar.getProgress());
+            }
+        });
+
         mSpotifyContext = new SpotifyContext();
     }
 
@@ -103,6 +117,13 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         if (!mSpotifySession.relogin()) {
             mSpotifySession.login(TempPrivateSettings.username, TempPrivateSettings.password, true);
         }
+        mPlayer = mSpotifySession.getPlayer();
+        mPlayer.setCallback(new Player.Callback() {
+            public void onTrackProgress(int secondsPlayed, int secondsDuration) {
+                mSeekBar.setMax(secondsDuration);
+                mSeekBar.setProgress(secondsPlayed);
+            }
+        });
     }
 
     public void onConnectionStateUpdated(int state) {
@@ -172,6 +193,11 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
             sb.append(artist.getName());
         }
         mTrackArtists.setText(sb.toString());
+
+        mPlayer.play(mTrack);
     }
 
+    private void onSeekToPosition(int progressSeconds) {
+        mPlayer.seek(progressSeconds * 1000);
+    }
 }

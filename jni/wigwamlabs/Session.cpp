@@ -4,6 +4,7 @@
 
 #include "Session.h"
 #include "PlaylistContainer.h"
+#include "Player.h"
 #include <stddef.h>
 #include <string.h>
 #include "key.c"
@@ -80,7 +81,9 @@ Session *Session::create(Context *context, SessionCallback *callback, const char
     callbacks.connection_error = onConnectionError;
     callbacks.message_to_user = onMessageToUser;
     callbacks.notify_main_thread = onNotifyMainThread;
+    callbacks.music_delivery = onMusicDelivery;
     callbacks.log_message = onLogMessage;
+    callbacks.end_of_track = onEndOfTrack;
     callbacks.connectionstate_updated = onConnectionStateUpdated;
 
     // config
@@ -108,12 +111,21 @@ Session *Session::create(Context *context, SessionCallback *callback, const char
     sp_session *session;
     outError = sp_session_create(&config, &session);
 
-    if (outError != SP_ERROR_OK) {
+    // init player
+    if (outError == SP_ERROR_OK) {
+        self->mPlayer = Player::create(session);
+        if (self->mPlayer == NULL) {
+            outError = SP_ERROR_OTHER_TRANSIENT;
+        }
+    }
+
+    //
+    if (outError == SP_ERROR_OK) {
+        self->mSession = session;
+    } else {
         delete self;
         self = NULL;
     }
-
-    self->mSession = session;
 
     return self;
 }
@@ -206,6 +218,11 @@ sp_error Session::destroy() {
 
         // stop thread
         mMainThreadRunning = false;
+
+        //
+        error = mPlayer->destroy();
+        delete mPlayer;
+        mPlayer = NULL;
     }
     return error;
 }
@@ -238,6 +255,10 @@ PlaylistContainer *Session::getPlaylistContainer() {
     return new PlaylistContainer(c);
 }
 
+Player *Session::getPlayer() {
+    return mPlayer;
+}
+
 void Session::onLoggedIn(sp_error error) {
     LOGV("onLoggedIn() %s", sp_error_message(error));
 }
@@ -265,6 +286,10 @@ void Session::onNotifyMainThread() {
     }
 }
 
+int Session::onMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int numFrames) {
+    return getSelf(session)->mPlayer->onMusicDelivery(format, frames, numFrames);
+}
+
 void Session::onLogMessage(const char *data) {
     LOGV("onLogMessage() %s", data);
 }
@@ -273,6 +298,10 @@ void Session::onConnectionStateUpdated() {
     LOGV("onConnectionStateUpdated()");
 
     mCallback->onConnectionStateUpdated(sp_session_connectionstate(mSession));
+}
+
+void Session::onEndOfTrack(sp_session *session) {
+    return getSelf(session)->mPlayer->onEndOfTrack();
 }
 
 } // namespace wigwamlabs

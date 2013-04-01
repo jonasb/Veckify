@@ -13,9 +13,11 @@
 namespace wigwamlabs {
     class Context;
     class Session;
+    class Track;
 }
 
 wigwamlabs::Context *getNativeContext(JNIEnv *env, jobject object);
 wigwamlabs::Session *getNativeSession(JNIEnv *env, jobject object);
+wigwamlabs::Track *getNativeTrack(JNIEnv *env, jobject object);
 
 #endif // UTILS_H_INCLUDED
