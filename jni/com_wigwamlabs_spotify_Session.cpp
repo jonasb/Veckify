@@ -44,7 +44,7 @@ Session *getNativeSession(JNIEnv *env, jobject object) {
     return reinterpret_cast<Session *>(handle);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_Session_nativeInitClass(JNIEnv *env, jclass klass) {
+JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Session, nativeInitClass) {
     LOGV("nativeInitClass()");
 
     if (sSessionHandleField == 0) {
@@ -58,7 +58,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_Session_nativeInit
     }
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_Session_nativeCreate(JNIEnv *env, jobject self, jstring settingsPath, jstring cachePath, jstring deviceId) {
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Session, nativeCreate, jstring settingsPath, jstring cachePath, jstring deviceId) {
     LOGV("nativeCreate()");
 
     const char *settingsPathStr = env->GetStringUTFChars(settingsPath, NULL);
@@ -82,7 +82,7 @@ extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_Session_nativeCrea
     return reinterpret_cast<jint>(session);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_Session_nativeDestroy(JNIEnv *env, jobject self) {
+JNI_METHOD(void, com_wigwamlabs_spotify_Session, nativeDestroy) {
     LOGV("nativeDestroy()");
 
     Session *session = getNativeSession(env, self);
@@ -95,14 +95,14 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_Session_nativeDest
     }
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_com_wigwamlabs_spotify_Session_nativeRelogin(JNIEnv *env, jobject self) {
+JNI_METHOD(jboolean, com_wigwamlabs_spotify_Session, nativeRelogin) {
     LOGV("nativeRelogin()");
 
     Session *session = getNativeSession(env, self);
     return session->relogin();
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_Session_nativeLogin(JNIEnv *env, jobject self, jstring username, jstring password, jboolean rememberMe) {
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeLogin, jstring username, jstring password, jboolean rememberMe) {
     LOGV("nativeLogin()");
 
     Session *session = getNativeSession(env, self);
@@ -120,7 +120,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_Session_nativeLogi
     }
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_Session_nativeGetPlaylistContainer(JNIEnv *env, jobject self) {
+JNI_METHOD(jint, com_wigwamlabs_spotify_Session, nativeGetPlaylistContainer) {
     LOGV("nativeGetPlaylistContainer()");
 
     Session *session = getNativeSession(env, self);
