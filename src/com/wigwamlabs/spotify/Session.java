@@ -18,7 +18,7 @@ public class Session extends NativeItem {
     private Callback mCallback;
     private Player mPlayer;
 
-    public Session(Context context, SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId) {
+    public Session(Context context, String settingsPath, String cachePath, String deviceId) {
         super(0);
         if (settingsPath == null) {
             settingsPath = context.getFilesDir().getAbsolutePath();
@@ -29,8 +29,10 @@ public class Session extends NativeItem {
         if (deviceId == null) {
             deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         }
-        setHandle(nativeCreate(spotifyContext, settingsPath, cachePath, deviceId));
+        setHandle(nativeCreate(settingsPath, cachePath, deviceId));
     }
+
+    private static native void nativeInitClass();
 
     @Override
     public void destroy() {
@@ -41,8 +43,6 @@ public class Session extends NativeItem {
             mPlayer = null;
         }
     }
-
-    private static native void nativeInitClass();
 
     public boolean relogin() {
         return nativeRelogin();
@@ -60,7 +60,7 @@ public class Session extends NativeItem {
         return new PlaylistContainer(handle);
     }
 
-    private native int nativeCreate(SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId);
+    private native int nativeCreate(String settingsPath, String cachePath, String deviceId);
 
     native void nativeDestroy();
 
@@ -105,6 +105,9 @@ public class Session extends NativeItem {
     }
 
     static {
+        System.loadLibrary("spotify");
+        System.loadLibrary("spotify-jni");
+
         nativeInitClass();
     }
 

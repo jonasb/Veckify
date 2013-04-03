@@ -15,11 +15,9 @@ LOCAL_SRC_FILES := \
     com_wigwamlabs_spotify_Player.cpp \
     com_wigwamlabs_spotify_Playlist.cpp \
     com_wigwamlabs_spotify_PlaylistContainer.cpp \
-    com_wigwamlabs_spotify_SpotifyContext.cpp \
     com_wigwamlabs_spotify_Session.cpp \
     com_wigwamlabs_spotify_Track.cpp \
     wigwamlabs/Artist.cpp \
-    wigwamlabs/Context.cpp \
     wigwamlabs/FolderEnd.cpp \
     wigwamlabs/FolderStart.cpp \
     wigwamlabs/Placeholder.cpp \

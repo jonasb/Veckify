@@ -15,14 +15,12 @@ import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
-import com.wigwamlabs.spotify.SpotifyContext;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
 public class MainActivity extends Activity implements Session.Callback {
 
-    private SpotifyContext mSpotifyContext;
     private Session mSpotifySession;
     private TextView mConnectionState;
     private View mLoginButton;
@@ -87,8 +85,6 @@ public class MainActivity extends Activity implements Session.Callback {
                 onSeekToPosition(seekBar.getProgress());
             }
         });
-
-        mSpotifyContext = new SpotifyContext();
     }
 
     @Override
@@ -99,11 +95,6 @@ public class MainActivity extends Activity implements Session.Callback {
             mSpotifySession.destroy();
             mSpotifySession = null;
         }
-
-        if (mSpotifyContext != null) {
-            mSpotifyContext.destroy();
-            mSpotifyContext = null;
-        }
     }
 
     private void login() {
@@ -112,7 +103,7 @@ public class MainActivity extends Activity implements Session.Callback {
         if (mSpotifySession != null) {
             mSpotifySession.destroy();
         }
-        mSpotifySession = new Session(this, mSpotifyContext, null, null, null);
+        mSpotifySession = new Session(this, null, null, null);
         mSpotifySession.setCallback(this);
         if (!mSpotifySession.relogin()) {
             mSpotifySession.login(TempPrivateSettings.username, TempPrivateSettings.password, true);

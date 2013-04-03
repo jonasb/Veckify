@@ -58,10 +58,9 @@ extern "C" JNIEXPORT void JNICALL Java_com_wigwamlabs_spotify_Session_nativeInit
     }
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_Session_nativeCreate(JNIEnv *env, jobject self, jobject context, jstring settingsPath, jstring cachePath, jstring deviceId) {
+extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_Session_nativeCreate(JNIEnv *env, jobject self, jstring settingsPath, jstring cachePath, jstring deviceId) {
     LOGV("nativeCreate()");
 
-    Context *c = getNativeContext(env, context);
     const char *settingsPathStr = env->GetStringUTFChars(settingsPath, NULL);
     const char *cachePathStr = env->GetStringUTFChars(cachePath, NULL);
     const char *deviceIdStr = env->GetStringUTFChars(deviceId, NULL);
@@ -69,7 +68,7 @@ extern "C" JNIEXPORT jint JNICALL Java_com_wigwamlabs_spotify_Session_nativeCrea
     SessionCallbackJNI *callback = new SessionCallbackJNI(env, self);
 
     sp_error error;
-    Session *session = Session::create(c, callback, settingsPathStr, cachePathStr, deviceIdStr, error);
+    Session *session = Session::create(callback, settingsPathStr, cachePathStr, deviceIdStr, error);
 
     env->ReleaseStringUTFChars(deviceId, deviceIdStr);
     env->ReleaseStringUTFChars(cachePath, cachePathStr);

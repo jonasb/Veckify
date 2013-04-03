@@ -15,10 +15,10 @@ Session *getSelf(sp_session *session) {
     return static_cast<Session *>(sp_session_userdata(session));
 }
 
-Session *Session::create(Context *context, SessionCallback *callback, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError) {
+Session *Session::create(SessionCallback *callback, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError) {
     LOGV("%s (%s, %s, %s)", __func__, settingsPath, cachePath, deviceId);
     // create instance
-    Session *self = new Session(context, callback);
+    Session *self = new Session(callback);
 
     // create thread
     outError = self->startThread();
@@ -85,8 +85,7 @@ Session *Session::create(Context *context, SessionCallback *callback, const char
     return self;
 }
 
-Session::Session(Context *context, SessionCallback *callback) :
-    mContext(context),
+Session::Session(SessionCallback *callback) :
     mCallback(callback),
     mSession(NULL),
     mMainThread(0),
@@ -183,7 +182,6 @@ sp_error Session::destroy() {
 }
 
 Session::~Session() {
-    mContext = NULL;
     delete mCallback;
     if (mSession) {
         LOGE("mSession not null, forgot to call destroy()?");

@@ -16,7 +16,6 @@ namespace wigwamlabs {
     class Track;
 }
 
-wigwamlabs::Context *getNativeContext(JNIEnv *env, jobject object);
 wigwamlabs::Session *getNativeSession(JNIEnv *env, jobject object);
 wigwamlabs::Track *getNativeTrack(JNIEnv *env, jobject object);
 
