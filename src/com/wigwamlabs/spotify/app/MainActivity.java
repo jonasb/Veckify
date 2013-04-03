@@ -14,16 +14,16 @@ import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
+import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.SpotifyContext;
-import com.wigwamlabs.spotify.SpotifySession;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
-public class MainActivity extends Activity implements SpotifySession.Callback {
+public class MainActivity extends Activity implements Session.Callback {
 
     private SpotifyContext mSpotifyContext;
-    private SpotifySession mSpotifySession;
+    private Session mSpotifySession;
     private TextView mConnectionState;
     private View mLoginButton;
     private PlaylistContainer mPlaylistContainer;
@@ -112,7 +112,7 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
         if (mSpotifySession != null) {
             mSpotifySession.destroy();
         }
-        mSpotifySession = new SpotifySession(this, mSpotifyContext, null, null, null);
+        mSpotifySession = new Session(this, mSpotifyContext, null, null, null);
         mSpotifySession.setCallback(this);
         if (!mSpotifySession.relogin()) {
             mSpotifySession.login(TempPrivateSettings.username, TempPrivateSettings.password, true);
@@ -129,29 +129,29 @@ public class MainActivity extends Activity implements SpotifySession.Callback {
     public void onConnectionStateUpdated(int state) {
         final int res;
         switch (state) {
-        case SpotifySession.CONNECTION_STATE_LOGGED_OUT:
+        case Session.CONNECTION_STATE_LOGGED_OUT:
             res = R.string.connectionStateLoggedOut;
             break;
-        case SpotifySession.CONNECTION_STATE_LOGGED_IN:
+        case Session.CONNECTION_STATE_LOGGED_IN:
             res = R.string.connectionStateLoggedIn;
             break;
-        case SpotifySession.CONNECTION_STATE_DISCONNECTED:
+        case Session.CONNECTION_STATE_DISCONNECTED:
             res = R.string.connectionStateDisconnected;
             break;
-        case SpotifySession.CONNECTION_STATE_OFFLINE:
+        case Session.CONNECTION_STATE_OFFLINE:
             res = R.string.connectionStateOffline;
             break;
-        case SpotifySession.CONNECTION_STATE_UNDEFINED:
+        case Session.CONNECTION_STATE_UNDEFINED:
         default:
             res = R.string.connectionStateUndefined;
             break;
         }
         mConnectionState.setText(res);
 
-        mLoginButton.setVisibility(state == SpotifySession.CONNECTION_STATE_LOGGED_OUT ? View.VISIBLE : View.GONE);
+        mLoginButton.setVisibility(state == Session.CONNECTION_STATE_LOGGED_OUT ? View.VISIBLE : View.GONE);
         mLoginButton.setEnabled(true);
 
-        mGetPlaylistsButton.setVisibility(state == SpotifySession.CONNECTION_STATE_LOGGED_OUT ? View.GONE : View.VISIBLE);
+        mGetPlaylistsButton.setVisibility(state == Session.CONNECTION_STATE_LOGGED_OUT ? View.GONE : View.VISIBLE);
     }
 
     private void getPlaylists() {

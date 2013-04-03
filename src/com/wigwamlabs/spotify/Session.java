@@ -7,7 +7,7 @@ import android.util.Log;
 
 import proguard.annotation.Keep;
 
-public class SpotifySession extends NativeItem {
+public class Session extends NativeItem {
     public static final int CONNECTION_STATE_LOGGED_OUT = 0;
     public static final int CONNECTION_STATE_LOGGED_IN = 1;
     public static final int CONNECTION_STATE_DISCONNECTED = 2;
@@ -18,7 +18,7 @@ public class SpotifySession extends NativeItem {
     private Callback mCallback;
     private Player mPlayer;
 
-    public SpotifySession(Context context, SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId) {
+    public Session(Context context, SpotifyContext spotifyContext, String settingsPath, String cachePath, String deviceId) {
         super(0);
         if (settingsPath == null) {
             settingsPath = context.getFilesDir().getAbsolutePath();
