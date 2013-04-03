@@ -18,8 +18,9 @@ public class Playlist extends NativeItemCollection<Track> {
         nativeInitInstance();
     }
 
+    @Override
     public Playlist clone() {
-        int handle = nativeClone();
+        final int handle = nativeClone();
         return new Playlist(handle);
     }
 
@@ -27,12 +28,14 @@ public class Playlist extends NativeItemCollection<Track> {
 
     private native void nativeInitInstance();
 
+    @Override
     native void nativeDestroy();
 
     private native int nativeClone();
 
     private native String nativeGetName();
 
+    @Override
     native int nativeGetCount();
 
     private native int nativeGetTrack(int position);

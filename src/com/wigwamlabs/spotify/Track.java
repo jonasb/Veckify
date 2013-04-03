@@ -16,8 +16,9 @@ public class Track extends NativeItem {
         setHandle(nativeCreate(uri));
     }
 
+    @Override
     public Track clone() {
-        int handle = nativeClone();
+        final int handle = nativeClone();
         return new Track(handle);
     }
 
@@ -27,6 +28,7 @@ public class Track extends NativeItem {
 
     private native int nativeClone();
 
+    @Override
     native void nativeDestroy();
 
     private native String nativeGetName();
@@ -57,7 +59,7 @@ public class Track extends NativeItem {
         final int count = nativeGetArtistCount();
         mArtists = new Artist[count];
         for (int i = 0; i < mArtists.length; i++) {
-            int handle = nativeGetArtist(i);
+            final int handle = nativeGetArtist(i);
             mArtists[i] = new Artist(handle);
         }
         return mArtists;

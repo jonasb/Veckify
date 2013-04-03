@@ -1,6 +1,6 @@
 package com.wigwamlabs.spotify;
 
-public class DummyNativeItem extends NativeItem {
+class DummyNativeItem extends NativeItem {
     private final String mName;
 
     public DummyNativeItem(String name) {

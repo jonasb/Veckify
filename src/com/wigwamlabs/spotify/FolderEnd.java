@@ -11,5 +11,6 @@ public class FolderEnd extends NativeItem {
 
     private static native void nativeInitClass();
 
+    @Override
     native void nativeDestroy();
 }

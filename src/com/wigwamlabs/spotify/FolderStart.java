@@ -11,6 +11,7 @@ public class FolderStart extends NativeItem {
 
     private static native void nativeInitClass();
 
+    @Override
     native void nativeDestroy();
 
     private native String nativeGetName();

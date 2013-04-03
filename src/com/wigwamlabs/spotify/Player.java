@@ -10,7 +10,7 @@ public class Player extends NativeItem {
         nativeInitClass();
     }
 
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     private Callback mCallback;
 
     public Player(int handle) {
@@ -22,6 +22,7 @@ public class Player extends NativeItem {
 
     private native void nativeInitInstance();
 
+    @Override
     void nativeDestroy() {
         // do nothing, native instance is deleted by session
     }

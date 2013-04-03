@@ -11,5 +11,6 @@ public class Placeholder extends NativeItem {
 
     private static native void nativeInitClass();
 
+    @Override
     native void nativeDestroy();
 }

@@ -53,7 +53,7 @@ public class Session extends NativeItem {
     }
 
     public PlaylistContainer getPlaylistContainer() {
-        int handle = nativeGetPlaylistContainer();
+        final int handle = nativeGetPlaylistContainer();
         if (handle == 0) {
             return null;
         }
@@ -62,6 +62,7 @@ public class Session extends NativeItem {
 
     private native int nativeCreate(String settingsPath, String cachePath, String deviceId);
 
+    @Override
     native void nativeDestroy();
 
     private native boolean nativeRelogin();
@@ -78,7 +79,7 @@ public class Session extends NativeItem {
 
     public Player getPlayer() {
         if (mPlayer == null) {
-            int handle = nativeGetPlayer();
+            final int handle = nativeGetPlayer();
             mPlayer = new Player(handle);
         }
         return mPlayer;

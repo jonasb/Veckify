@@ -6,7 +6,7 @@ public abstract class NativeItem {
     @KeepName
     private int mHandle;
 
-    public NativeItem(int handle) {
+    NativeItem(int handle) {
         mHandle = handle;
     }
 

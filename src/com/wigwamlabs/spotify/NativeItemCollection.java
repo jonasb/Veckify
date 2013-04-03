@@ -5,10 +5,11 @@ import java.util.ArrayList;
 public abstract class NativeItemCollection<T extends NativeItem> extends NativeItem {
     private ArrayList<T> mItems;
 
-    public NativeItemCollection(int handle) {
+    NativeItemCollection(int handle) {
         super(handle);
     }
 
+    @Override
     public void destroy() {
         if (mItems != null) {
             for (T item : mItems) {
@@ -91,11 +92,11 @@ public abstract class NativeItemCollection<T extends NativeItem> extends NativeI
                 final int oldPosition = oldPositions[i];
                 onItemsMoved(oldPosition, newPosition);
 
-                boolean added = (oldPosition < 0);
-                boolean moved = (oldPosition >= 0 && newPosition >= 0);
-                boolean movedLeft = (moved && newPosition < oldPosition);
-                boolean movedNowhere = (moved && newPosition == oldPosition);
-                boolean removed = (newPosition < 0);
+                final boolean added = (oldPosition < 0);
+                final boolean moved = (oldPosition >= 0 && newPosition >= 0);
+                final boolean movedLeft = (moved && newPosition < oldPosition);
+                final boolean movedNowhere = (moved && newPosition == oldPosition);
+                final boolean removed = (newPosition < 0);
 
                 // adjust future source positions
                 if (moved || removed) {

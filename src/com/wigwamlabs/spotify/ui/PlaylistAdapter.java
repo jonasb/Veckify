@@ -66,7 +66,7 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
         }
         final Track item = getItem(position);
         final Artist[] artists = item.getArtists();
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(item.getName());
         String delimiter = ": ";
         for (Artist artist : artists) {

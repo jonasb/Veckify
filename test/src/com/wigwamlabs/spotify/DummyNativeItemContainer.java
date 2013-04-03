@@ -23,7 +23,7 @@ public class DummyNativeItemContainer extends NativeItemCollection<DummyNativeIt
     }
 
     public String getContainerItems() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         final int count = getCount();
         for (int i = 0; i < count; i++) {
             if (sb.length() > 0) {
@@ -36,12 +36,12 @@ public class DummyNativeItemContainer extends NativeItemCollection<DummyNativeIt
     }
 
     public String getNativeItems() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < mNativeItems.length; i++) {
+        final StringBuilder sb = new StringBuilder();
+        for (final String mNativeItem : mNativeItems) {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(mNativeItems[i]);
+            sb.append(mNativeItem);
         }
         return sb.toString();
     }

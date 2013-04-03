@@ -13,6 +13,7 @@ public class Artist extends NativeItem {
 
     private native String nativeGetName();
 
+    @Override
     native void nativeDestroy();
 
     public String getName() {

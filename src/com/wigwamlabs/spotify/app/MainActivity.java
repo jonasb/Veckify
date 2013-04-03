@@ -176,7 +176,7 @@ public class MainActivity extends Activity implements Session.Callback {
         mTrack = item.clone();
 
         mTrackName.setText(mTrack.getName());
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (Artist artist : mTrack.getArtists()) {
             if (sb.length() > 0) {
                 sb.append(", ");

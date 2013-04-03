@@ -25,8 +25,10 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
 
     private native void nativeInitInstance();
 
+    @Override
     native void nativeDestroy();
 
+    @Override
     protected native int nativeGetCount();
 
     private native int nativeGetPlaylistType(int index);
@@ -65,7 +67,7 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
         });
     }
 
-
+    @Override
     NativeItem createNewItem(int index) {
         switch (nativeGetPlaylistType(index)) {
         case TYPE_PLAYLIST: {
