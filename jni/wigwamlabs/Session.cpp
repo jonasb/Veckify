@@ -11,57 +11,12 @@
 
 namespace wigwamlabs {
 
-////////////////////////////////////////////////////////////
-// static callbacks
-//
-
-void *Session::mainThreadLoop(void *self) {
-    return static_cast<Session *>(self)->mainThreadLoop();
-}
-
 Session *getSelf(sp_session *session) {
     return static_cast<Session *>(sp_session_userdata(session));
 }
 
-void Session::onLoggedIn(sp_session *session, sp_error error) {
-    getSelf(session)->onLoggedIn(error);
-}
-
-void Session::onLoggedOut(sp_session *session) {
-    getSelf(session)->onLoggedOut();
-}
-
-void Session::onMetadataUpdated(sp_session *session) {
-    LOGV("%s", __func__);
-    Session *self = getSelf(session);
-    self->mCallback->onMetadataUpdated();
-}
-
-void Session::onConnectionError(sp_session *session, sp_error error) {
-    getSelf(session)->onConnectionError(error);
-}
-
-void Session::onMessageToUser(sp_session *session, const char *message) {
-    getSelf(session)->onMessageToUser(message);
-}
-
-void Session::onNotifyMainThread(sp_session *session) {
-    getSelf(session)->onNotifyMainThread();
-}
-
-void Session::onLogMessage(sp_session *session, const char *data) {
-    getSelf(session)->onLogMessage(data);
-}
-
-void Session::onConnectionStateUpdated(sp_session *session) {
-    getSelf(session)->onConnectionStateUpdated();
-}
-
-////////////////////////////////////////////////////////////
-// factory
-
 Session *Session::create(Context *context, SessionCallback *callback, const char *settingsPath, const char *cachePath, const char *deviceId, sp_error &outError) {
-    LOGV("create(%s, %s, %s)", settingsPath, cachePath, deviceId);
+    LOGV("%s (%s, %s, %s)", __func__, settingsPath, cachePath, deviceId);
     // create instance
     Session *self = new Session(context, callback);
 
@@ -130,10 +85,6 @@ Session *Session::create(Context *context, SessionCallback *callback, const char
     return self;
 }
 
-////////////////////////////////////////////////////////////
-//
-//
-
 Session::Session(Context *context, SessionCallback *callback) :
     mContext(context),
     mCallback(callback),
@@ -152,6 +103,10 @@ sp_error Session::startThread() {
         /*ignore = */ pthread_setname_np(mMainThread, "Session Worker");
     }
     return (err ? SP_ERROR_SYSTEM_FAILURE : SP_ERROR_OK);
+}
+
+void *Session::mainThreadLoop(void *self) {
+    return static_cast<Session *>(self)->mainThreadLoop();
 }
 
 void *Session::mainThreadLoop() {
@@ -207,7 +162,7 @@ void *Session::mainThreadLoop() {
 }
 
 sp_error Session::destroy() {
-    LOGV("destroy()");
+    LOGV(__func__);
     sp_error error = SP_ERROR_OK;
     if (mSession) {
         error = sp_session_logout(mSession);
@@ -238,12 +193,12 @@ Session::~Session() {
 }
 
 bool Session::relogin() {
-    LOGV("relogin()");
+    LOGV(__func__);
     return (sp_session_relogin(mSession) == SP_ERROR_OK);
 }
 
 sp_error Session::login(const char *username, const char *password, bool rememberMe) {
-    LOGV("login(%s, ***, %d)", username, rememberMe);
+    LOGV("%s (%s, ***, %d)", __func__, username, rememberMe);
     return sp_session_login(mSession, username, password, rememberMe, NULL); //TODO need to deal with blob?
 }
 
@@ -259,30 +214,36 @@ Player *Session::getPlayer() {
     return mPlayer;
 }
 
-void Session::onLoggedIn(sp_error error) {
-    LOGV("onLoggedIn() %s", sp_error_message(error));
+void Session::onLoggedIn(sp_session *session, sp_error error) {
+    LOGV("%s %s", __func__, sp_error_message(error));
 }
 
-void Session::onLoggedOut() {
-    LOGV("onLoggedOut()");
+void Session::onLoggedOut(sp_session *session) {
+    LOGV(__func__);
 }
 
-void Session::onConnectionError(sp_error error) {
-    LOGV("onConnectionError() %s", sp_error_message(error));
+void Session::onMetadataUpdated(sp_session *session) {
+    LOGV(__func__);
+    getSelf(session)->mCallback->onMetadataUpdated();
 }
 
-void Session::onMessageToUser(const char *message) {
-    LOGV("onMessageToUser(%s)", message);
+void Session::onConnectionError(sp_session *session, sp_error error) {
+    LOGV("%s %s", __func__, sp_error_message(error));
 }
 
-void Session::onNotifyMainThread() {
-    LOGV("onNotifyMainThread()");
+void Session::onMessageToUser(sp_session *session, const char *message) {
+    LOGV("%s %s", __func__, message);
+}
 
-    if (mMainThreadRunning) {
-        pthread_mutex_lock(&mMainNotifyMutex);
-        mMainNotifyDo = 1;
-        pthread_cond_signal(&mMainNotifyCond);
-        pthread_mutex_unlock(&mMainNotifyMutex);
+void Session::onNotifyMainThread(sp_session *session) {
+    LOGV(__func__);
+    Session *self = getSelf(session);
+
+    if (self->mMainThreadRunning) {
+        pthread_mutex_lock(&self->mMainNotifyMutex);
+        self->mMainNotifyDo = 1;
+        pthread_cond_signal(&self->mMainNotifyCond);
+        pthread_mutex_unlock(&self->mMainNotifyMutex);
     }
 }
 
@@ -290,18 +251,20 @@ int Session::onMusicDelivery(sp_session *session, const sp_audioformat *format, 
     return getSelf(session)->mPlayer->onMusicDelivery(format, frames, numFrames);
 }
 
-void Session::onLogMessage(const char *data) {
-    LOGV("onLogMessage() %s", data);
-}
-
-void Session::onConnectionStateUpdated() {
-    LOGV("onConnectionStateUpdated()");
-
-    mCallback->onConnectionStateUpdated(sp_session_connectionstate(mSession));
+void Session::onLogMessage(sp_session *session, const char *data) {
+    LOGV("%s %s", __func__, data);
 }
 
 void Session::onEndOfTrack(sp_session *session) {
+    LOGV(__func__);
     return getSelf(session)->mPlayer->onEndOfTrack();
+}
+
+void Session::onConnectionStateUpdated(sp_session *session) {
+    LOGV(__func__);
+    Session *self = getSelf(session);
+    sp_connectionstate state = sp_session_connectionstate(self->mSession);
+    self->mCallback->onConnectionStateUpdated(state);
 }
 
 } // namespace wigwamlabs
