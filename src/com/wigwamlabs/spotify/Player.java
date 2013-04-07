@@ -13,6 +13,8 @@ public class Player extends NativeItem {
     private final Handler mHandler = new Handler();
     private Callback mCallback;
     private Queue mQueue;
+    private int mTrackProgressSec = 0;
+    private int mTrackDurationSec = 0;
 
     public Player(int handle) {
         super(handle);
@@ -46,6 +48,8 @@ public class Player extends NativeItem {
 
     @Keep
     private void onTrackProgress(final int secondsPlayed, final int secondsDuration) {
+        mTrackProgressSec = secondsPlayed;
+        mTrackDurationSec = secondsDuration;
         if (mCallback == null) {
             return;
         }
@@ -72,8 +76,12 @@ public class Player extends NativeItem {
         });
     }
 
-    public void setCallback(Callback callback) {
+    public void setCallback(Callback callback, boolean callbackNow) {
         mCallback = callback;
+        if (mCallback != null && callbackNow) {
+            mCallback.onCurrentTrackUpdated(mQueue != null ? mQueue.getTrack(0) : null);
+            mCallback.onTrackProgress(mTrackProgressSec, mTrackDurationSec);
+        }
     }
 
     public void seek(int progressMs) {
@@ -81,8 +89,8 @@ public class Player extends NativeItem {
     }
 
     public interface Callback {
-        void onTrackProgress(int secondsPlayed, int secondsDuration);
-
         void onCurrentTrackUpdated(Track track);
+
+        void onTrackProgress(int secondsPlayed, int secondsDuration);
     }
 }

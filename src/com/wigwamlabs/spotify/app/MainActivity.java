@@ -1,7 +1,11 @@
 package com.wigwamlabs.spotify.app;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,13 +20,15 @@ import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.PlaylistQueue;
 import com.wigwamlabs.spotify.Session;
+import com.wigwamlabs.spotify.SpotifyService;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.TrackPlaylist;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
-public class MainActivity extends Activity implements Session.Callback, Player.Callback {
+public class MainActivity extends Activity implements Session.Callback, Player.Callback, ServiceConnection {
 
+    private SpotifyService mService;
     private Session mSpotifySession;
     private TextView mConnectionState;
     private View mLoginButton;
@@ -87,31 +93,91 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
                 onSeekToPosition(seekBar.getProgress());
             }
         });
+
+        bindSpotifyService();
+    }
+
+    private void bindSpotifyService() {
+        final Intent intent = new Intent(this, SpotifyService.class);
+        startService(intent);
+        bindService(intent, this, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        final SpotifyService.LocalBinder binder = (SpotifyService.LocalBinder) service;
+        mService = binder.getService();
+
+        mSpotifySession = mService.getSession();
+        mSpotifySession.setCallback(this, true); //TODO add support for multiple callbacks, methinks
+        mPlayer = mSpotifySession.getPlayer();
+        mPlayer.setCallback(this, true);
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName arg0) {
+        mService = null;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mSpotifySession != null) {
+            mSpotifySession.setCallback(null, false);
+        }
+        if (mPlayer != null) {
+            mPlayer.setCallback(null, false);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mSpotifySession != null) {
+            mSpotifySession.setCallback(this, true);
+        }
+        if (mPlayer != null) {
+            mPlayer.setCallback(this, true);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        if (mTrack != null) {
+            mTrack.destroy();
+            mTrack = null;
+        }
+        if (mPlaylist != null) {
+            mPlaylist.destroy();
+            mPlaylist = null;
+        }
+        if (mPlaylistContainer != null) {
+            mPlaylistContainer.destroy();
+            mPlaylistContainer = null;
+        }
+        if (mPlayer != null) {
+            mPlayer.setCallback(null, false);
+            mPlayer = null;
+        }
         if (mSpotifySession != null) {
-            mSpotifySession.destroy();
+            mSpotifySession.setCallback(null, false);
             mSpotifySession = null;
         }
+
+        unbindService(this);
+        mService = null;
     }
 
     private void login() {
         mLoginButton.setEnabled(false);
 
-        if (mSpotifySession != null) {
-            mSpotifySession.destroy();
-        }
-        mSpotifySession = new Session(this, null, null, null);
-        mSpotifySession.setCallback(this);
         if (!mSpotifySession.relogin()) {
             mSpotifySession.login(TempPrivateSettings.username, TempPrivateSettings.password, true);
         }
-        mPlayer = mSpotifySession.getPlayer();
-        mPlayer.setCallback(this);
     }
 
     public void onConnectionStateUpdated(int state) {

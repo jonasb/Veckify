@@ -190,6 +190,11 @@ Session::~Session() {
     mMainThreadRunning = false;
 }
 
+int Session::getConnectionState() const {
+    LOGV(__func__);
+    return sp_session_connectionstate(mSession);
+}
+
 bool Session::relogin() {
     LOGV(__func__);
     return (sp_session_relogin(mSession) == SP_ERROR_OK);

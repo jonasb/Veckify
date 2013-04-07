@@ -95,6 +95,13 @@ JNI_METHOD(void, com_wigwamlabs_spotify_Session, nativeDestroy) {
     }
 }
 
+JNI_METHOD(jint, com_wigwamlabs_spotify_Session, nativeGetConnectionState) {
+    LOGV("nativeGetConnectionState()");
+
+    Session *session = getNativeSession(env, self);
+    return session->getConnectionState();
+}
+
 JNI_METHOD(jboolean, com_wigwamlabs_spotify_Session, nativeRelogin) {
     LOGV("nativeRelogin()");
 

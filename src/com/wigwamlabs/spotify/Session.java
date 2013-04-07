@@ -65,10 +65,15 @@ public class Session extends NativeItem {
     @Override
     native void nativeDestroy();
 
+    private native int nativeGetConnectionState();
+
     private native boolean nativeRelogin();
 
-    public void setCallback(Callback callback) {
+    public void setCallback(Callback callback, boolean callbackNow) {
         mCallback = callback;
+        if (mCallback != null && callbackNow) {
+            mCallback.onConnectionStateUpdated(nativeGetConnectionState());
+        }
     }
 
     private native void nativeLogin(String username, String password, boolean rememberMe);
@@ -88,6 +93,10 @@ public class Session extends NativeItem {
     @Keep
     void onMetadataUpdated() {
         Log.d("XXX", "onMetadataUpdated()");
+    }
+
+    public int getConnectionState() {
+        return nativeGetConnectionState();
     }
 
     @Keep

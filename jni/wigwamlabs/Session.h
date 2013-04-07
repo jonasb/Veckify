@@ -21,6 +21,7 @@ public:
     sp_error destroy();
     ~Session();
 
+    int getConnectionState() const;
     bool relogin();
     sp_error login(const char *username, const char *password, bool rememberMe);
     PlaylistContainer *getPlaylistContainer();
