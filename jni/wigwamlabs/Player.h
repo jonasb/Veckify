@@ -71,6 +71,7 @@ private:
     int mTrackProgressReportedSec;
 
     sp_track *mTrackNext;
+    bool mPrefetchRequested;
 };
 
 }

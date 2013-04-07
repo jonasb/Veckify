@@ -207,16 +207,23 @@ void Player::setNextTrack(Track *track) {
         mTrackNext = NULL;
     }
 
-    mTrackNext = track->getTrack();
-    sp_track_add_ref(mTrackNext);
+    if (track) {
+        mTrackNext = track->getTrack();
+        sp_track_add_ref(mTrackNext);
+    }
+    mPrefetchRequested = false;
 }
 
 void Player::playNextTrack() {
     if (mTrackNext) {
         LOGV("%s: Start playing next track", __func__);
-        play(mTrackNext, true);
-        sp_track_release(mTrackNext);
-        mTrackNext = NULL;
+        sp_track *track = mTrackNext;
+        sp_track_add_ref(track);
+
+        setNextTrack(NULL);
+        play(track, true);
+
+        sp_track_release(track);
     } else {
         LOGV("%s: No track queued up, stop", __func__);
         play(NULL, true);
@@ -314,8 +321,13 @@ void Player::setTrackProgressMs(int progressMs) {
             mCallback->onTrackProgress(mTrackProgressReportedSec, trackDurationSec);
         }
 
+        // play next at end or prefetch 10s before end
         if (progressSec >= trackDurationSec) {
             playNextTrack();
+        } else if (mTrackNext != NULL && !mPrefetchRequested && trackDurationSec - progressSec < 10) {
+            LOGV("Prefetching track");
+            sp_session_player_prefetch(mSession, mTrackNext);
+            mPrefetchRequested = true;
         }
     }
 }
