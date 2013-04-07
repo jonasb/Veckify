@@ -13,6 +13,7 @@ class Track;
 class PlayerCallback {
 public:
     virtual void onTrackProgress(int secondsPlayed, int secondsDuration) = 0;
+    virtual void onCurrentTrackUpdated(bool playNext) = 0;
 };
 
 static const int SAMPLES_PER_SECOND = 44100;
@@ -32,10 +33,11 @@ public:
     void setCallback(PlayerCallback *callback);
 
     int onMusicDelivery(const sp_audioformat *format, const void *frames, int numFrames);
-    void onEndOfTrack();
 
     void play(Track *track);
     void seek(int progressMs);
+    void setNextTrack(Track *track);
+    void playNextTrack();
 
 private:
     struct Buffer {
@@ -46,6 +48,7 @@ private:
     static void bqPlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context);
     Player(sp_session *session);
     bool initialize();
+    void play(sp_track *track, bool playNext);
     void setTrackProgressMs(int progressMs);
 
 private:
@@ -66,6 +69,8 @@ private:
     int mTrackDurationMs;
     int mTrackProgressBytes;
     int mTrackProgressReportedSec;
+
+    sp_track *mTrackNext;
 };
 
 }

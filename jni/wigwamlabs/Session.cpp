@@ -255,7 +255,6 @@ void Session::onLogMessage(sp_session *session, const char *data) {
 
 void Session::onEndOfTrack(sp_session *session) {
     LOGV(__func__);
-    return getSelf(session)->mPlayer->onEndOfTrack();
 }
 
 void Session::onConnectionStateUpdated(sp_session *session) {

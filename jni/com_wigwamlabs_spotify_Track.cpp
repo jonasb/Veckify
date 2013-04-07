@@ -12,6 +12,9 @@ using namespace wigwamlabs;
 jfieldID sTrackHandleField = 0;
 
 Track *getNativeTrack(JNIEnv *env, jobject object) {
+    if (object == 0) {
+        return NULL;
+    }
     const jint handle = env->GetIntField(object, sTrackHandleField);
     return reinterpret_cast<Track *>(handle);
 }

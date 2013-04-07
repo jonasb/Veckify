@@ -12,6 +12,7 @@ using namespace wigwamlabs;
 
 jfieldID sPlayerHandleField = 0;
 jmethodID sPlayerOnTrackProgressMethod = 0;
+jmethodID sPlayerOnCurrentTrackUpdatedMethod = 0;
 
 class PlayerCallbackJNI : public PlayerCallback {
 public:
@@ -27,6 +28,11 @@ public:
     void onTrackProgress(int secondsPlayed, int secondsDuration) {
         LOGV("%s %ds (%ds)", secondsPlayed, secondsDuration);
         mProvider->getEnv()->CallVoidMethod(mPlayer, sPlayerOnTrackProgressMethod, secondsPlayed, secondsDuration);
+    }
+
+    void onCurrentTrackUpdated(bool playNext) {
+        LOGV("%s %d", __func__, playNext);
+        mProvider->getEnv()->CallVoidMethod(mPlayer, sPlayerOnCurrentTrackUpdatedMethod, playNext);
     }
 private:
     JNIEnvProvider *mProvider;
@@ -47,6 +53,9 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Player, nativeInitClass) {
     if (sPlayerOnTrackProgressMethod == 0) {
         sPlayerOnTrackProgressMethod = env->GetMethodID(klass, "onTrackProgress", "(II)V");
     }
+    if (sPlayerOnCurrentTrackUpdatedMethod == 0) {
+        sPlayerOnCurrentTrackUpdatedMethod = env->GetMethodID(klass, "onCurrentTrackUpdated", "(Z)V");
+    }
 }
 
 JNI_METHOD(void, com_wigwamlabs_spotify_Player, nativeInitInstance) {
@@ -64,6 +73,15 @@ JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativePlay, jobject trackHa
     Track *track = getNativeTrack(env, trackHandle);
 
     player->play(track);
+}
+
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativeSetNextTrack, jobject trackHandle) {
+    LOGV("nativeSetNextTrack");
+
+    Player *player = getNativePlayer(env, self);
+    Track *track = getNativeTrack(env, trackHandle);
+
+    player->setNextTrack(track);
 }
 
 JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativeSeek, jint progressMs) {

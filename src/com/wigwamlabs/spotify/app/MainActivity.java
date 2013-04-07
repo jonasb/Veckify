@@ -14,12 +14,14 @@ import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
+import com.wigwamlabs.spotify.PlaylistQueue;
 import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.Track;
+import com.wigwamlabs.spotify.TrackPlaylist;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
-public class MainActivity extends Activity implements Session.Callback {
+public class MainActivity extends Activity implements Session.Callback, Player.Callback {
 
     private Session mSpotifySession;
     private TextView mConnectionState;
@@ -109,12 +111,7 @@ public class MainActivity extends Activity implements Session.Callback {
             mSpotifySession.login(TempPrivateSettings.username, TempPrivateSettings.password, true);
         }
         mPlayer = mSpotifySession.getPlayer();
-        mPlayer.setCallback(new Player.Callback() {
-            public void onTrackProgress(int secondsPlayed, int secondsDuration) {
-                mSeekBar.setMax(secondsDuration);
-                mSeekBar.setProgress(secondsPlayed);
-            }
-        });
+        mPlayer.setCallback(this);
     }
 
     public void onConnectionStateUpdated(int state) {
@@ -165,30 +162,43 @@ public class MainActivity extends Activity implements Session.Callback {
             }
             mPlaylist = playlist.clone();
             mPlaylistList.setAdapter(new PlaylistAdapter(this, mPlaylist));
+
+            mPlayer.play(new PlaylistQueue(mPlaylist));
         }
     }
 
     private void onTrackClicked(Track item) {
-        if (mTrack != null) {
-            mTrack.destroy();
-            mTrack = null;
-        }
-        mTrack = item.clone();
-
-        mTrackName.setText(mTrack.getName());
-        final StringBuilder sb = new StringBuilder();
-        for (Artist artist : mTrack.getArtists()) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(artist.getName());
-        }
-        mTrackArtists.setText(sb.toString());
-
-        mPlayer.play(mTrack);
+        //TODO start playlist queue at specific track
+        mPlayer.play(new TrackPlaylist(item));
     }
 
     private void onSeekToPosition(int progressSeconds) {
         mPlayer.seek(progressSeconds * 1000);
+    }
+
+    public void onTrackProgress(int secondsPlayed, int secondsDuration) {
+        mSeekBar.setMax(secondsDuration);
+        mSeekBar.setProgress(secondsPlayed);
+    }
+
+    public void onCurrentTrackUpdated(Track track) {
+        if (mTrack != null) {
+            mTrack.destroy();
+        }
+        mTrack = (track != null ? track.clone() : null);
+
+        if (mTrack != null) {
+            mTrackName.setText(mTrack.getName());
+            final StringBuilder sb = new StringBuilder();
+            for (Artist artist : mTrack.getArtists()) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(artist.getName());
+            }
+            mTrackArtists.setText(sb.toString());
+        } else {
+            //TODO
+        }
     }
 }

@@ -140,6 +140,11 @@ sp_error Player::destroy() {
     LOGV(__func__);
     sp_error error = SP_ERROR_OK;
 
+    if (mTrackNext) {
+        sp_track_release(mTrackNext);
+        mTrackNext = NULL;
+    }
+
     // destroy buffer queue audio player object, and invalidate all associated interfaces
     if (mBqPlayerObject != NULL) {
         (*mBqPlayerObject)->Destroy(mBqPlayerObject);
@@ -177,11 +182,45 @@ void Player::setCallback(PlayerCallback *callback) {
 }
 
 void Player::play(Track *track) {
+    play(track->getTrack(), false);
+}
+
+void Player::play(sp_track *track, bool playNext) {
     mTrackProgressBytes = 0;
-    sp_session_player_load(mSession, track->getTrack());
-    sp_session_player_play(mSession, true);
-    mTrackDurationMs = track->getDurationMs();
+    if (track) {
+        sp_session_player_load(mSession, track);
+        sp_session_player_play(mSession, true);
+        mTrackDurationMs = sp_track_duration(track);
+    } else {
+        sp_session_player_unload(mSession);
+        mTrackDurationMs = 0;
+    }
+    if (mCallback) {
+        mCallback->onCurrentTrackUpdated(playNext);
+    }
     setTrackProgressMs(0);
+}
+
+void Player::setNextTrack(Track *track) {
+    if (mTrackNext) {
+        sp_track_release(mTrackNext);
+        mTrackNext = NULL;
+    }
+
+    mTrackNext = track->getTrack();
+    sp_track_add_ref(mTrackNext);
+}
+
+void Player::playNextTrack() {
+    if (mTrackNext) {
+        LOGV("%s: Start playing next track", __func__);
+        play(mTrackNext, true);
+        sp_track_release(mTrackNext);
+        mTrackNext = NULL;
+    } else {
+        LOGV("%s: No track queued up, stop", __func__);
+        play(NULL, true);
+    }
 }
 
 void Player::seek(int progressMs) {
@@ -235,14 +274,6 @@ int Player::onMusicDelivery(const sp_audioformat *format, const void *frames, in
     return bytesConsumed / BYTES_PER_SAMPLE;
 }
 
-void Player::onEndOfTrack() {
-    LOGV(__func__);
-    sp_session_player_unload(mSession);
-
-    setTrackProgressMs(mTrackDurationMs);
-    //TODO report to user
-}
-
 void Player::bqPlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) {
     Player *self = static_cast<Player *>(context);
     pthread_mutex_lock(&self->mBufferMutex);
@@ -281,6 +312,10 @@ void Player::setTrackProgressMs(int progressMs) {
         LOGV("Track progress: %ds/%ds", mTrackProgressReportedSec, trackDurationSec);
         if (mCallback) {
             mCallback->onTrackProgress(mTrackProgressReportedSec, trackDurationSec);
+        }
+
+        if (progressSec >= trackDurationSec) {
+            playNextTrack();
         }
     }
 }
