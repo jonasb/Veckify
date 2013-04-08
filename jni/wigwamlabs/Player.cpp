@@ -324,7 +324,7 @@ void Player::setTrackProgressMs(int progressMs) {
         // play next at end or prefetch 10s before end
         if (progressSec >= trackDurationSec) {
             playNextTrack();
-        } else if (mTrackNext != NULL && !mPrefetchRequested && trackDurationSec - progressSec < 10) {
+        } else if (mTrackNext != NULL && !mPrefetchRequested && trackDurationSec - progressSec < 20) {
             LOGV("Prefetching track");
             sp_session_player_prefetch(mSession, mTrackNext);
             mPrefetchRequested = true;
