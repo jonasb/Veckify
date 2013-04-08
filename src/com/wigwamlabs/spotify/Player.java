@@ -70,7 +70,9 @@ public class Player extends NativeItem {
                     mQueue.onCurrentTrackUpdated(playNext);
                     nativeSetNextTrack(mQueue.getTrack(1));
 
-                    mCallback.onCurrentTrackUpdated(mQueue.getTrack(0));
+                    if (mCallback != null) {
+                        mCallback.onCurrentTrackUpdated(mQueue.getTrack(0));
+                    }
                 }
             }
         });
