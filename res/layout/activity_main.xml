@@ -27,13 +27,6 @@
         android:layout_height="wrap_content"
         android:text="@string/connectionStateLoggedOut" />
 
-    <Button
-        android:id="@+id/getPlaylists"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/getPlaylists"
-        android:visibility="gone" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

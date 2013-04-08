@@ -33,7 +33,6 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
     private TextView mConnectionState;
     private View mLoginButton;
     private PlaylistContainer mPlaylistContainer;
-    private View mGetPlaylistsButton;
     private ListView mPlaylistsList;
     private Playlist mPlaylist;
     private ListView mPlaylistList;
@@ -56,13 +55,6 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         });
 
         mConnectionState = (TextView) findViewById(R.id.connectionState);
-
-        mGetPlaylistsButton = findViewById(R.id.getPlaylists);
-        mGetPlaylistsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                getPlaylists();
-            }
-        });
 
         mPlaylistsList = (ListView) findViewById(R.id.playlists);
         mPlaylistsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -205,16 +197,10 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         mLoginButton.setVisibility(state == Session.CONNECTION_STATE_LOGGED_OUT ? View.VISIBLE : View.GONE);
         mLoginButton.setEnabled(true);
 
-        mGetPlaylistsButton.setVisibility(state == Session.CONNECTION_STATE_LOGGED_OUT ? View.GONE : View.VISIBLE);
-    }
-
-    private void getPlaylists() {
-        if (mPlaylistContainer != null) {
-            mPlaylistContainer.destroy();
-            mPlaylistContainer = null;
+        if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
+            mPlaylistContainer = mSpotifySession.getPlaylistContainer();
+            mPlaylistsList.setAdapter(new PlaylistContainerAdapter(this, mPlaylistContainer));
         }
-        mPlaylistContainer = mSpotifySession.getPlaylistContainer();
-        mPlaylistsList.setAdapter(new PlaylistContainerAdapter(this, mPlaylistContainer));
     }
 
     private void onPlaylistClicked(NativeItem item) {
