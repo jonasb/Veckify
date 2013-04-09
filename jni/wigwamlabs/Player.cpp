@@ -33,6 +33,7 @@ Player::Player(sp_session *session) :
     mEngineObject(NULL),
     mOutputMixObject(NULL),
     mBqPlayerObject(NULL),
+    mState(STATE_STARTED),
     mTrackDurationMs(0),
     mTrackProgressBytes(0),
     mTrackProgressReportedSec(0) {
@@ -181,6 +182,19 @@ void Player::setCallback(PlayerCallback *callback) {
     mCallback = callback;
 }
 
+PlayerState Player::getState() const {
+    return mState;
+}
+
+void Player::setState(PlayerState state) {
+    if (state != mState) {
+        mState = state;
+        if (mCallback) {
+            mCallback->onStateChanged(mState);
+        }
+    }
+}
+
 void Player::play(Track *track) {
     play(track->getTrack(), false);
 }
@@ -191,14 +205,33 @@ void Player::play(sp_track *track, bool playNext) {
         sp_session_player_load(mSession, track);
         sp_session_player_play(mSession, true);
         mTrackDurationMs = sp_track_duration(track);
+        setState(STATE_PLAYING);
     } else {
         sp_session_player_unload(mSession);
         mTrackDurationMs = 0;
+        setState(STATE_STOPPED);
     }
     if (mCallback) {
         mCallback->onCurrentTrackUpdated(playNext);
     }
     setTrackProgressMs(0);
+}
+
+void Player::togglePause() {
+    switch (mState) {
+    case STATE_STARTED:
+    case STATE_STOPPED:
+        //TODO
+        break;
+    case STATE_PLAYING:
+        sp_session_player_play(mSession, false);
+        setState(STATE_PAUSED_USER);
+        break;
+    case STATE_PAUSED_USER:
+        sp_session_player_play(mSession, true);
+        setState(STATE_PLAYING);
+        break;
+    }
 }
 
 void Player::setNextTrack(Track *track) {

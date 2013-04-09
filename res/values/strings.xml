@@ -8,5 +8,6 @@
     <string name="connectionStateDisconnected">Disconnected</string>
     <string name="connectionStateLoggedIn">Logged in</string>
     <string name="connectionStateLoggedOut">Logged out</string>
+    <string name="notification_action_pause">Pause</string>
 
 </resources>

@@ -228,6 +228,11 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         mPlayer.seek(progressSeconds * 1000);
     }
 
+    @Override
+    public void onStateChanged(int state) {
+        // TODO implement
+    }
+
     public void onTrackProgress(int secondsPlayed, int secondsDuration) {
         mSeekBar.setMax(secondsDuration);
         mSeekBar.setProgress(secondsPlayed);

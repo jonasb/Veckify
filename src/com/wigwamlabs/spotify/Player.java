@@ -12,6 +12,10 @@ public class Player extends NativeItem {
         nativeInitClass();
     }
 
+    static final int STATE_STARTED = 0;
+    static final int STATE_PLAYING = 1;
+    static final int STATE_PAUSED_USER = 2;
+    static final int STATE_STOPPED = 3;
     private final Handler mHandler = new Handler();
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private Queue mQueue;
@@ -32,7 +36,11 @@ public class Player extends NativeItem {
         // do nothing, native instance is deleted by session
     }
 
+    private native int nativeGetState();
+
     private native void nativePlay(Track track);
+
+    private native void nativeTogglePause();
 
     private native void nativeSetNextTrack(Track track);
 
@@ -46,6 +54,21 @@ public class Player extends NativeItem {
 
         nativePlay(mQueue.getTrack(0));
         nativeSetNextTrack(mQueue.getTrack(1));
+    }
+
+    @Keep
+    private void onStateChanged(final int state) {
+        if (mCallbacks.isEmpty()) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (Callback callback : mCallbacks) {
+                    callback.onStateChanged(state);
+                }
+            }
+        });
     }
 
     @Keep
@@ -87,9 +110,14 @@ public class Player extends NativeItem {
         }
         mCallbacks.add(callback);
         if (callbackNow) {
+            callback.onStateChanged(getState());
             callback.onCurrentTrackUpdated(mQueue != null ? mQueue.getTrack(0) : null);
             callback.onTrackProgress(mTrackProgressSec, mTrackDurationSec);
         }
+    }
+
+    private int getState() {
+        return nativeGetState();
     }
 
     public void removeCallback(Callback callback) {
@@ -100,7 +128,13 @@ public class Player extends NativeItem {
         nativeSeek(progressMs);
     }
 
+    public void togglePause() {
+        nativeTogglePause();
+    }
+
     public interface Callback {
+        void onStateChanged(int state);
+
         void onCurrentTrackUpdated(Track track);
 
         void onTrackProgress(int secondsPlayed, int secondsDuration);

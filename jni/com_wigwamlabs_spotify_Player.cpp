@@ -11,6 +11,7 @@
 using namespace wigwamlabs;
 
 jfieldID sPlayerHandleField = 0;
+jmethodID sPlayerOnStateChangedMethod = 0;
 jmethodID sPlayerOnTrackProgressMethod = 0;
 jmethodID sPlayerOnCurrentTrackUpdatedMethod = 0;
 
@@ -25,8 +26,13 @@ public:
         mProvider->getEnv()->DeleteGlobalRef(mPlayer);
     }
 
+    void onStateChanged(PlayerState state) {
+        LOGV("%s %d", __func__, state);
+        mProvider->getEnv()->CallVoidMethod(mPlayer, sPlayerOnStateChangedMethod, state);
+    }
+
     void onTrackProgress(int secondsPlayed, int secondsDuration) {
-        LOGV("%s %ds (%ds)", secondsPlayed, secondsDuration);
+        LOGV("%s %ds (%ds)", __func__, secondsPlayed, secondsDuration);
         mProvider->getEnv()->CallVoidMethod(mPlayer, sPlayerOnTrackProgressMethod, secondsPlayed, secondsDuration);
     }
 
@@ -50,6 +56,9 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Player, nativeInitClass) {
     if (sPlayerHandleField == 0) {
         sPlayerHandleField = env->GetFieldID(klass, "mHandle", "I");
     }
+    if (sPlayerOnStateChangedMethod == 0) {
+        sPlayerOnStateChangedMethod = env->GetMethodID(klass, "onStateChanged", "(I)V");
+    }
     if (sPlayerOnTrackProgressMethod == 0) {
         sPlayerOnTrackProgressMethod = env->GetMethodID(klass, "onTrackProgress", "(II)V");
     }
@@ -66,13 +75,29 @@ JNI_METHOD(void, com_wigwamlabs_spotify_Player, nativeInitInstance) {
     player->setCallback(callback);
 }
 
+JNI_METHOD(jint, com_wigwamlabs_spotify_Player, nativeGetState) {
+    LOGV("nativeGetState()");
+
+    Player *player = getNativePlayer(env, self);
+
+    return player->getState();
+}
+
 JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativePlay, jobject trackHandle) {
-    LOGV("nativePlay");
+    LOGV("nativePlay()");
 
     Player *player = getNativePlayer(env, self);
     Track *track = getNativeTrack(env, trackHandle);
 
     player->play(track);
+}
+
+JNI_METHOD(void, com_wigwamlabs_spotify_Player, nativeTogglePause) {
+    LOGV("nativeTogglePause");
+
+    Player *player = getNativePlayer(env, self);
+
+    player->togglePause();
 }
 
 JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativeSetNextTrack, jobject trackHandle) {

@@ -10,8 +10,16 @@ namespace wigwamlabs {
 
 class Track;
 
+enum PlayerState {
+    STATE_STARTED,
+    STATE_PLAYING,
+    STATE_PAUSED_USER,
+    STATE_STOPPED,
+};
+
 class PlayerCallback {
 public:
+    virtual void onStateChanged(PlayerState state) = 0;
     virtual void onTrackProgress(int secondsPlayed, int secondsDuration) = 0;
     virtual void onCurrentTrackUpdated(bool playNext) = 0;
 };
@@ -34,7 +42,9 @@ public:
 
     int onMusicDelivery(const sp_audioformat *format, const void *frames, int numFrames);
 
+    PlayerState getState() const;
     void play(Track *track);
+    void togglePause();
     void seek(int progressMs);
     void setNextTrack(Track *track);
     void playNextTrack();
@@ -47,6 +57,7 @@ private:
     };
     static void bqPlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context);
     Player(sp_session *session);
+    void setState(PlayerState state);
     bool initialize();
     void play(sp_track *track, bool playNext);
     void setTrackProgressMs(int progressMs);
@@ -70,6 +81,7 @@ private:
     int mTrackProgressBytes;
     int mTrackProgressReportedSec;
 
+    PlayerState mState;
     sp_track *mTrackNext;
     bool mPrefetchRequested;
 };
