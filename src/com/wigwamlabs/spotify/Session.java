@@ -7,6 +7,8 @@ import android.util.Log;
 
 import proguard.annotation.Keep;
 
+import java.util.ArrayList;
+
 public class Session extends NativeItem {
     public static final int CONNECTION_STATE_LOGGED_OUT = 0;
     public static final int CONNECTION_STATE_LOGGED_IN = 1;
@@ -15,7 +17,7 @@ public class Session extends NativeItem {
     public static final int CONNECTION_STATE_OFFLINE = 4;
     private static final Handler mHandler = new Handler();
     private int mState;
-    private Callback mCallback;
+    private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private Player mPlayer;
 
     public Session(Context context, String settingsPath, String cachePath, String deviceId) {
@@ -69,11 +71,18 @@ public class Session extends NativeItem {
 
     private native boolean nativeRelogin();
 
-    public void setCallback(Callback callback, boolean callbackNow) {
-        mCallback = callback;
-        if (mCallback != null && callbackNow) {
-            mCallback.onConnectionStateUpdated(nativeGetConnectionState());
+    public void addCallback(Callback callback, boolean callbackNow) {
+        if (mCallbacks.contains(callback)) {
+            return;
         }
+        mCallbacks.add(callback);
+        if (callbackNow) {
+            callback.onConnectionStateUpdated(nativeGetConnectionState());
+        }
+    }
+
+    public void removeCallback(Callback callback) {
+        mCallbacks.remove(callback);
     }
 
     private native void nativeLogin(String username, String password, boolean rememberMe);
@@ -102,13 +111,13 @@ public class Session extends NativeItem {
     @Keep
     void onConnectionStateUpdated(int state) {
         mState = state;
-        if (mCallback == null) {
+        if (mCallbacks.isEmpty()) {
             return;
         }
         mHandler.post(new Runnable() {
             public void run() {
-                if (mCallback != null) {
-                    mCallback.onConnectionStateUpdated(mState);
+                for (Callback callback : mCallbacks) {
+                    callback.onConnectionStateUpdated(mState);
                 }
             }
         });

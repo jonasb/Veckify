@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -101,9 +100,9 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         mService = binder.getService();
 
         mSpotifySession = mService.getSession();
-        mSpotifySession.setCallback(this, true); //TODO add support for multiple callbacks, methinks
+        mSpotifySession.addCallback(this, true);
         mPlayer = mSpotifySession.getPlayer();
-        mPlayer.setCallback(this, true);
+        mPlayer.addCallback(this, true);
     }
 
     @Override
@@ -116,10 +115,10 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         super.onPause();
 
         if (mSpotifySession != null) {
-            mSpotifySession.setCallback(null, false);
+            mSpotifySession.removeCallback(this);
         }
         if (mPlayer != null) {
-            mPlayer.setCallback(null, false);
+            mPlayer.removeCallback(this);
         }
     }
 
@@ -128,10 +127,10 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         super.onResume();
 
         if (mSpotifySession != null) {
-            mSpotifySession.setCallback(this, true);
+            mSpotifySession.addCallback(this, true);
         }
         if (mPlayer != null) {
-            mPlayer.setCallback(this, true);
+            mPlayer.addCallback(this, true);
         }
     }
 
@@ -152,11 +151,11 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
             mPlaylistContainer = null;
         }
         if (mPlayer != null) {
-            mPlayer.setCallback(null, false);
+            mPlayer.removeCallback(this);
             mPlayer = null;
         }
         if (mSpotifySession != null) {
-            mSpotifySession.setCallback(null, false);
+            mSpotifySession.removeCallback(this);
             mSpotifySession = null;
         }
 
@@ -204,7 +203,6 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
     }
 
     private void onPlaylistClicked(NativeItem item) {
-        Log.d("XXX", "Clicked: " + item);
         if (item instanceof Playlist) {
             final Playlist playlist = (Playlist) item;
 

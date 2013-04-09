@@ -4,6 +4,8 @@ import android.os.Handler;
 
 import proguard.annotation.Keep;
 
+import java.util.ArrayList;
+
 
 public class Player extends NativeItem {
     static {
@@ -11,7 +13,7 @@ public class Player extends NativeItem {
     }
 
     private final Handler mHandler = new Handler();
-    private Callback mCallback;
+    private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private Queue mQueue;
     private int mTrackProgressSec = 0;
     private int mTrackDurationSec = 0;
@@ -50,13 +52,13 @@ public class Player extends NativeItem {
     private void onTrackProgress(final int secondsPlayed, final int secondsDuration) {
         mTrackProgressSec = secondsPlayed;
         mTrackDurationSec = secondsDuration;
-        if (mCallback == null) {
+        if (mCallbacks.isEmpty()) {
             return;
         }
         mHandler.post(new Runnable() {
             public void run() {
-                if (mCallback != null) {
-                    mCallback.onTrackProgress(secondsPlayed, secondsDuration);
+                for (Callback callback : mCallbacks) {
+                    callback.onTrackProgress(secondsPlayed, secondsDuration);
                 }
             }
         });
@@ -70,20 +72,28 @@ public class Player extends NativeItem {
                     mQueue.onCurrentTrackUpdated(playNext);
                     nativeSetNextTrack(mQueue.getTrack(1));
 
-                    if (mCallback != null) {
-                        mCallback.onCurrentTrackUpdated(mQueue.getTrack(0));
+                    final Track currentTrack = mQueue.getTrack(0);
+                    for (Callback callback : mCallbacks) {
+                        callback.onCurrentTrackUpdated(currentTrack);
                     }
                 }
             }
         });
     }
 
-    public void setCallback(Callback callback, boolean callbackNow) {
-        mCallback = callback;
-        if (mCallback != null && callbackNow) {
-            mCallback.onCurrentTrackUpdated(mQueue != null ? mQueue.getTrack(0) : null);
-            mCallback.onTrackProgress(mTrackProgressSec, mTrackDurationSec);
+    public void addCallback(Callback callback, boolean callbackNow) {
+        if (mCallbacks.contains(callback)) {
+            return;
         }
+        mCallbacks.add(callback);
+        if (callbackNow) {
+            callback.onCurrentTrackUpdated(mQueue != null ? mQueue.getTrack(0) : null);
+            callback.onTrackProgress(mTrackProgressSec, mTrackDurationSec);
+        }
+    }
+
+    public void removeCallback(Callback callback) {
+        mCallbacks.remove(callback);
     }
 
     public void seek(int progressMs) {
