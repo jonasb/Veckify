@@ -1,5 +1,6 @@
 package com.wigwamlabs.spotify;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
@@ -10,6 +11,7 @@ public class SpotifyService extends android.app.Service {
     private final Handler mHandler = new Handler();
     private Session mSession;
     private int mClientCount;
+    private PlayerNotification mPlayerNotification;
 
     @Override
     public void onCreate() {
@@ -17,6 +19,7 @@ public class SpotifyService extends android.app.Service {
         super.onCreate();
 
         mSession = new Session(this, null, null, null);
+        mPlayerNotification = new PlayerNotification(this, mSession.getPlayer());
     }
 
     @Override
@@ -43,6 +46,9 @@ public class SpotifyService extends android.app.Service {
     public void onDestroy() {
         Debug.logLifecycle("SpotifyService onDestroy()");
         super.onDestroy();
+
+        mPlayerNotification.destroy();
+        mPlayerNotification = null;
     }
 
     private void stopSelfIfPossible() {
@@ -63,6 +69,10 @@ public class SpotifyService extends android.app.Service {
 
     public Session getSession() {
         return mSession;
+    }
+
+    public void setPlayIntent(PendingIntent intent) {
+        mPlayerNotification.setIntent(intent);
     }
 
     public class LocalBinder extends Binder {

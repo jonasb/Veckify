@@ -1,6 +1,7 @@
 package com.wigwamlabs.spotify.app;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -12,7 +13,6 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.wigwamlabs.spotify.Artist;
 import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
@@ -213,12 +213,14 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
             mPlaylist = playlist.clone();
             mPlaylistList.setAdapter(new PlaylistAdapter(this, mPlaylist));
 
+            mService.setPlayIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
             mPlayer.play(new PlaylistQueue(mPlaylist));
         }
     }
 
     private void onTrackClicked(Track item) {
         //TODO start playlist queue at specific track
+        mService.setPlayIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
         mPlayer.play(new TrackPlaylist(item));
     }
 
@@ -239,14 +241,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
 
         if (mTrack != null) {
             mTrackName.setText(mTrack.getName());
-            final StringBuilder sb = new StringBuilder();
-            for (Artist artist : mTrack.getArtists()) {
-                if (sb.length() > 0) {
-                    sb.append(", ");
-                }
-                sb.append(artist.getName());
-            }
-            mTrackArtists.setText(sb.toString());
+            mTrackArtists.setText(mTrack.getArtistsString());
         } else {
             //TODO
         }
