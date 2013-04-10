@@ -46,6 +46,7 @@ public class Session extends NativeItem {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean relogin() {
         return nativeRelogin();
     }
@@ -115,6 +116,7 @@ public class Session extends NativeItem {
             return;
         }
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 for (Callback callback : mCallbacks) {
                     callback.onConnectionStateUpdated(mState);

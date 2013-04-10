@@ -25,41 +25,50 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
         mContainer.setCallback(this);
     }
 
+    @Override
     public boolean areAllItemsEnabled() {
         return true;
     }
 
+    @Override
     public boolean isEnabled(int position) {
         return true;
     }
 
+    @Override
     public void registerDataSetObserver(DataSetObserver observer) {
         mObserver = observer;
     }
 
+    @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
         if (mObserver == observer) {
             mObserver = null;
         }
     }
 
+    @Override
     public int getCount() {
         return mContainer.getCount();
     }
 
+    @Override
     public NativeItem getItem(int position) {
         return mContainer.getItem(position);
     }
 
+    @Override
     public long getItemId(int position) {
         final NativeItem item = mContainer.getItem(position);
         return item.getId();
     }
 
+    @Override
     public boolean hasStableIds() {
         return true;
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView view = (TextView) convertView;
         if (view == null) {
@@ -82,27 +91,33 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
         return view;
     }
 
+    @Override
     public int getItemViewType(int position) {
         return 0;
     }
 
+    @Override
     public int getViewTypeCount() {
         return 1; //TODO 2, playlist and folder
     }
 
+    @Override
     public boolean isEmpty() {
         return mContainer.getCount() == 0;
     }
 
+    @Override
     public void onContainerLoaded() {
         if (mObserver != null) {
             mObserver.onChanged();
         }
     }
 
+    @Override
     public void onPlaylistUpdateInProgress(boolean done) {
     }
 
+    @Override
     public void onPlaylistRenamed() {
         if (mObserver != null) {
             mObserver.onChanged();

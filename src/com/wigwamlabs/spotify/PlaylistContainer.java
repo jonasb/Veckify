@@ -48,6 +48,7 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
     @Keep
     void onPlaylistMoved(final int oldPosition, final int newPosition) {
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 PlaylistContainer.this.onItemsMoved(oldPosition, newPosition);
             }
@@ -57,6 +58,7 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
     @Keep
     void onContainerLoaded() {
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 initList();
 

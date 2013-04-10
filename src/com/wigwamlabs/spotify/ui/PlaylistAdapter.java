@@ -22,41 +22,50 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
         mPlaylist.setCallback(this);
     }
 
+    @Override
     public boolean areAllItemsEnabled() {
         return true;
     }
 
+    @Override
     public boolean isEnabled(int position) {
         return true;
     }
 
+    @Override
     public void registerDataSetObserver(DataSetObserver observer) {
         mObserver = observer;
     }
 
+    @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
         if (mObserver == observer) {
             mObserver = null;
         }
     }
 
+    @Override
     public int getCount() {
         return mPlaylist.getCount();
     }
 
+    @Override
     public Track getItem(int position) {
         return mPlaylist.getItem(position);
     }
 
+    @Override
     public long getItemId(int position) {
         final Track item = mPlaylist.getItem(position);
         return item.getId();
     }
 
+    @Override
     public boolean hasStableIds() {
         return true;
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView view = (TextView) convertView;
         if (view == null) {
@@ -68,18 +77,22 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
         return view;
     }
 
+    @Override
     public int getItemViewType(int position) {
         return 0;
     }
 
+    @Override
     public int getViewTypeCount() {
         return 1;
     }
 
+    @Override
     public boolean isEmpty() {
         return mPlaylist.getCount() == 0;
     }
 
+    @Override
     public void onPlaylistUpdateInProgress(boolean done) {
         if (done) {
             if (mObserver != null) {
@@ -88,6 +101,7 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
         }
     }
 
+    @Override
     public void onPlaylistRenamed() {
     }
 }

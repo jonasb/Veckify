@@ -67,7 +67,7 @@ public class Track extends NativeItem {
 
     public String getArtistsString() {
         final Artist[] artists = getArtists();
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (Artist artist : artists) {
             if (sb.length() > 0) {
                 sb.append(", ");

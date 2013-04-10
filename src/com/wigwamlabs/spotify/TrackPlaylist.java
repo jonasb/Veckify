@@ -7,6 +7,7 @@ public class TrackPlaylist implements Queue {
         mTrack = track.clone();
     }
 
+    @Override
     public void destroy() {
         if (mTrack != null) {
             mTrack.destroy();
@@ -14,10 +15,12 @@ public class TrackPlaylist implements Queue {
         }
     }
 
+    @Override
     public Track getTrack(int index) {
         return mTrack;
     }
 
+    @Override
     public void onCurrentTrackUpdated(boolean playNext) {
     }
 }

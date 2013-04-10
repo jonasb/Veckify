@@ -48,6 +48,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
 
         mLoginButton = findViewById(R.id.login);
         mLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 login();
             }
@@ -57,6 +58,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
 
         mPlaylistsList = (ListView) findViewById(R.id.playlists);
         mPlaylistsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 onPlaylistClicked(((PlaylistContainerAdapter) parent.getAdapter()).getItem(position));
             }
@@ -64,6 +66,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
 
         mPlaylistList = (ListView) findViewById(R.id.playlist);
         mPlaylistList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 onTrackClicked(((PlaylistAdapter) parent.getAdapter()).getItem(position));
             }
@@ -74,12 +77,15 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
 
         mSeekBar = (SeekBar) findViewById(R.id.seekBar);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             }
 
+            @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
 
+            @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 onSeekToPosition(seekBar.getProgress());
             }
@@ -171,6 +177,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         }
     }
 
+    @Override
     public void onConnectionStateUpdated(int state) {
         final int res;
         switch (state) {
@@ -233,11 +240,13 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         // TODO implement
     }
 
+    @Override
     public void onTrackProgress(int secondsPlayed, int secondsDuration) {
         mSeekBar.setMax(secondsDuration);
         mSeekBar.setProgress(secondsPlayed);
     }
 
+    @Override
     public void onCurrentTrackUpdated(Track track) {
         if (mTrack != null) {
             mTrack.destroy();

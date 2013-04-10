@@ -79,6 +79,7 @@ public class Player extends NativeItem {
             return;
         }
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 for (Callback callback : mCallbacks) {
                     callback.onTrackProgress(secondsPlayed, secondsDuration);
@@ -90,6 +91,7 @@ public class Player extends NativeItem {
     @Keep
     private void onCurrentTrackUpdated(final boolean playNext) {
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 if (mQueue != null) {
                     mQueue.onCurrentTrackUpdated(playNext);

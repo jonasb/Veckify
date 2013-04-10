@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.wigwamlabs.spotify.app.BuildConfig;
 
-class Debug {
+final class Debug {
     private static final String TAG = "SpotifyApp";
 
     static void logLifecycle(String msg) {

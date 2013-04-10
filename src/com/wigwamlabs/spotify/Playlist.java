@@ -57,6 +57,7 @@ public class Playlist extends NativeItemCollection<Track> {
     @Keep
     private void onTracksMoved(final int[] oldPositions, final int newPosition) {
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 Playlist.this.onItemsMoved(oldPositions, newPosition);
             }
@@ -69,6 +70,7 @@ public class Playlist extends NativeItemCollection<Track> {
             return;
         }
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 if (mCallback != null) {
                     mCallback.onPlaylistRenamed();
@@ -83,6 +85,7 @@ public class Playlist extends NativeItemCollection<Track> {
             return;
         }
         mHandler.post(new Runnable() {
+            @Override
             public void run() {
                 if (mCallback != null) {
                     mCallback.onPlaylistUpdateInProgress(done);
