@@ -44,7 +44,8 @@ public:
 
     PlayerState getState() const;
     void play(Track *track);
-    void togglePause();
+    void pause();
+    void resume();
     void seek(int progressMs);
     void setNextTrack(Track *track);
     void playNextTrack();

@@ -1,5 +1,6 @@
 package com.wigwamlabs.spotify;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,22 +12,23 @@ import com.wigwamlabs.spotify.app.R;
 class PlayerNotification implements Player.Callback {
     private final Service mService;
     private final Player mPlayer;
+    private final PendingIntent mPauseIntent;
+    private final PendingIntent mResumeIntent;
     private final NotificationManager mNotificationManager;
-    private final NotificationCompat.Builder mBuilder;
     private PendingIntent mIntent;
     private boolean mForeground = false;
+    private String mArtists;
+    private String mTrackName;
+    private int mState;
 
-    PlayerNotification(Service service, Player player, PendingIntent intent) {
+    PlayerNotification(Service service, Player player, PendingIntent pauseIntent, PendingIntent resumeIntent) {
         mService = service;
         mPlayer = player;
+        mPauseIntent = pauseIntent;
+        mResumeIntent = resumeIntent;
         mPlayer.addCallback(this, false);
 
         mNotificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-        mBuilder = new NotificationCompat.Builder(service)
-                .setSmallIcon(R.drawable.ic_stat_player)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-        mBuilder.addAction(0, service.getString(R.string.notification_action_pause), intent);
     }
 
     void destroy() {
@@ -41,17 +43,37 @@ class PlayerNotification implements Player.Callback {
         mIntent = intent;
     }
 
-    @Override
-    public void onCurrentTrackUpdated(Track track) {
-        mBuilder.setContentTitle(track.getArtistsString())
-                .setContentText(track.getName())
+    private Notification getNotification() {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(mService)
+                .setSmallIcon(R.drawable.ic_stat_player)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentTitle(mArtists)
+                .setContentText(mTrackName)
                 .setContentIntent(mIntent);
 
-        mNotificationManager.notify(R.id.notificationPlayer, mBuilder.build());
+        switch (mState) {
+        case Player.STATE_PLAYING:
+            builder.addAction(0, mService.getString(R.string.notification_action_pause), mPauseIntent);
+            break;
+        case Player.STATE_PAUSED_USER:
+            builder.addAction(0, mService.getString(R.string.notification_action_resume), mResumeIntent);
+            break;
+        }
+
+        return builder.build();
+    }
+
+    @Override
+    public void onCurrentTrackUpdated(Track track) {
+        mArtists = track.getArtistsString();
+        mTrackName = track.getName();
+
+        mNotificationManager.notify(R.id.notificationPlayer, getNotification());
     }
 
     @Override
     public void onStateChanged(int state) {
+        mState = state;
         switch (state) {
         case Player.STATE_PLAYING:
             setForeground(true);
@@ -69,12 +91,12 @@ class PlayerNotification implements Player.Callback {
             mForeground = foreground;
 
             if (foreground) {
-                mService.startForeground(R.id.notificationPlayer, mBuilder.build());
+                mService.startForeground(R.id.notificationPlayer, getNotification());
             } else {
                 // this will cause flicker since the notification will be removed before readded,
                 // however without it the notification is sticky and can't be removed by the user
                 mService.stopForeground(true);
-                mNotificationManager.notify(R.id.notificationPlayer, mBuilder.build());
+                mNotificationManager.notify(R.id.notificationPlayer, getNotification());
             }
         }
     }

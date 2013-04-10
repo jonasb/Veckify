@@ -9,5 +9,6 @@
     <string name="connectionStateLoggedIn">Logged in</string>
     <string name="connectionStateLoggedOut">Logged out</string>
     <string name="notification_action_pause">Pause</string>
+    <string name="notification_action_resume">Play</string>
 
 </resources>

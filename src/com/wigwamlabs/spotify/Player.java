@@ -40,7 +40,9 @@ public class Player extends NativeItem {
 
     private native void nativePlay(Track track);
 
-    private native void nativeTogglePause();
+    private native void nativePause();
+
+    private native void nativeResume();
 
     private native void nativeSetNextTrack(Track track);
 
@@ -130,8 +132,12 @@ public class Player extends NativeItem {
         nativeSeek(progressMs);
     }
 
-    public void togglePause() {
-        nativeTogglePause();
+    public void pause() {
+        nativePause();
+    }
+
+    public void resume() {
+        nativeResume();
     }
 
     public interface Callback {

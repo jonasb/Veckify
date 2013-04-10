@@ -217,7 +217,7 @@ void Player::play(sp_track *track, bool playNext) {
     setTrackProgressMs(0);
 }
 
-void Player::togglePause() {
+void Player::pause() {
     switch (mState) {
     case STATE_STARTED:
     case STATE_STOPPED:
@@ -226,6 +226,21 @@ void Player::togglePause() {
     case STATE_PLAYING:
         sp_session_player_play(mSession, false);
         setState(STATE_PAUSED_USER);
+        break;
+    case STATE_PAUSED_USER:
+        // already paused, do nothing
+        break;
+    }
+}
+
+void Player::resume() {
+    switch (mState) {
+    case STATE_STARTED:
+    case STATE_STOPPED:
+        //TODO
+        break;
+    case STATE_PLAYING:
+        // already playing, do nothing
         break;
     case STATE_PAUSED_USER:
         sp_session_player_play(mSession, true);
