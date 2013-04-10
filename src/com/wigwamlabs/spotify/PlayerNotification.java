@@ -53,10 +53,10 @@ class PlayerNotification implements Player.Callback {
 
         switch (mState) {
         case Player.STATE_PLAYING:
-            builder.addAction(0, mService.getString(R.string.notification_action_pause), mPauseIntent);
+            builder.addAction(R.drawable.ic_notification_action_pause, mService.getString(R.string.notification_action_pause), mPauseIntent);
             break;
         case Player.STATE_PAUSED_USER:
-            builder.addAction(0, mService.getString(R.string.notification_action_resume), mResumeIntent);
+            builder.addAction(R.drawable.ic_notification_action_resume, mService.getString(R.string.notification_action_resume), mResumeIntent);
             break;
         }
 
