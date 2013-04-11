@@ -11,6 +11,7 @@ class Player;
 
 class SessionCallback {
 public:
+    virtual void onLoggedIn(sp_error error) = 0;
     virtual void onMetadataUpdated() = 0;
     virtual void onConnectionStateUpdated(int state) = 0;
 };

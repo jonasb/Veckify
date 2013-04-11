@@ -101,6 +101,21 @@ public class Session extends NativeItem {
     }
 
     @Keep
+    void onLoggedIn(final int error) {
+        if (mCallbacks.isEmpty()) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (Callback callback : mCallbacks) {
+                    callback.onLoggedIn(error);
+                }
+            }
+        });
+    }
+
+    @Keep
     void onMetadataUpdated() {
         Log.d("XXX", "onMetadataUpdated()");
     }
@@ -133,6 +148,8 @@ public class Session extends NativeItem {
     }
 
     public interface Callback {
+        void onLoggedIn(int error);
+
         void onConnectionStateUpdated(int state);
     }
 }

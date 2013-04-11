@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -19,6 +22,7 @@ import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.PlaylistQueue;
 import com.wigwamlabs.spotify.Session;
+import com.wigwamlabs.spotify.SpotifyError;
 import com.wigwamlabs.spotify.SpotifyService;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.TrackPlaylist;
@@ -42,12 +46,31 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
     private SeekBar mSeekBar;
     private View mResumeButton;
     private View mPauseButton;
+    private boolean mAutoLogin;
+    private View mLoginOverlay;
+    private EditText mLoginUsername;
+    private EditText mLoginPassword;
+    private TextView mLoginErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mLoginOverlay = findViewById(R.id.loginOverlay);
+        mLoginErrorMessage = (TextView) findViewById(R.id.loginErrorMessage);
+        mLoginUsername = (EditText) findViewById(R.id.loginName);
+        mLoginPassword = (EditText) findViewById(R.id.loginPassword);
+        mLoginPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == R.id.actionLogin || actionId == EditorInfo.IME_NULL) {
+                    login();
+                    return true;
+                }
+                return false;
+            }
+        });
         mLoginButton = findViewById(R.id.login);
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +146,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         mService = binder.getService();
 
         mSpotifySession = mService.getSession();
+        mAutoLogin = true;
         mSpotifySession.addCallback(this, true);
         mPlayer = mSpotifySession.getPlayer();
         mPlayer.addCallback(this, true);
@@ -187,10 +211,89 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
     }
 
     private void login() {
-        mLoginButton.setEnabled(false);
+        final String username = mLoginUsername.getText().toString().trim();
+        final String password = mLoginPassword.getText().toString().trim();
 
-        if (!mSpotifySession.relogin()) {
-            mSpotifySession.login(TempPrivateSettings.username, TempPrivateSettings.password, true);
+        EditText firstError = null;
+        if (username.length() == 0) {
+            mLoginUsername.setError(getString(R.string.loginUsernameRequired));
+            if (firstError == null) {
+                firstError = mLoginUsername;
+            }
+        } else {
+            mLoginUsername.setError(null);
+        }
+
+        if (password.length() == 0) {
+            mLoginPassword.setError(getString(R.string.loginPasswordRequired));
+            if (firstError == null) {
+                firstError = mLoginPassword;
+            }
+        } else {
+            mLoginPassword.setError(null);
+        }
+
+        if (firstError == null) {
+            ViewUtils.hideSoftInput(mLoginUsername);
+
+            mLoginErrorMessage.setVisibility(View.GONE);
+            mLoginUsername.setEnabled(false);
+            mLoginPassword.setEnabled(false);
+            mLoginButton.setEnabled(false);
+
+            mSpotifySession.login(username, password, true);
+        } else {
+            firstError.requestFocus();
+            ViewUtils.showSoftInput(firstError);
+        }
+    }
+
+    @Override
+    public void onLoggedIn(int error) {
+        mLoginUsername.setEnabled(true);
+        mLoginPassword.setEnabled(true);
+        mLoginButton.setEnabled(true);
+
+        final int errorResourceId;
+        switch (error) {
+        case SpotifyError.OK:
+            errorResourceId = 0;
+            break;
+        case SpotifyError.UNABLE_TO_CONTACT_SERVER:
+            errorResourceId = R.string.loginErrorUnableToContactServer;
+            break;
+        case SpotifyError.BAD_USERNAME_OR_PASSWORD:
+            errorResourceId = R.string.loginErrorBadUsernameOrPassword;
+            break;
+        case SpotifyError.USER_BANNED:
+            errorResourceId = R.string.loginErrorUserBanned;
+            break;
+        case SpotifyError.USER_NEEDS_PREMIUM:
+            errorResourceId = R.string.loginErrorUserNeedsPremium;
+            break;
+        case SpotifyError.CLIENT_TOO_OLD:
+            errorResourceId = R.string.loginErrorClientTooOld;
+            break;
+        case SpotifyError.OTHER_PERMANENT:
+            errorResourceId = R.string.loginErrorPermanent;
+            break;
+        default:
+        case SpotifyError.OTHER_TRANSIENT:
+            errorResourceId = R.string.loginErrorTransient;
+            break;
+        }
+
+        if (errorResourceId == 0) {
+            mLoginOverlay.setVisibility(View.GONE);
+            mLoginErrorMessage.setVisibility(View.GONE);
+        } else {
+            mLoginErrorMessage.setText(errorResourceId);
+            mLoginErrorMessage.setVisibility(View.VISIBLE);
+        }
+
+        if (error == SpotifyError.BAD_USERNAME_OR_PASSWORD) {
+            mLoginUsername.requestFocus();
+            ViewUtils.showSoftInput(mLoginUsername);
         }
     }
 
@@ -217,8 +320,31 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         }
         mConnectionState.setText(res);
 
-        mLoginButton.setVisibility(state == Session.CONNECTION_STATE_LOGGED_OUT ? View.VISIBLE : View.GONE);
-        mLoginButton.setEnabled(true);
+        boolean showLogin = false;
+        switch (state) {
+        case Session.CONNECTION_STATE_LOGGED_OUT:
+        case Session.CONNECTION_STATE_UNDEFINED:
+            showLogin = true;
+            if (mAutoLogin) {
+                mAutoLogin = false;
+                if (mSpotifySession.relogin()) {
+                    showLogin = false;
+                }
+            }
+            break;
+        case Session.CONNECTION_STATE_DISCONNECTED:
+        case Session.CONNECTION_STATE_LOGGED_IN:
+        case Session.CONNECTION_STATE_OFFLINE:
+            showLogin = false;
+            break;
+        }
+
+        final int oldLoginOverlayVisibility = mLoginOverlay.getVisibility();
+        mLoginOverlay.setVisibility(showLogin ? View.VISIBLE : View.GONE);
+        if (showLogin && oldLoginOverlayVisibility != mLoginOverlay.getVisibility()) {
+            mLoginUsername.requestFocus();
+            ViewUtils.showSoftInput(mLoginUsername);
+        }
 
         if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
             mPlaylistContainer = mSpotifySession.getPlaylistContainer();
