@@ -25,7 +25,6 @@ import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.SpotifyError;
 import com.wigwamlabs.spotify.SpotifyService;
 import com.wigwamlabs.spotify.Track;
-import com.wigwamlabs.spotify.TrackPlaylist;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
@@ -94,7 +93,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         mPlaylistList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onTrackClicked(((PlaylistAdapter) parent.getAdapter()).getItem(position));
+                onTrackClicked(position);
             }
         });
 
@@ -370,16 +369,13 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
             }
             mPlaylist = playlist.clone();
             mPlaylistList.setAdapter(new PlaylistAdapter(this, mPlaylist));
-
-            mService.setPlayIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
-            mPlayer.play(new PlaylistQueue(mPlaylist));
         }
     }
 
-    private void onTrackClicked(Track item) {
-        //TODO start playlist queue at specific track
+    private void onTrackClicked(int position) {
+        //TODO change queue if current queue is using the same playlist, instead of always creating a new queue
         mService.setPlayIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
-        mPlayer.play(new TrackPlaylist(item));
+        mPlayer.play(new PlaylistQueue(mPlaylist, position));
     }
 
     private void onSeekToPosition(int progressSeconds) {
