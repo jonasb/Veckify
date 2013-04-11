@@ -211,6 +211,9 @@ bool Session::relogin() {
 
 sp_error Session::login(const char *username, const char *password, bool rememberMe) {
     LOGV("%s (%s, ***, %d)", __func__, username, rememberMe);
+    mWaitingForLoggedIn = true;
+    onNotifyMainThread(mSession);
+
     return sp_session_login(mSession, username, password, rememberMe, NULL); //TODO need to deal with blob?
 }
 
@@ -228,12 +231,7 @@ Player *Session::getPlayer() {
 
 void Session::onLoggedIn(sp_session *session, sp_error error) {
     LOGV("%s %s", __func__, sp_error_message(error));
-    Session *self = getSelf(session);
-    if (error == SP_ERROR_OK) {
-        self->mWaitingForLoggedIn = true;
-        onNotifyMainThread(session);
-    }
-    self->mCallback->onLoggedIn(error);
+    getSelf(session)->mCallback->onLoggedIn(error);
 }
 
 void Session::onLoggedOut(sp_session *session) {
