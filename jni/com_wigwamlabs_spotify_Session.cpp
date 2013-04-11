@@ -135,6 +135,18 @@ JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeLogin, jstring usern
     }
 }
 
+JNI_METHOD(void, com_wigwamlabs_spotify_Session, nativeLogout) {
+    LOGV("nativeLogout()");
+
+    Session *session = getNativeSession(env, self);
+    sp_error error = session->logout();
+
+    if (error != SP_ERROR_OK) {
+        ExceptionUtils::throwException(env, ExceptionUtils::RUNTIME_EXCEPTION, sp_error_message(error));
+        return;
+    }
+}
+
 JNI_METHOD(jint, com_wigwamlabs_spotify_Session, nativeGetPlaylistContainer) {
     LOGV("nativeGetPlaylistContainer()");
 

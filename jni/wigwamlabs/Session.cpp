@@ -217,6 +217,11 @@ sp_error Session::login(const char *username, const char *password, bool remembe
     return sp_session_login(mSession, username, password, rememberMe, NULL); //TODO need to deal with blob?
 }
 
+sp_error Session::logout() {
+    LOGV(__func__);
+    return sp_session_logout(mSession);
+}
+
 PlaylistContainer *Session::getPlaylistContainer() {
     sp_playlistcontainer *c = sp_session_playlistcontainer(mSession);
     if (!c) {

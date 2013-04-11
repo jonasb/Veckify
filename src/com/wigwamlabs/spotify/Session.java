@@ -55,6 +55,10 @@ public class Session extends NativeItem {
         nativeLogin(username, password, rememberMe);
     }
 
+    public void logout() {
+        nativeLogout();
+    }
+
     public PlaylistContainer getPlaylistContainer() {
         final int handle = nativeGetPlaylistContainer();
         if (handle == 0) {
@@ -87,6 +91,8 @@ public class Session extends NativeItem {
     }
 
     private native void nativeLogin(String username, String password, boolean rememberMe);
+
+    private native void nativeLogout();
 
     private native int nativeGetPlaylistContainer();
 

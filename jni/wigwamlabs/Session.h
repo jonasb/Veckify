@@ -25,6 +25,7 @@ public:
     int getConnectionState() const;
     bool relogin();
     sp_error login(const char *username, const char *password, bool rememberMe);
+    sp_error logout();
     PlaylistContainer *getPlaylistContainer();
     Player *getPlayer();
 private:
