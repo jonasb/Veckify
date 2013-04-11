@@ -12,10 +12,10 @@ public class Player extends NativeItem {
         nativeInitClass();
     }
 
-    static final int STATE_STARTED = 0;
-    static final int STATE_PLAYING = 1;
-    static final int STATE_PAUSED_USER = 2;
-    static final int STATE_STOPPED = 3;
+    public static final int STATE_STARTED = 0;
+    public static final int STATE_PLAYING = 1;
+    public static final int STATE_PAUSED_USER = 2;
+    public static final int STATE_STOPPED = 3;
     private final Handler mHandler = new Handler();
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private Queue mQueue;

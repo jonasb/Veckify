@@ -40,6 +40,8 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
     private TextView mTrackArtists;
     private Player mPlayer;
     private SeekBar mSeekBar;
+    private View mResumeButton;
+    private View mPauseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,21 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 onSeekToPosition(seekBar.getProgress());
+            }
+        });
+
+        mResumeButton = findViewById(R.id.resumeButton);
+        mResumeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlayer.resume();
+            }
+        });
+        mPauseButton = findViewById(R.id.pauseButton);
+        mPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlayer.pause();
             }
         });
 
@@ -237,7 +254,21 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
 
     @Override
     public void onStateChanged(int state) {
-        // TODO implement
+        switch (state) {
+        case Player.STATE_STARTED:
+        case Player.STATE_STOPPED:
+            mPauseButton.setVisibility(View.GONE);
+            mResumeButton.setVisibility(View.GONE);
+            break;
+        case Player.STATE_PLAYING:
+            mPauseButton.setVisibility(View.VISIBLE);
+            mResumeButton.setVisibility(View.GONE);
+            break;
+        case Player.STATE_PAUSED_USER:
+            mPauseButton.setVisibility(View.GONE);
+            mResumeButton.setVisibility(View.VISIBLE);
+            break;
+        }
     }
 
     @Override
