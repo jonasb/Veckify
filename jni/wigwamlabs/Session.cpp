@@ -90,7 +90,8 @@ Session::Session(SessionCallback *callback) :
     mSession(NULL),
     mMainThread(0),
     mMainNotifyDo(0),
-    mMainThreadRunning(false) {
+    mMainThreadRunning(false),
+    mWaitingForLoggedIn(false) {
 }
 
 sp_error Session::startThread() {
@@ -126,17 +127,17 @@ void *Session::mainThreadLoop() {
     mMainThreadRunning = true;
     pthread_mutex_lock(&mMainNotifyMutex);
 
-    int nextTimeout = 0;
+    int nextTimeoutMs = 0;
     while (mMainThreadRunning) {
-        if (nextTimeout == 0) {
+        if (nextTimeoutMs == 0) {
             while (!mMainNotifyDo) {
                 pthread_cond_wait(&mMainNotifyCond, &mMainNotifyMutex);
             }
         } else {
             struct timespec ts;
             clock_gettime(CLOCK_REALTIME, &ts);
-            ts.tv_sec += nextTimeout / 1000;
-            ts.tv_nsec += (nextTimeout % 1000) * 1000000;
+            ts.tv_sec += nextTimeoutMs / 1000;
+            ts.tv_nsec += (nextTimeoutMs % 1000) * 1000000;
 
             pthread_cond_timedwait(&mMainNotifyCond, &mMainNotifyMutex, &ts);
         }
@@ -146,8 +147,16 @@ void *Session::mainThreadLoop() {
 
         do {
             LOGV("Calling sp_session_process_events");
-            sp_session_process_events(mSession, &nextTimeout);
-        } while (nextTimeout == 0);
+            sp_session_process_events(mSession, &nextTimeoutMs);
+        } while (nextTimeoutMs == 0);
+
+        // Workaround for bug https://github.com/spotify/cocoalibspotify/issues/140
+        // During login the notify_main_thread callback isn't called for some reason.
+        // Since the connection state is offline, nextTimeoutMs is 5 mins, so it takes ages
+        // before the connectionstate_updated callback is called.
+        if (mWaitingForLoggedIn && nextTimeoutMs > 200) {
+            nextTimeoutMs = 200;
+        }
 
         pthread_mutex_lock(&mMainNotifyMutex);
     }
@@ -219,6 +228,10 @@ Player *Session::getPlayer() {
 
 void Session::onLoggedIn(sp_session *session, sp_error error) {
     LOGV("%s %s", __func__, sp_error_message(error));
+    if (error == SP_ERROR_OK) {
+        getSelf(session)->mWaitingForLoggedIn = true;
+        onNotifyMainThread(session);
+    }
 }
 
 void Session::onLoggedOut(sp_session *session) {
@@ -263,10 +276,14 @@ void Session::onEndOfTrack(sp_session *session) {
 }
 
 void Session::onConnectionStateUpdated(sp_session *session) {
-    LOGV(__func__);
     Session *self = getSelf(session);
     sp_connectionstate state = sp_session_connectionstate(self->mSession);
+    LOGV("%s %d", __func__, state);
     self->mCallback->onConnectionStateUpdated(state);
+
+    if (self->mWaitingForLoggedIn && state == SP_CONNECTION_STATE_LOGGED_IN) {
+        self->mWaitingForLoggedIn = false;
+    }
 }
 
 } // namespace wigwamlabs

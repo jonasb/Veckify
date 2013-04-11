@@ -58,6 +58,7 @@ private:
     int mMainNotifyDo;
     bool mMainThreadRunning;
     Player *mPlayer;
+    bool mWaitingForLoggedIn;
 };
 
 }
