@@ -10,6 +10,7 @@
     <string name="connectionStateLoggedOut">Logged out</string>
     <string name="notification_action_pause">Pause</string>
     <string name="notification_action_resume">Play</string>
+    <string name="notification_action_next">Next</string>
     <string name="loginHintUsername">Username</string>
     <string name="loginHintPassword">Password</string>
     <string name="loginUsernameRequired">You have to enter a username.</string>

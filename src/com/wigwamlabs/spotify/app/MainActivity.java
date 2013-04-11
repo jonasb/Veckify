@@ -46,6 +46,7 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
     private SeekBar mSeekBar;
     private View mResumeButton;
     private View mPauseButton;
+    private View mNextButton;
     private boolean mAutoLogin;
     private View mLoginOverlay;
     private EditText mLoginUsername;
@@ -128,6 +129,13 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
             @Override
             public void onClick(View v) {
                 mPlayer.pause();
+            }
+        });
+        mNextButton = findViewById(R.id.nextButton);
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlayer.next();
             }
         });
 
@@ -385,14 +393,17 @@ public class MainActivity extends Activity implements Session.Callback, Player.C
         case Player.STATE_STOPPED:
             mPauseButton.setVisibility(View.GONE);
             mResumeButton.setVisibility(View.GONE);
+            mNextButton.setVisibility(View.GONE);
             break;
         case Player.STATE_PLAYING:
             mPauseButton.setVisibility(View.VISIBLE);
             mResumeButton.setVisibility(View.GONE);
+            mNextButton.setVisibility(View.VISIBLE);
             break;
         case Player.STATE_PAUSED_USER:
             mPauseButton.setVisibility(View.GONE);
             mResumeButton.setVisibility(View.VISIBLE);
+            mNextButton.setVisibility(View.VISIBLE);
             break;
         }
     }

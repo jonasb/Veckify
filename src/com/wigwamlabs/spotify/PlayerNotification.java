@@ -14,6 +14,7 @@ class PlayerNotification implements Player.Callback {
     private final Player mPlayer;
     private final PendingIntent mPauseIntent;
     private final PendingIntent mResumeIntent;
+    private final PendingIntent mNextIntent;
     private final NotificationManager mNotificationManager;
     private PendingIntent mIntent;
     private boolean mForeground = false;
@@ -21,11 +22,12 @@ class PlayerNotification implements Player.Callback {
     private String mTrackName;
     private int mState;
 
-    PlayerNotification(Service service, Player player, PendingIntent pauseIntent, PendingIntent resumeIntent) {
+    PlayerNotification(Service service, Player player, PendingIntent pauseIntent, PendingIntent resumeIntent, PendingIntent nextIntent) {
         mService = service;
         mPlayer = player;
         mPauseIntent = pauseIntent;
         mResumeIntent = resumeIntent;
+        mNextIntent = nextIntent;
         mPlayer.addCallback(this, false);
 
         mNotificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -54,9 +56,11 @@ class PlayerNotification implements Player.Callback {
         switch (mState) {
         case Player.STATE_PLAYING:
             builder.addAction(R.drawable.ic_notification_action_pause, mService.getString(R.string.notification_action_pause), mPauseIntent);
+            builder.addAction(R.drawable.ic_notification_action_next, mService.getString(R.string.notification_action_next), mNextIntent);
             break;
         case Player.STATE_PAUSED_USER:
             builder.addAction(R.drawable.ic_notification_action_resume, mService.getString(R.string.notification_action_resume), mResumeIntent);
+            builder.addAction(R.drawable.ic_notification_action_next, mService.getString(R.string.notification_action_next), mNextIntent);
             break;
         }
 

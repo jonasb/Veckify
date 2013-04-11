@@ -108,6 +108,14 @@ JNI_METHOD(void, com_wigwamlabs_spotify_Player, nativeResume) {
     player->resume();
 }
 
+JNI_METHOD(void, com_wigwamlabs_spotify_Player, nativeNext) {
+    LOGV("nativeNext()");
+
+    Player *player = getNativePlayer(env, self);
+
+    player->playNextTrack();
+}
+
 JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativeSetNextTrack, jobject trackHandle) {
     LOGV("nativeSetNextTrack");
 

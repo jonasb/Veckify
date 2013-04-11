@@ -44,6 +44,8 @@ public class Player extends NativeItem {
 
     private native void nativeResume();
 
+    private native void nativeNext();
+
     private native void nativeSetNextTrack(Track track);
 
     private native void nativeSeek(int progressMs);
@@ -138,6 +140,10 @@ public class Player extends NativeItem {
 
     public void resume() {
         nativeResume();
+    }
+
+    public void next() {
+        nativeNext();
     }
 
     public interface Callback {

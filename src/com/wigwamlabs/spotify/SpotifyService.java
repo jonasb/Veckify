@@ -9,6 +9,7 @@ import android.os.IBinder;
 public class SpotifyService extends android.app.Service {
     private static final String ACTION_PAUSE = "pause";
     private static final String ACTION_RESUME = "resume";
+    private static final String ACTION_NEXT = "next";
     private final IBinder mBinder = new LocalBinder();
     private final Handler mHandler = new Handler();
     private Session mSession;
@@ -30,7 +31,14 @@ public class SpotifyService extends android.app.Service {
         final Intent resumeIntent = new Intent(this, SpotifyService.class);
         resumeIntent.setAction(ACTION_RESUME);
 
-        mPlayerNotification = new PlayerNotification(this, mPlayer, PendingIntent.getService(this, 0, pauseIntent, 0), PendingIntent.getService(this, 0, resumeIntent, 0));
+        final Intent nextIntent = new Intent(this, SpotifyService.class);
+        nextIntent.setAction(ACTION_NEXT);
+
+        mPlayerNotification = new PlayerNotification(this, mPlayer,
+                PendingIntent.getService(this, 0, pauseIntent, 0),
+                PendingIntent.getService(this, 0, resumeIntent, 0),
+                PendingIntent.getService(this, 0, nextIntent, 0)
+        );
     }
 
     @Override
@@ -41,6 +49,8 @@ public class SpotifyService extends android.app.Service {
                 mPlayer.pause();
             } else if (ACTION_RESUME.equals(action)) {
                 mPlayer.resume();
+            } else if (ACTION_NEXT.equals(action)) {
+                mPlayer.next();
             }
         }
 
