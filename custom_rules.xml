@@ -1,31 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-    <condition property="ndk.dir"
-        value="${env.NDK_HOME}">
-        <isset property="env.NDK_HOME" />
-    </condition>
-
-    <!-- quick check on ndk.dir -->
-    <fail message="ndk.dir is missing. Make sure to set it in local.properties or to inject it through the NDK_HOME environment variable."
-        unless="ndk.dir" />
-
-    <target name="ndk-build">
-        <exec executable="${ndk.dir}/ndk-build"
-            failonerror="true" />
-    </target>
-
-    <target name="-pre-build"
-        depends="ndk-build">
-    </target>
-
-    <target name="clean"
-        depends="android_rules.clean">
-        <exec executable="${ndk.dir}/ndk-build"
-            failonerror="true">
-            <arg value="clean" />
-        </exec>
-    </target>
-
     <target name="run">
         <exec executable="adb">
             <arg value="shell"/>

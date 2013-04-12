@@ -1,7 +1,7 @@
 .idea/
+SpotifyLibrary/libs/armeabi/
 bin/
 gen/
-libs/armeabi/
 obj/
 out/
 proguard_logs/
