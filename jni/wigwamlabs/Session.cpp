@@ -206,15 +206,24 @@ int Session::getConnectionState() const {
 
 bool Session::relogin() {
     LOGV(__func__);
-    return (sp_session_relogin(mSession) == SP_ERROR_OK);
+
+    sp_error error = sp_session_relogin(mSession);
+    if (error == SP_ERROR_OK) {
+        mWaitingForLoggedIn = true;
+        onNotifyMainThread(mSession);
+    }
+    return (error == SP_ERROR_OK);
 }
 
 sp_error Session::login(const char *username, const char *password, bool rememberMe) {
     LOGV("%s (%s, ***, %d)", __func__, username, rememberMe);
-    mWaitingForLoggedIn = true;
-    onNotifyMainThread(mSession);
 
-    return sp_session_login(mSession, username, password, rememberMe, NULL); //TODO need to deal with blob?
+    sp_error error = sp_session_login(mSession, username, password, rememberMe, NULL); //TODO need to deal with blob?
+    if (error == SP_ERROR_OK) {
+        mWaitingForLoggedIn = true;
+        onNotifyMainThread(mSession);
+    }
+    return error;
 }
 
 sp_error Session::logout() {
