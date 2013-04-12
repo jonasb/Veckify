@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_action_pause">Pause</string>
+    <string name="notification_action_resume">Play</string>
+    <string name="notification_action_next">Next</string>
+</resources>

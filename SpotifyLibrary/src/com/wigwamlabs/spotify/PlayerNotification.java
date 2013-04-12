@@ -7,7 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 
-import com.wigwamlabs.spotify.app.R;
+import com.wigwamlabs.spotify.R;
 
 class PlayerNotification implements Player.Callback {
     private final Service mService;

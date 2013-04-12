@@ -2,8 +2,6 @@ package com.wigwamlabs.spotify;
 
 import android.util.Log;
 
-import com.wigwamlabs.spotify.app.BuildConfig;
-
 final class Debug {
     private static final String TAG = "SpotifyApp";
 

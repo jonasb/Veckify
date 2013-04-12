@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="android" name="Android">
       <configuration>
-        <option name="PACK_TEST_CODE" value="true" />
+        <option name="LIBRARY_PROJECT" value="true" />
       </configuration>
     </facet>
   </component>
@@ -15,8 +15,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="SpotifyApp" scope="PROVIDED" />
-    <orderEntry type="module" module-name="SpotifyLibrary" />
+    <orderEntry type="library" name="proguard-annotations" level="project" />
+    <orderEntry type="library" name="android-support-v13" level="project" />
   </component>
 </module>
 
