@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="proguard-annotations">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/SpotifyLibrary/libs/proguard-annotations.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

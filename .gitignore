@@ -1,4 +1,4 @@
-.idea/
+.idea/dictionaries/
 SpotifyLibrary/libs/armeabi/
 bin/
 gen/
@@ -6,6 +6,9 @@ obj/
 out/
 proguard_logs/
 
+.idea/jenkinsSettings.xml
+.idea/uiDesigner.xml
+.idea/workspace.xml
 key.c
 local.properties
 tags
