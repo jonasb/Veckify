@@ -1,25 +1,18 @@
 package com.wigwamlabs.veckify;
 
-import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.TimePicker;
 
 import com.wigwamlabs.spotify.Session;
-import com.wigwamlabs.spotify.SpotifyService;
+import com.wigwamlabs.spotify.ui.SpotifyActivity;
 import com.wigwamlabs.veckify.alarms.Alarm;
 import com.wigwamlabs.veckify.alarms.AlarmCollection;
 
 import java.util.Calendar;
 
-public class MainActivity extends Activity implements ServiceConnection {
-    private SpotifyService mService;
-    private Session mSpotifySession;
+public class MainActivity extends SpotifyActivity {
     private AlarmCollection mAlarmCollection;
     private Alarm mAlarm;
     private TimePicker mTimePicker;
@@ -61,40 +54,23 @@ public class MainActivity extends Activity implements ServiceConnection {
         });
     }
 
-    private void bindSpotifyService() {
-        final Intent intent = new Intent(this, SpotifyService.class);
-        startService(intent);
-        bindService(intent, this, BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-        final SpotifyService.LocalBinder binder = (SpotifyService.LocalBinder) service;
-        mService = binder.getService();
-
-        mSpotifySession = mService.getSession();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName arg0) {
-        mService = null;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (mSpotifySession != null) {
-            mSpotifySession = null;
-        }
-
-        //
-        unbindService(this);
-        mService = null;
-    }
-
     private void onSetAlarm() {
         mAlarm.setTime(mTimePicker.getCurrentHour().intValue(), mTimePicker.getCurrentMinute().intValue());
         mAlarmCollection.onAlarmUpdated(mAlarm);
+    }
+
+    @Override
+    protected void onSpotifySessionAttached(Session spotifySession) {
+        // TODO implement
+    }
+
+    @Override
+    public void onLoggedIn(int error) {
+        // TODO implement
+    }
+
+    @Override
+    public void onConnectionStateUpdated(int state) {
+        // TODO implement
     }
 }
