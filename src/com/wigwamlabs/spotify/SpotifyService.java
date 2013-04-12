@@ -82,6 +82,12 @@ public class SpotifyService extends android.app.Service {
         Debug.logLifecycle("SpotifyService onDestroy()");
         super.onDestroy();
 
+        if (mSession != null) {
+            mSession.logout();
+            mSession.destroy();
+            mSession = null;
+        }
+
         mPlayerNotification.destroy();
         mPlayerNotification = null;
     }
