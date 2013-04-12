@@ -4,10 +4,6 @@ public class PlaylistQueue implements Queue {
     private Playlist mPlaylist;
     private int mIndex = 0; //TODO update to deal with playlist changes
 
-    public PlaylistQueue(Playlist playlist) {
-        this(playlist, 0);
-    }
-
     public PlaylistQueue(Playlist playlist, int initialIndex) {
         mPlaylist = playlist.clone();
         mIndex = initialIndex;

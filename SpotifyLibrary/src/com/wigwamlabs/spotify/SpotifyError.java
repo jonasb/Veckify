@@ -1,6 +1,6 @@
 package com.wigwamlabs.spotify;
 
-public class SpotifyError {
+public final class SpotifyError {
     public static final int OK = 0;
     public static final int BAD_API_VERSION = 1;
     public static final int API_INITIALIZATION_FAILED = 2;

@@ -2,7 +2,7 @@ package com.wigwamlabs.spotify.app;
 
 import android.os.StrictMode;
 
-public final class Debug {
+final class Debug {
     static void enableStrictMode() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
