@@ -18,7 +18,7 @@ public class AlarmCollection {
     private final SharedPreferences mPreferences;
     private final Context mContext;
     private final AlarmManager mAlarmManager;
-    private Alarm mAlarm;
+    private final Alarm mAlarm;
 
     public AlarmCollection(Context context) {
         mContext = context;
