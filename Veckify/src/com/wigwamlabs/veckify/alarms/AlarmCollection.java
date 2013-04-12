@@ -45,11 +45,13 @@ public class AlarmCollection {
 
     void rescheduleAlarm() {
         final Calendar cal = mAlarm.getNextAlarmTime();
+        final long eventTimeMs = cal.getTimeInMillis();
 
         final Intent intent = new Intent(BroadcastReceiver.ACTION_ALARM);
+        intent.putExtra(BroadcastReceiver.EXTRA_EVENT_TIME_MS, eventTimeMs);
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        mAlarmManager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+        mAlarmManager.set(AlarmManager.RTC_WAKEUP, eventTimeMs, pendingIntent);
         Debug.logAlarmScheduling("Scheduling alarm at " + DateFormat.format("yyyy-MM-dd kk:mm", cal));
     }
 }

@@ -8,6 +8,8 @@ import com.wigwamlabs.veckify.Debug;
 
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     static final String ACTION_ALARM = "com.wigwamlabs.veckify.alarms.BroadcastReceiver.ALARM";
+    static final String EXTRA_EVENT_TIME_MS = "eventtime";
+    private static final int MAX_TIME_SINCE_SCHEDULED_MS = 5 * 60 * 1000;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -15,8 +17,14 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
             final String action = intent.getAction();
             final AlarmCollection alarmCollection = new AlarmCollection(context);
             if (ACTION_ALARM.equals(action)) {
-                Debug.logAlarmScheduling("Received alarm broadcast");
-                Toast.makeText(context, "ALARM", Toast.LENGTH_LONG).show();
+                final long eventTimeMs = intent.getLongExtra(EXTRA_EVENT_TIME_MS, 0);
+                final long timeSinceEventMs = System.currentTimeMillis() - eventTimeMs;
+                Debug.logAlarmScheduling("Received alarm broadcast " + timeSinceEventMs / 1000 + "s after scheduled");
+                if (timeSinceEventMs < MAX_TIME_SINCE_SCHEDULED_MS) {
+                    Toast.makeText(context, "ALARM", Toast.LENGTH_LONG).show();
+                } else {
+                    Debug.logAlarmScheduling("Skipping alarm since too long since scheduled");
+                }
                 alarmCollection.rescheduleAlarm();
             } else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
                 Debug.logAlarmScheduling("Device booted");
