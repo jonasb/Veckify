@@ -1,10 +1,13 @@
 package com.wigwamlabs.veckify.alarms;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
+import android.support.v4.app.NotificationCompat;
 
 import com.wigwamlabs.veckify.Debug;
+import com.wigwamlabs.veckify.R;
 
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     static final String ACTION_ALARM = "com.wigwamlabs.veckify.alarms.BroadcastReceiver.ALARM";
@@ -20,8 +23,16 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                 final long eventTimeMs = intent.getLongExtra(EXTRA_EVENT_TIME_MS, 0);
                 final long timeSinceEventMs = System.currentTimeMillis() - eventTimeMs;
                 Debug.logAlarmScheduling("Received alarm broadcast " + timeSinceEventMs / 1000 + "s after scheduled");
+
                 if (timeSinceEventMs < MAX_TIME_SINCE_SCHEDULED_MS) {
-                    Toast.makeText(context, "ALARM", Toast.LENGTH_LONG).show();
+                    final NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                            .setDefaults(Notification.DEFAULT_SOUND)
+                            .setSmallIcon(R.drawable.ic_stat_alarm)
+                            .setPriority(NotificationCompat.PRIORITY_MAX)
+                            .setContentTitle("Veckify")
+                            .setContentText("Alarm");
+                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(0, builder.build());
                 } else {
                     Debug.logAlarmScheduling("Skipping alarm since too long since scheduled");
                 }
