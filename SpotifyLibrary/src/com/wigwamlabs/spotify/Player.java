@@ -6,7 +6,6 @@ import proguard.annotation.Keep;
 
 import java.util.ArrayList;
 
-
 public class Player extends NativeItem {
     static {
         nativeInitClass();

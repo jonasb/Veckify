@@ -120,5 +120,4 @@ public abstract class NativeItemCollection<T extends NativeItem> extends NativeI
             }
         }
     }
-
 }
