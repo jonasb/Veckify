@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <target name="run">
+        <exec executable="adb">
+            <arg value="shell"/>
+            <arg value="am"/>
+            <arg value="start"/>
+            <arg value="-a"/>
+            <arg value="android.intent.action.MAIN"/>
+            <arg value="-n"/>
+            <arg value="com.wigwamlabs.veckify/.MainActivity"/>
+        </exec>
+    </target>
+
+    <!--
+    <target name="-debug-obfuscation-check">
+        <property name="proguard.enabled" value="true"/>
+    </target>
+    -->
+</project>
