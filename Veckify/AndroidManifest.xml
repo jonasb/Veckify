@@ -30,5 +30,8 @@
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
         </receiver>
+        <service
+            android:name="com.wigwamlabs.spotify.SpotifyService"
+            android:exported="false" />
     </application>
 </manifest>
