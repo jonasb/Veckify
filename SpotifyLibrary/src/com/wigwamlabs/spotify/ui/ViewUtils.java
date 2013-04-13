@@ -1,4 +1,4 @@
-package com.wigwamlabs.spotify.app;
+package com.wigwamlabs.spotify.ui;
 
 import android.content.Context;
 import android.view.View;

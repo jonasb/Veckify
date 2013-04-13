@@ -3,11 +3,8 @@ package com.wigwamlabs.spotify.app;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -18,7 +15,6 @@ import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.PlaylistQueue;
 import com.wigwamlabs.spotify.Session;
-import com.wigwamlabs.spotify.SpotifyError;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
@@ -26,7 +22,6 @@ import com.wigwamlabs.spotify.ui.SpotifyActivity;
 
 public class MainActivity extends SpotifyActivity implements Player.Callback {
     private TextView mConnectionState;
-    private View mLoginButton;
     private PlaylistContainer mPlaylistContainer;
     private ListView mPlaylistsList;
     private Playlist mPlaylist;
@@ -39,38 +34,11 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
     private View mResumeButton;
     private View mPauseButton;
     private View mNextButton;
-    private boolean mAutoLogin;
-    private View mLoginOverlay;
-    private EditText mLoginUsername;
-    private EditText mLoginPassword;
-    private TextView mLoginErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mLoginOverlay = findViewById(R.id.loginOverlay);
-        mLoginErrorMessage = (TextView) findViewById(R.id.loginErrorMessage);
-        mLoginUsername = (EditText) findViewById(R.id.loginName);
-        mLoginPassword = (EditText) findViewById(R.id.loginPassword);
-        mLoginPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == R.id.actionLogin || actionId == EditorInfo.IME_NULL) {
-                    login();
-                    return true;
-                }
-                return false;
-            }
-        });
-        mLoginButton = findViewById(R.id.login);
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                login();
-            }
-        });
 
         mConnectionState = (TextView) findViewById(R.id.connectionState);
 
@@ -136,7 +104,7 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
 
     @Override
     protected void onSpotifySessionAttached(Session spotifySession) {
-        mAutoLogin = true;
+        setAutoLogin(true);
 
         mPlayer = spotifySession.getPlayer();
         mPlayer.addCallback(this, true);
@@ -182,95 +150,10 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
         super.onDestroy();
     }
 
-    private void login() {
-        final String username = mLoginUsername.getText().toString().trim();
-        final String password = mLoginPassword.getText().toString().trim();
-
-        EditText firstError = null;
-        if (username.length() == 0) {
-            mLoginUsername.setError(getString(R.string.loginUsernameRequired));
-            if (firstError == null) {
-                firstError = mLoginUsername;
-            }
-        } else {
-            mLoginUsername.setError(null);
-        }
-
-        if (password.length() == 0) {
-            mLoginPassword.setError(getString(R.string.loginPasswordRequired));
-            if (firstError == null) {
-                firstError = mLoginPassword;
-            }
-        } else {
-            mLoginPassword.setError(null);
-        }
-
-        if (firstError == null) {
-            ViewUtils.hideSoftInput(mLoginUsername);
-
-            mLoginErrorMessage.setVisibility(View.GONE);
-            mLoginUsername.setEnabled(false);
-            mLoginPassword.setEnabled(false);
-            mLoginButton.setEnabled(false);
-
-            getSpotifySession().login(username, password, true);
-        } else {
-            firstError.requestFocus();
-            ViewUtils.showSoftInput(firstError);
-        }
-    }
-
-    @Override
-    public void onLoggedIn(int error) {
-        mLoginUsername.setEnabled(true);
-        mLoginPassword.setEnabled(true);
-        mLoginButton.setEnabled(true);
-
-        final int errorResourceId;
-        switch (error) {
-        case SpotifyError.OK:
-            errorResourceId = 0;
-            break;
-        case SpotifyError.UNABLE_TO_CONTACT_SERVER:
-            errorResourceId = R.string.loginErrorUnableToContactServer;
-            break;
-        case SpotifyError.BAD_USERNAME_OR_PASSWORD:
-            errorResourceId = R.string.loginErrorBadUsernameOrPassword;
-            break;
-        case SpotifyError.USER_BANNED:
-            errorResourceId = R.string.loginErrorUserBanned;
-            break;
-        case SpotifyError.USER_NEEDS_PREMIUM:
-            errorResourceId = R.string.loginErrorUserNeedsPremium;
-            break;
-        case SpotifyError.CLIENT_TOO_OLD:
-            errorResourceId = R.string.loginErrorClientTooOld;
-            break;
-        case SpotifyError.OTHER_PERMANENT:
-            errorResourceId = R.string.loginErrorPermanent;
-            break;
-        default:
-        case SpotifyError.OTHER_TRANSIENT:
-            errorResourceId = R.string.loginErrorTransient;
-            break;
-        }
-
-        if (errorResourceId == 0) {
-            mLoginOverlay.setVisibility(View.GONE);
-            mLoginErrorMessage.setVisibility(View.GONE);
-        } else {
-            mLoginErrorMessage.setText(errorResourceId);
-            mLoginErrorMessage.setVisibility(View.VISIBLE);
-        }
-
-        if (error == SpotifyError.BAD_USERNAME_OR_PASSWORD) {
-            mLoginUsername.requestFocus();
-            ViewUtils.showSoftInput(mLoginUsername);
-        }
-    }
-
     @Override
     public void onConnectionStateUpdated(int state) {
+        super.onConnectionStateUpdated(state);
+
         final int res;
         switch (state) {
         case Session.CONNECTION_STATE_LOGGED_OUT:
@@ -291,32 +174,6 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
             break;
         }
         mConnectionState.setText(res);
-
-        boolean showLogin = false;
-        switch (state) {
-        case Session.CONNECTION_STATE_LOGGED_OUT:
-        case Session.CONNECTION_STATE_UNDEFINED:
-            showLogin = true;
-            if (mAutoLogin) {
-                mAutoLogin = false;
-                if (getSpotifySession().relogin()) {
-                    showLogin = false;
-                }
-            }
-            break;
-        case Session.CONNECTION_STATE_DISCONNECTED:
-        case Session.CONNECTION_STATE_LOGGED_IN:
-        case Session.CONNECTION_STATE_OFFLINE:
-            showLogin = false;
-            break;
-        }
-
-        final int oldLoginOverlayVisibility = mLoginOverlay.getVisibility();
-        mLoginOverlay.setVisibility(showLogin ? View.VISIBLE : View.GONE);
-        if (showLogin && oldLoginOverlayVisibility != mLoginOverlay.getVisibility()) {
-            mLoginUsername.requestFocus();
-            ViewUtils.showSoftInput(mLoginUsername);
-        }
 
         if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
             mPlaylistContainer = getSpotifySession().getPlaylistContainer();

@@ -2,22 +2,10 @@
 <resources>
 
     <string name="app_name">SpotifyApp</string>
-    <string name="login">Login</string>
     <string name="connectionStateUndefined">Undefined</string>
     <string name="connectionStateOffline">Offline</string>
     <string name="connectionStateDisconnected">Disconnected</string>
     <string name="connectionStateLoggedIn">Logged in</string>
     <string name="connectionStateLoggedOut">Logged out</string>
-    <string name="loginHintUsername">Username</string>
-    <string name="loginHintPassword">Password</string>
-    <string name="loginUsernameRequired">You have to enter a username.</string>
-    <string name="loginPasswordRequired">You have to enter a password.</string>
-    <string name="loginErrorUnableToContactServer">Unable to contact server, check your internet connection and try again.</string>
-    <string name="loginErrorBadUsernameOrPassword">Wrong username or password.</string>
-    <string name="loginErrorUserBanned">You are banned from Spotify.</string>
-    <string name="loginErrorUserNeedsPremium">You have to have Spotify Premium.</string>
-    <string name="loginErrorTransient">Failed to login, try again.</string>
-    <string name="loginErrorClientTooOld">This app is too old, try to update to latest version.</string>
-    <string name="loginErrorPermanent">Failed to login.</string>
 
 </resources>
