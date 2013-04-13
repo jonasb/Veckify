@@ -31,7 +31,7 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                             .setPriority(NotificationCompat.PRIORITY_MAX)
                             .setContentTitle("Veckify")
                             .setContentText("Alarm");
-                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                     notificationManager.notify(0, builder.build());
                 } else {
                     Debug.logAlarmScheduling("Skipping alarm since too long since scheduled");

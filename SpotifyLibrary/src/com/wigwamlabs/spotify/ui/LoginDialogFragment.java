@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.wigwamlabs.spotify.R;
 import com.wigwamlabs.spotify.SpotifyError;
 
+@SuppressWarnings("WeakerAccess")
 public class LoginDialogFragment extends DialogFragment {
     private EditText mUsername;
     private EditText mPassword;
