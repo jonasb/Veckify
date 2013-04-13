@@ -27,6 +27,7 @@ public class LoginDialogFragment extends DialogFragment {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         return dialog;
     }
 
@@ -65,8 +66,6 @@ public class LoginDialogFragment extends DialogFragment {
                 login();
             }
         });
-
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         return root;
     }
