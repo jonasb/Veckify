@@ -245,7 +245,11 @@ Player *Session::getPlayer() {
 
 void Session::onLoggedIn(sp_session *session, sp_error error) {
     LOGV("%s %s", __func__, sp_error_message(error));
-    getSelf(session)->mCallback->onLoggedIn(error);
+    Session *self = getSelf(session);
+    if (error != SP_ERROR_OK) {
+        self->mWaitingForLoggedIn = false;
+    }
+    self->mCallback->onLoggedIn(error);
 }
 
 void Session::onLoggedOut(sp_session *session) {
