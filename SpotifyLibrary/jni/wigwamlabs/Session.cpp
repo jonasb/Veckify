@@ -39,6 +39,7 @@ Session *Session::create(SessionCallback *callback, const char *settingsPath, co
     callbacks.music_delivery = onMusicDelivery;
     callbacks.log_message = onLogMessage;
     callbacks.end_of_track = onEndOfTrack;
+    callbacks.credentials_blob_updated = onCredentialsBlobUpdated;
     callbacks.connectionstate_updated = onConnectionStateUpdated;
 
     // config
@@ -204,21 +205,10 @@ int Session::getConnectionState() const {
     return sp_session_connectionstate(mSession);
 }
 
-bool Session::relogin() {
-    LOGV(__func__);
+sp_error Session::login(const char *username, const char *password, const char *blob) {
+    LOGV("%s (%s) credentials:%s%s", __func__, username, password ? " password" : "", blob ? " blob" : "");
 
-    sp_error error = sp_session_relogin(mSession);
-    if (error == SP_ERROR_OK) {
-        mWaitingForLoggedIn = true;
-        onNotifyMainThread(mSession);
-    }
-    return (error == SP_ERROR_OK);
-}
-
-sp_error Session::login(const char *username, const char *password, bool rememberMe) {
-    LOGV("%s (%s, ***, %d)", __func__, username, rememberMe);
-
-    sp_error error = sp_session_login(mSession, username, password, rememberMe, NULL); //TODO need to deal with blob?
+    sp_error error = sp_session_login(mSession, username, password, false, blob);
     if (error == SP_ERROR_OK) {
         mWaitingForLoggedIn = true;
         onNotifyMainThread(mSession);
@@ -291,6 +281,11 @@ void Session::onLogMessage(sp_session *session, const char *data) {
 
 void Session::onEndOfTrack(sp_session *session) {
     LOGV(__func__);
+}
+
+void Session::onCredentialsBlobUpdated(sp_session *session, const char *blob) {
+    LOGV(__func__);
+    getSelf(session)->mCallback->onCredentialsBlobUpdated(blob);
 }
 
 void Session::onConnectionStateUpdated(sp_session *session) {

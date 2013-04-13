@@ -78,6 +78,7 @@ public class LoginDialogFragment extends DialogFragment {
         EditText firstError = null;
         if (username.length() == 0) {
             mUsername.setError(getString(R.string.loginUsernameRequired));
+            //noinspection ConstantConditions
             if (firstError == null) {
                 firstError = mUsername;
             }
@@ -103,7 +104,7 @@ public class LoginDialogFragment extends DialogFragment {
             mButton.setEnabled(false);
 
             final SpotifyActivity activity = (SpotifyActivity) getActivity();
-            activity.getSpotifySession().login(username, password, true);
+            activity.getSpotifySession().login(username, password);
         } else {
             firstError.requestFocus();
         }

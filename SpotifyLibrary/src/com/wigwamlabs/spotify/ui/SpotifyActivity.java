@@ -89,7 +89,7 @@ public abstract class SpotifyActivity extends Activity implements Session.Callba
         super.onDestroy();
     }
 
-    protected void setAutoLogin(boolean autoLogin) {
+    protected void setAutoLogin(@SuppressWarnings("SameParameterValue") boolean autoLogin) {
         mAutoLogin = autoLogin;
     }
 

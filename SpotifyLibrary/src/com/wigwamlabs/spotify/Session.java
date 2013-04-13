@@ -16,6 +16,7 @@ public class Session extends NativeItem {
     public static final int CONNECTION_STATE_UNDEFINED = 3;
     public static final int CONNECTION_STATE_OFFLINE = 4;
     private static final Handler mHandler = new Handler();
+    private final Preferences mPreferences;
     private int mState;
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private Player mPlayer;
@@ -32,6 +33,7 @@ public class Session extends NativeItem {
             deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         }
         setHandle(nativeCreate(settingsPath, cachePath, deviceId));
+        mPreferences = new Preferences(context);
     }
 
     private static native void nativeInitClass();
@@ -46,13 +48,22 @@ public class Session extends NativeItem {
         }
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean relogin() {
-        return nativeRelogin();
+        // libspotify's relogin support is not reliable so we store the credentials ourselves
+        final String username = mPreferences.getUsername();
+        final String blob = mPreferences.getCredentialsBlob();
+
+        if (username != null && blob != null) {
+            nativeLogin(username, null, blob);
+            return true;
+        }
+        return false;
     }
 
-    public void login(String username, String password, boolean rememberMe) {
-        nativeLogin(username, password, rememberMe);
+    public void login(String username, String password) {
+        nativeLogin(username, password, null);
+
+        mPreferences.setUsername(username);
     }
 
     public void logout() {
@@ -74,8 +85,6 @@ public class Session extends NativeItem {
 
     private native int nativeGetConnectionState();
 
-    private native boolean nativeRelogin();
-
     public void addCallback(Callback callback, boolean callbackNow) {
         if (mCallbacks.contains(callback)) {
             return;
@@ -90,7 +99,7 @@ public class Session extends NativeItem {
         mCallbacks.remove(callback);
     }
 
-    private native void nativeLogin(String username, String password, boolean rememberMe);
+    private native void nativeLogin(String username, String password, String blob);
 
     private native void nativeLogout();
 
@@ -124,6 +133,16 @@ public class Session extends NativeItem {
     @Keep
     void onMetadataUpdated() {
         Log.d("XXX", "onMetadataUpdated()");
+    }
+
+    @Keep
+    void onCredentialsBlobUpdated(final String blob) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mPreferences.setCredentialsBlob(blob);
+            }
+        });
     }
 
     public int getConnectionState() {

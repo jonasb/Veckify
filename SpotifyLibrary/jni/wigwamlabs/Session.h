@@ -13,6 +13,7 @@ class SessionCallback {
 public:
     virtual void onLoggedIn(sp_error error) = 0;
     virtual void onMetadataUpdated() = 0;
+    virtual void onCredentialsBlobUpdated(const char *blob) = 0;
     virtual void onConnectionStateUpdated(int state) = 0;
 };
 
@@ -23,8 +24,7 @@ public:
     ~Session();
 
     int getConnectionState() const;
-    bool relogin();
-    sp_error login(const char *username, const char *password, bool rememberMe);
+    sp_error login(const char *username, const char *password, const char *blob);
     sp_error logout();
     PlaylistContainer *getPlaylistContainer();
     Player *getPlayer();
@@ -39,6 +39,7 @@ private:
     static int onMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int numFrames);
     static void onLogMessage(sp_session *session, const char *data);
     static void onEndOfTrack(sp_session *session);
+    static void onCredentialsBlobUpdated(sp_session *session, const char *blob);
     static void onConnectionStateUpdated(sp_session *session);
 
     Session(SessionCallback *callback);

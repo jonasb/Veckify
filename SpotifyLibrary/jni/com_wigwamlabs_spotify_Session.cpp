@@ -14,6 +14,7 @@ using namespace wigwamlabs;
 jfieldID sSessionHandleField = 0;
 jmethodID sSessionOnLoggedInMethod = 0;
 jmethodID sSessionOnMetadataUpdatedMethod = 0;
+jmethodID sSessionOnCredentialsBlobUpdatedMethod = 0;
 jmethodID sSessionOnConnectionStateUpdatedMethod = 0;
 
 class SessionCallbackJNI : public SessionCallback {
@@ -33,6 +34,15 @@ public:
 
     void onMetadataUpdated() {
         mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnMetadataUpdatedMethod);
+    }
+
+    void onCredentialsBlobUpdated(const char *blobStr) {
+        JNIEnv *env = mProvider->getEnv();
+        jstring blob = env->NewStringUTF(blobStr);
+
+        env->CallVoidMethod(mSession, sSessionOnCredentialsBlobUpdatedMethod, blob);
+
+        env->DeleteLocalRef(blob);
     }
 
     void onConnectionStateUpdated(int state) {
@@ -60,6 +70,9 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Session, nativeInitClass) {
     }
     if (sSessionOnMetadataUpdatedMethod == 0) {
         sSessionOnMetadataUpdatedMethod = env->GetMethodID(klass, "onMetadataUpdated", "()V");
+    }
+    if (sSessionOnCredentialsBlobUpdatedMethod == 0) {
+        sSessionOnCredentialsBlobUpdatedMethod = env->GetMethodID(klass, "onCredentialsBlobUpdated", "(Ljava/lang/String;)V");
     }
     if (sSessionOnConnectionStateUpdatedMethod == 0) {
         sSessionOnConnectionStateUpdatedMethod = env->GetMethodID(klass, "onConnectionStateUpdated", "(I)V");
@@ -110,23 +123,22 @@ JNI_METHOD(jint, com_wigwamlabs_spotify_Session, nativeGetConnectionState) {
     return session->getConnectionState();
 }
 
-JNI_METHOD(jboolean, com_wigwamlabs_spotify_Session, nativeRelogin) {
-    LOGV("nativeRelogin()");
-
-    Session *session = getNativeSession(env, self);
-    return session->relogin();
-}
-
-JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeLogin, jstring username, jstring password, jboolean rememberMe) {
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeLogin, jstring username, jstring password, jstring blob) {
     LOGV("nativeLogin()");
 
     Session *session = getNativeSession(env, self);
     const char *usernameStr = env->GetStringUTFChars(username, NULL);
-    const char *passwordStr = env->GetStringUTFChars(password, NULL);
+    const char *passwordStr = (!password ? NULL : env->GetStringUTFChars(password, NULL));
+    const char *blobStr = (!blob ? NULL : env->GetStringUTFChars(blob, NULL));
 
-    sp_error error = session->login(usernameStr, passwordStr, rememberMe);
+    sp_error error = session->login(usernameStr, passwordStr, blobStr);
 
-    env->ReleaseStringUTFChars(password, passwordStr);
+    if (blob && blobStr) {
+        env->ReleaseStringUTFChars(blob, blobStr);
+    }
+    if (password && passwordStr) {
+        env->ReleaseStringUTFChars(password, passwordStr);
+    }
     env->ReleaseStringUTFChars(username, usernameStr);
 
     if (error != SP_ERROR_OK) {
