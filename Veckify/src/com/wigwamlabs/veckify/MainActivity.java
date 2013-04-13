@@ -61,16 +61,16 @@ public class MainActivity extends SpotifyActivity {
 
     @Override
     protected void onSpotifySessionAttached(Session spotifySession) {
-        // TODO implement
+        setAutoLogin(true);
     }
 
     @Override
     public void onLoggedIn(int error) {
-        // TODO implement
+        super.onLoggedIn(error);
     }
 
     @Override
     public void onConnectionStateUpdated(int state) {
-        // TODO implement
+        super.onConnectionStateUpdated(state);
     }
 }
