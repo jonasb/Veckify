@@ -28,6 +28,8 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
     @Override
     native void nativeDestroy();
 
+    native boolean nativeIsLoaded();
+
     @Override
     protected native int nativeGetCount();
 
@@ -41,8 +43,17 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
 
     private native int nativeGetPlaceholder(int index);
 
-    public void setCallback(Callback callback) {
+    public void setCallback(Callback callback, boolean callbackNow) {
         mCallback = callback;
+        if (callbackNow && callback != null) {
+            if (isLoaded()) {
+                callback.onContainerLoaded();
+            }
+        }
+    }
+
+    private boolean isLoaded() {
+        return nativeIsLoaded();
     }
 
     @Keep

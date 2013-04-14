@@ -52,11 +52,21 @@ public class MainActivity extends SpotifyActivity {
                 onSetAlarm();
             }
         });
+        findViewById(R.id.runNowButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runAlarmNow();
+            }
+        });
     }
 
     private void onSetAlarm() {
         mAlarm.setTime(mTimePicker.getCurrentHour().intValue(), mTimePicker.getCurrentMinute().intValue());
         mAlarmCollection.onAlarmUpdated(mAlarm);
+    }
+
+    private void runAlarmNow() {
+        mAlarmCollection.runAlarmNow(mAlarm);
     }
 
     @Override

@@ -24,6 +24,7 @@ public:
 
     void setCallback(PlaylistContainerCallback *callback);
 
+    bool isLoaded() const;
     int getCount();
     sp_playlist_type getPlaylistType(int index);
     Playlist *getPlaylist(int index);

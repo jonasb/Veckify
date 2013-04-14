@@ -19,7 +19,7 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
     public PlaylistAdapter(Context context, Playlist playlist) {
         mContext = context;
         mPlaylist = playlist;
-        mPlaylist.setCallback(this);
+        mPlaylist.setCallback(this, false);
     }
 
     @Override
@@ -103,5 +103,9 @@ public class PlaylistAdapter implements ListAdapter, Playlist.Callback {
 
     @Override
     public void onPlaylistRenamed() {
+    }
+
+    @Override
+    public void onPlaylistStateChanged() {
     }
 }

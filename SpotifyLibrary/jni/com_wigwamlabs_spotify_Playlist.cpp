@@ -13,6 +13,7 @@ using namespace wigwamlabs;
 jfieldID sPlaylistHandleField = 0;
 jmethodID sPlaylistOnTracksMovedMethod = 0;
 jmethodID sPlaylistOnPlaylistRenamedMethod = 0;
+jmethodID sPlaylistOnPlaylistStateChangedMethod = 0;
 jmethodID sPlaylistOnPlaylistUpdateInProgressMethod = 0;
 
 class PlaylistCallbackJNI : public PlaylistCallback {
@@ -52,6 +53,11 @@ public:
         mProvider->getEnv()->CallVoidMethod(mPlaylist, sPlaylistOnPlaylistRenamedMethod);
     }
 
+    void onPlaylistStateChanged() {
+        LOGV(__func__);
+        mProvider->getEnv()->CallVoidMethod(mPlaylist, sPlaylistOnPlaylistStateChangedMethod);
+    }
+
     void onPlaylistUpdateInProgress(bool done) {
         LOGV("%s (%d)", __func__, done);
         mProvider->getEnv()->CallVoidMethod(mPlaylist, sPlaylistOnPlaylistUpdateInProgressMethod, done);
@@ -77,6 +83,9 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeInitClass) {
     }
     if (sPlaylistOnPlaylistRenamedMethod == 0) {
         sPlaylistOnPlaylistRenamedMethod = env->GetMethodID(klass, "onPlaylistRenamed", "()V");
+    }
+    if (sPlaylistOnPlaylistStateChangedMethod == 0) {
+        sPlaylistOnPlaylistStateChangedMethod = env->GetMethodID(klass, "onPlaylistStateChanged", "()V");
     }
     if (sPlaylistOnPlaylistUpdateInProgressMethod == 0) {
         sPlaylistOnPlaylistUpdateInProgressMethod = env->GetMethodID(klass, "onPlaylistUpdateInProgress", "(Z)V");
@@ -111,6 +120,13 @@ JNI_METHOD(jint, com_wigwamlabs_spotify_Playlist, nativeClone) {
     Playlist *clone = playlist->clone();
 
     return reinterpret_cast<jint>(clone);
+}
+
+JNI_METHOD(jboolean, com_wigwamlabs_spotify_Playlist, nativeIsLoaded) {
+    LOGV("nativeIsLoaded()");
+
+    Playlist *playlist = getNativePlaylist(env, self);
+    return playlist->isLoaded();
 }
 
 JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetName) {

@@ -1,6 +1,7 @@
 package com.wigwamlabs.spotify;
 
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
@@ -43,6 +44,7 @@ public class SpotifyService extends android.app.Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Debug.logLifecycle("onStartCommand() intent=" + intent);
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_PAUSE.equals(action)) {
@@ -51,6 +53,8 @@ public class SpotifyService extends android.app.Service {
                 mPlayer.resume();
             } else if (ACTION_NEXT.equals(action)) {
                 mPlayer.next();
+            } else if ("ALARM".equals(action)) {
+                new PendingAction(getSession());
             }
         }
 

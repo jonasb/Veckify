@@ -19,6 +19,7 @@ public class AlarmCollection {
     private final Context mContext;
     private final AlarmManager mAlarmManager;
     private final Alarm mAlarm;
+    private Alarm mAlarmRunNow;
 
     public AlarmCollection(Context context) {
         mContext = context;
@@ -43,8 +44,20 @@ public class AlarmCollection {
         rescheduleAlarm();
     }
 
+    public void runAlarmNow(Alarm alarm) {
+        mAlarmRunNow = alarm;
+        rescheduleAlarm();
+        mAlarmRunNow = null;
+    }
+
     void rescheduleAlarm() {
-        final Calendar cal = mAlarm.getNextAlarmTime();
+        final Calendar cal;
+        if (mAlarmRunNow == null) {
+            cal = mAlarm.getNextAlarmTime();
+        } else {
+            cal = Calendar.getInstance();
+            cal.setTimeInMillis(System.currentTimeMillis());
+        }
         final long eventTimeMs = cal.getTimeInMillis();
 
         final Intent intent = new Intent(BroadcastReceiver.ACTION_ALARM);

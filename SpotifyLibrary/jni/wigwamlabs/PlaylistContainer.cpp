@@ -77,6 +77,10 @@ void PlaylistContainer::onContainerLoaded(sp_playlistcontainer *container, void 
     }
 }
 
+bool PlaylistContainer::isLoaded() const {
+    return sp_playlistcontainer_is_loaded(mContainer);
+}
+
 int PlaylistContainer::getCount() {
     return sp_playlistcontainer_num_playlists(mContainer);
 }

@@ -8,10 +8,6 @@
 
 namespace wigwamlabs {
 
-void onPlaylistStateChanged(sp_playlist *playlist, void *self) {
-    LOGV("onPlaylistStateChanged()");
-}
-
 Playlist::Playlist(sp_playlist *playlist) :
     mPlaylist(playlist),
     mCallback(NULL) {
@@ -57,6 +53,10 @@ Playlist::~Playlist() {
 void Playlist::setCallback(PlaylistCallback *callback) {
     //assert(!mCallback);
     mCallback = callback;
+}
+
+bool Playlist::isLoaded() const {
+    return sp_playlist_is_loaded(mPlaylist);
 }
 
 const char *Playlist::getName() {
@@ -111,6 +111,14 @@ void Playlist::onPlaylistRenamed(sp_playlist *playlist, void *self) {
     PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
     if (callback) {
         callback->onPlaylistRenamed();
+    }
+}
+
+void Playlist::onPlaylistStateChanged(sp_playlist *playlist, void *self) {
+    LOGV(__func__);
+    PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
+    if (callback) {
+        callback->onPlaylistStateChanged();
     }
 }
 

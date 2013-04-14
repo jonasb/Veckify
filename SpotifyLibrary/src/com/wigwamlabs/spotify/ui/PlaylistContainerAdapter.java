@@ -22,7 +22,7 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
     public PlaylistContainerAdapter(Context context, PlaylistContainer container) {
         mContext = context;
         mContainer = container;
-        mContainer.setCallback(this);
+        mContainer.setCallback(this, false);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
         if (item instanceof Playlist) {
             final Playlist playlist = (Playlist) item;
             view.setText(playlist.getName());
-            playlist.setCallback(this);
+            playlist.setCallback(this, false);
         } else if (item instanceof FolderStart) {
             view.setText(((FolderStart) item).getName());
         } else if (item instanceof FolderEnd) {
@@ -122,5 +122,9 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
         if (mObserver != null) {
             mObserver.onChanged();
         }
+    }
+
+    @Override
+    public void onPlaylistStateChanged() {
     }
 }

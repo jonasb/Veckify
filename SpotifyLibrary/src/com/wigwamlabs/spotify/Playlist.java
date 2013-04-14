@@ -33,6 +33,8 @@ public class Playlist extends NativeItemCollection<Track> {
 
     private native int nativeClone();
 
+    private native boolean nativeIsLoaded();
+
     private native String nativeGetName();
 
     @Override
@@ -46,12 +48,22 @@ public class Playlist extends NativeItemCollection<Track> {
         return new Track(handle);
     }
 
+    public boolean isLoaded() {
+        return nativeIsLoaded();
+    }
+
     public String getName() {
         return nativeGetName();
     }
 
-    public void setCallback(Callback callback) {
+    public void setCallback(Callback callback, boolean callbackNow) {
         mCallback = callback;
+        if (callback != null && callbackNow) {
+            //TODO how to treat the other callbacks
+            if (isLoaded()) {
+                callback.onPlaylistStateChanged();
+            }
+        }
     }
 
     @Keep
@@ -80,6 +92,21 @@ public class Playlist extends NativeItemCollection<Track> {
     }
 
     @Keep
+    private void onPlaylistStateChanged() {
+        if (mCallback == null) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onPlaylistStateChanged();
+                }
+            }
+        });
+    }
+
+    @Keep
     private void onPlaylistUpdateInProgress(final boolean done) {
         if (mCallback == null) {
             return;
@@ -98,5 +125,7 @@ public class Playlist extends NativeItemCollection<Track> {
         void onPlaylistUpdateInProgress(boolean done);
 
         void onPlaylistRenamed();
+
+        void onPlaylistStateChanged();
     }
 }

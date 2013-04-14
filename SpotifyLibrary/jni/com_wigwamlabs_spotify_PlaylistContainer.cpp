@@ -81,6 +81,12 @@ JNI_METHOD(void, com_wigwamlabs_spotify_PlaylistContainer, nativeDestroy) {
     }
 }
 
+JNI_METHOD(jboolean, com_wigwamlabs_spotify_PlaylistContainer, nativeIsLoaded) {
+    LOGV("nativeIsLoaded()");
+    PlaylistContainer *container = getNativePlaylistContainer(env, self);
+    return container->isLoaded();
+}
+
 JNI_METHOD(jint, com_wigwamlabs_spotify_PlaylistContainer, nativeGetCount) {
     LOGV("nativeGetCount()");
 
