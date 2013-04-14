@@ -200,6 +200,10 @@ Session::~Session() {
     mMainThreadRunning = false;
 }
 
+sp_session *Session::getSession() {
+    return mSession;
+}
+
 int Session::getConnectionState() const {
     LOGV(__func__);
     return sp_session_connectionstate(mSession);

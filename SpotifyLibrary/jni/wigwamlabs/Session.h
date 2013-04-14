@@ -23,6 +23,8 @@ public:
     sp_error destroy();
     ~Session();
 
+    sp_session *getSession();
+
     int getConnectionState() const;
     sp_error login(const char *username, const char *password, const char *blob);
     sp_error logout();

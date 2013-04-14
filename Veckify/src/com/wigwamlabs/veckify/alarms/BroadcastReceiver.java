@@ -9,6 +9,7 @@ import com.wigwamlabs.veckify.Debug;
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     static final String ACTION_ALARM = "com.wigwamlabs.veckify.alarms.BroadcastReceiver.ALARM";
     static final String EXTRA_EVENT_TIME_MS = "eventtime";
+    static final String EXTRA_PLAYLIST_LINK = "playlist_link";
     private static final int MAX_TIME_SINCE_SCHEDULED_MS = 5 * 60 * 1000;
 
     @Override
@@ -22,7 +23,7 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                 Debug.logAlarmScheduling("Received alarm broadcast " + timeSinceEventMs / 1000 + "s after scheduled");
 
                 if (timeSinceEventMs < MAX_TIME_SINCE_SCHEDULED_MS) {
-                    startAlarm(context);
+                    startAlarm(context, intent.getStringExtra(EXTRA_PLAYLIST_LINK));
                 } else {
                     Debug.logAlarmScheduling("Skipping alarm since too long since scheduled");
                 }
@@ -41,9 +42,10 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
         }
     }
 
-    private void startAlarm(Context context) {
+    private void startAlarm(Context context, String playlistLink) {
         final Intent intent = new Intent(context, SpotifyService.class);
-        intent.setAction("ALARM");
+        intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
+        intent.putExtra(SpotifyService.EXTRA_LINK, playlistLink);
         context.startService(intent);
     }
 }

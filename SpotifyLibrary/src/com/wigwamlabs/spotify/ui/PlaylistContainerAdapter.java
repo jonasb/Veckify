@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.wigwamlabs.spotify.FolderEnd;
@@ -14,7 +15,7 @@ import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 
-public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.Callback, Playlist.Callback {
+public class PlaylistContainerAdapter implements ListAdapter, SpinnerAdapter, PlaylistContainer.Callback, Playlist.Callback {
     private final Context mContext;
     private final PlaylistContainer mContainer;
     private DataSetObserver mObserver;
@@ -27,12 +28,13 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
 
     @Override
     public boolean areAllItemsEnabled() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isEnabled(int position) {
-        return true;
+        final NativeItem item = getItem(position);
+        return item instanceof Playlist;
     }
 
     @Override
@@ -70,6 +72,29 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        TextView view = (TextView) convertView;
+        if (view == null) {
+            view = new TextView(mContext);
+            view.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+        final NativeItem item = getItem(position);
+        if (item instanceof Playlist) {
+            final Playlist playlist = (Playlist) item;
+            view.setText(playlist.getName());
+            playlist.setCallback(this, false);
+        } else if (item instanceof FolderStart) {
+            view.setText(((FolderStart) item).getName());
+        } else if (item instanceof FolderEnd) {
+            view.setText("/>");
+        } else {
+            view.setText("---"); //Placeholder
+        }
+        view.setVisibility(item == null ? View.GONE : View.VISIBLE);
+        return view;
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
         TextView view = (TextView) convertView;
         if (view == null) {
             view = new TextView(mContext);

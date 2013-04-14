@@ -5,6 +5,7 @@
 
 namespace wigwamlabs {
 
+class Session;
 class Track;
 
 class PlaylistCallback {
@@ -17,6 +18,7 @@ public:
 
 class Playlist {
 public:
+    static Playlist *create(Session *session, const char *linkStr);
     Playlist(sp_playlist *playlist);
     Playlist *clone();
     sp_error destroy();
@@ -24,6 +26,7 @@ public:
 
     void setCallback(PlaylistCallback *callback);
     bool isLoaded() const;
+    sp_link *getLink() const;
     const char *getName();
     int getCount();
     Track *getTrack(int index);

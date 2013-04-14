@@ -18,15 +18,22 @@ public class Playlist extends NativeItemCollection<Track> {
         nativeInitInstance();
     }
 
+    public Playlist(Session session, String link) {
+        super(0);
+        setHandle(nativeCreate(session, link));
+    }
+
+    private static native void nativeInitClass();
+
     @Override
     public Playlist clone() {
         final int handle = nativeClone();
         return new Playlist(handle);
     }
 
-    private static native void nativeInitClass();
-
     private native void nativeInitInstance();
+
+    native int nativeCreate(Session session, String link);
 
     @Override
     native void nativeDestroy();
@@ -34,6 +41,8 @@ public class Playlist extends NativeItemCollection<Track> {
     private native int nativeClone();
 
     private native boolean nativeIsLoaded();
+
+    private native String nativeGetLink();
 
     private native String nativeGetName();
 
@@ -50,6 +59,10 @@ public class Playlist extends NativeItemCollection<Track> {
 
     public boolean isLoaded() {
         return nativeIsLoaded();
+    }
+
+    public String getLink() {
+        return nativeGetLink();
     }
 
     public String getName() {

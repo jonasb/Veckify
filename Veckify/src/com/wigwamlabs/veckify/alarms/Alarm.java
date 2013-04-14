@@ -6,11 +6,7 @@ public class Alarm {
     private static final long MINIMUM_TIME_TO_ALARM_MS = 60 * 1000;
     private int mHour;
     private int mMinute;
-
-    Alarm(int hour, int minute) {
-        mHour = hour;
-        mMinute = minute;
-    }
+    private String mPlaylistLink;
 
     public int getHour() {
         return mHour;
@@ -23,6 +19,14 @@ public class Alarm {
     public void setTime(int hour, int minute) {
         mHour = hour;
         mMinute = minute;
+    }
+
+    public void setPlaylistLink(String link) {
+        mPlaylistLink = link;
+    }
+
+    public String getPlaylistLink() {
+        return mPlaylistLink;
     }
 
     public Calendar getNextAlarmTime() {

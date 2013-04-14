@@ -1,12 +1,13 @@
 package com.wigwamlabs.spotify;
 
-public class PendingAction implements Session.Callback, PlaylistContainer.Callback, Playlist.Callback {
+public class PendingAction implements Session.Callback, Playlist.Callback {
     private final Session mSession;
-    private PlaylistContainer mPlaylistContainer;
+    private final String mLink;
     private Playlist mPlaylist;
 
-    public PendingAction(Session session) {
+    public PendingAction(Session session, String link) {
         mSession = session;
+        mLink = link;
         switch (session.getConnectionState()) {
         case Session.CONNECTION_STATE_LOGGED_OUT:
         case Session.CONNECTION_STATE_UNDEFINED:
@@ -25,30 +26,13 @@ public class PendingAction implements Session.Callback, PlaylistContainer.Callba
     public void onLoggedIn(int error) {
         mSession.removeCallback(this);
         if (error == SpotifyError.OK) {
-            mPlaylistContainer = mSession.getPlaylistContainer();
-            mPlaylistContainer.setCallback(this, true);
+            mPlaylist = new Playlist(mSession, mLink);
+            mPlaylist.setCallback(this, true);
         }
     }
 
     @Override
     public void onConnectionStateUpdated(int state) {
-    }
-
-    @Override
-    public void onContainerLoaded() {
-        mPlaylistContainer.setCallback(null, false);
-        mPlaylist = null;
-        final int count = mPlaylistContainer.getCount();
-        for (int i = 0; i < count; i++) {
-            final NativeItem item = mPlaylistContainer.getItem(i);
-            if (item instanceof Playlist) {
-                mPlaylist = (Playlist) item;
-                break;
-            }
-        }
-        if (mPlaylist != null) {
-            mPlaylist.setCallback(this, true);
-        }
     }
 
     @Override

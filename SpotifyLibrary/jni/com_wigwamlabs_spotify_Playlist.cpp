@@ -100,6 +100,20 @@ JNI_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeInitInstance) {
     playlist->setCallback(callback);
 }
 
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Playlist, nativeCreate, jobject sessionObj, jstring link) {
+    LOGV("nativeCreate()");
+
+    Session *session = getNativeSession(env, sessionObj);
+
+    const char *linkStr = env->GetStringUTFChars(link, NULL);
+
+    Playlist *instance = Playlist::create(session, linkStr);
+
+    env->ReleaseStringUTFChars(link, linkStr);
+
+    return reinterpret_cast<jint>(instance);
+}
+
 JNI_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeDestroy) {
     LOGV("nativeDestroy()");
 
@@ -127,6 +141,22 @@ JNI_METHOD(jboolean, com_wigwamlabs_spotify_Playlist, nativeIsLoaded) {
 
     Playlist *playlist = getNativePlaylist(env, self);
     return playlist->isLoaded();
+}
+
+JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetLink) {
+    LOGV("nativeGetLink()");
+
+    Playlist *playlist = getNativePlaylist(env, self);
+
+    sp_link *link = playlist->getLink();
+    if (!link) {
+        return 0;
+    }
+    char linkStr[256];
+    sp_link_as_string(link, linkStr, sizeof(linkStr));
+    sp_link_release(link);
+
+    return env->NewStringUTF(linkStr);
 }
 
 JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetName) {

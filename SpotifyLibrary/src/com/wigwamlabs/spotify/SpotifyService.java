@@ -11,6 +11,8 @@ public class SpotifyService extends android.app.Service {
     private static final String ACTION_PAUSE = "pause";
     private static final String ACTION_RESUME = "resume";
     private static final String ACTION_NEXT = "next";
+    public static final String ACTION_PLAY_PLAYLIST = "play_playlist";
+    public static final String EXTRA_LINK = "link";
     private final IBinder mBinder = new LocalBinder();
     private final Handler mHandler = new Handler();
     private Session mSession;
@@ -53,8 +55,8 @@ public class SpotifyService extends android.app.Service {
                 mPlayer.resume();
             } else if (ACTION_NEXT.equals(action)) {
                 mPlayer.next();
-            } else if ("ALARM".equals(action)) {
-                new PendingAction(getSession());
+            } else if (ACTION_PLAY_PLAYLIST.equals(action)) {
+                new PendingAction(getSession(), intent.getStringExtra(EXTRA_LINK));
             }
         }
 

@@ -3,10 +3,31 @@
 #include "log.h"
 
 #include "Playlist.h"
+#include "Session.h"
 #include "Track.h"
+#include <libspotify/api.h>
 #include <string.h>
 
 namespace wigwamlabs {
+
+Playlist *Playlist::create(Session *session, const char *linkStr) {
+    Playlist *instance = NULL;
+    sp_link *link = sp_link_create_from_string(linkStr);
+    if (!link) {
+        return NULL;
+    }
+
+    sp_playlist *playlist = sp_playlist_create(session->getSession(), link);
+    if (playlist) {
+        instance = new Playlist(playlist);
+
+        sp_playlist_release(playlist);
+    }
+
+    sp_link_release(link);
+
+    return instance;
+}
 
 Playlist::Playlist(sp_playlist *playlist) :
     mPlaylist(playlist),
@@ -57,6 +78,10 @@ void Playlist::setCallback(PlaylistCallback *callback) {
 
 bool Playlist::isLoaded() const {
     return sp_playlist_is_loaded(mPlaylist);
+}
+
+sp_link *Playlist::getLink() const {
+    return sp_link_create_from_playlist(mPlaylist);
 }
 
 const char *Playlist::getName() {
