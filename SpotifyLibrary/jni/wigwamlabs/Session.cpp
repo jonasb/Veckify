@@ -1,6 +1,11 @@
 #define LOG_TAG "Session"
 #define LOG_NDEBUG 0
 #include "log.h"
+#if 0
+#define LOG_RUN_LOOP(...) LOGV(__VA_ARGS__)
+#else
+#define LOG_RUN_LOOP(...) ((void)0)
+#endif
 
 #include "Session.h"
 #include "PlaylistContainer.h"
@@ -147,7 +152,7 @@ void *Session::mainThreadLoop() {
         pthread_mutex_unlock(&mMainNotifyMutex);
 
         do {
-            LOGV("Calling sp_session_process_events");
+            LOG_RUN_LOOP("Calling sp_session_process_events");
             sp_session_process_events(mSession, &nextTimeoutMs);
         } while (nextTimeoutMs == 0);
 
@@ -264,7 +269,7 @@ void Session::onMessageToUser(sp_session *session, const char *message) {
 }
 
 void Session::onNotifyMainThread(sp_session *session) {
-    LOGV(__func__);
+    LOG_RUN_LOOP(__func__);
     Session *self = getSelf(session);
 
     if (self->mMainThreadRunning) {

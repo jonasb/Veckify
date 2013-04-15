@@ -1,6 +1,11 @@
 #define LOG_TAG "Player"
 #define LOG_NDEBUG 0
 #include "log.h"
+#if 0
+#define LOG_BUFFERS(...) LOGV(__VA_ARGS__)
+#else
+#define LOG_BUFFERS(...) ((void)0)
+#endif
 
 #include "Player.h"
 #include "Track.h"
@@ -309,7 +314,7 @@ int Player::onMusicDelivery(const sp_audioformat *format, const void *frames, in
         memcpy(reinterpret_cast<int8_t *>(buffer.buffer) + buffer.size, frames, bytesConsumed);
         buffer.size += bytesConsumed;
         bool bufferFull = (buffer.size + bytesAvailable > BUFFER_SIZE); // can't fit another call with the same amount
-        LOGV("Fill buffer %d with %d bytes %s", mProduceBuffer, bytesConsumed, (bufferFull ? "-> enqueue" : ""));
+        LOG_BUFFERS("Fill buffer %d with %d bytes %s", mProduceBuffer, bytesConsumed, (bufferFull ? "-> enqueue" : ""));
 
         // enqueue
         if (bufferFull) {
@@ -334,7 +339,7 @@ void Player::bqPlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) {
     pthread_mutex_lock(&self->mBufferMutex);
 
     // mark buffer as consumed
-    LOGV("Buffer %d has been consumed", self->mConsumeBuffer);
+    LOG_BUFFERS("Buffer %d has been consumed", self->mConsumeBuffer);
     Buffer &consumedBuffer = self->mBuffers[self->mConsumeBuffer];
     const int consumedBytes = consumedBuffer.size;
     consumedBuffer.size = 0;
