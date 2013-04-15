@@ -37,7 +37,7 @@ else
   FLAGS="--sort=yes"
 fi
 ctag_dirs \
-  jni/wigwamlabs \
+  SpotifyLibrary/jni/wigwamlabs \
   vendor/spotify/include \
 #
 ctag_limited_dirs \
