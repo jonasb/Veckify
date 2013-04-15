@@ -57,6 +57,7 @@ class PlayerNotification implements Player.Callback {
             builder.addAction(R.drawable.ic_notification_action_next, mService.getString(R.string.notification_action_next), mNextIntent);
             break;
         case Player.STATE_PAUSED_USER:
+        case Player.STATE_PAUSED_AUDIOFOCUS:
             builder.addAction(R.drawable.ic_notification_action_resume, mService.getString(R.string.notification_action_resume), mResumeIntent);
             builder.addAction(R.drawable.ic_notification_action_next, mService.getString(R.string.notification_action_next), mNextIntent);
             break;
@@ -82,6 +83,7 @@ class PlayerNotification implements Player.Callback {
             break;
         case Player.STATE_STARTED:
         case Player.STATE_PAUSED_USER:
+        case Player.STATE_PAUSED_AUDIOFOCUS:
         case Player.STATE_STOPPED:
             setForeground(false);
             break;

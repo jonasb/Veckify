@@ -222,7 +222,12 @@ void Player::play(sp_track *track, bool playNext) {
     setTrackProgressMs(0);
 }
 
-void Player::pause() {
+void Player::pause(PlayerState reason) {
+    if (reason != STATE_PAUSED_USER && reason != STATE_PAUSED_AUDIOFOCUS) {
+        LOGE("Invalid pause reason: %d", reason);
+        reason = STATE_PAUSED_USER;
+    }
+
     switch (mState) {
     case STATE_STARTED:
     case STATE_STOPPED:
@@ -230,10 +235,14 @@ void Player::pause() {
         break;
     case STATE_PLAYING:
         sp_session_player_play(mSession, false);
-        setState(STATE_PAUSED_USER);
+        setState(reason);
         break;
     case STATE_PAUSED_USER:
-        // already paused, do nothing
+    case STATE_PAUSED_AUDIOFOCUS:
+        // already paused, do nothing except for perhaps changing pause reason
+        if (reason < mState) {
+            setState(reason);
+        }
         break;
     }
 }
@@ -248,6 +257,7 @@ void Player::resume() {
         // already playing, do nothing
         break;
     case STATE_PAUSED_USER:
+    case STATE_PAUSED_AUDIOFOCUS:
         sp_session_player_play(mSession, true);
         setState(STATE_PLAYING);
         break;

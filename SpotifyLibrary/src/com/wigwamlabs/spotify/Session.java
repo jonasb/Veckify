@@ -16,6 +16,7 @@ public class Session extends NativeItem {
     public static final int CONNECTION_STATE_UNDEFINED = 3;
     public static final int CONNECTION_STATE_OFFLINE = 4;
     private static final Handler mHandler = new Handler();
+    private final Context mContext;
     private final Preferences mPreferences;
     private int mState;
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
@@ -23,6 +24,7 @@ public class Session extends NativeItem {
 
     public Session(Context context, String settingsPath, String cachePath, String deviceId) {
         super(0);
+        mContext = context;
         if (settingsPath == null) {
             settingsPath = context.getFilesDir().getAbsolutePath();
         }
@@ -110,7 +112,7 @@ public class Session extends NativeItem {
     public Player getPlayer() {
         if (mPlayer == null) {
             final int handle = nativeGetPlayer();
-            mPlayer = new Player(handle);
+            mPlayer = new Player(mContext, handle);
         }
         return mPlayer;
     }

@@ -10,4 +10,10 @@ final class Debug {
             Log.v(TAG, msg);
         }
     }
+
+    public static void logAudioFocus(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, msg);
+        }
+    }
 }

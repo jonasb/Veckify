@@ -92,12 +92,12 @@ JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativePlay, jobject trackHa
     player->play(track);
 }
 
-JNI_METHOD(void, com_wigwamlabs_spotify_Player, nativePause) {
-    LOGV("nativePause()");
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativePause, jint reasonState) {
+    LOGV("nativePause(%d)", reasonState);
 
     Player *player = getNativePlayer(env, self);
 
-    player->pause();
+    player->pause((PlayerState) reasonState);
 }
 
 JNI_METHOD(void, com_wigwamlabs_spotify_Player, nativeResume) {

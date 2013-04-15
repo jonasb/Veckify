@@ -14,6 +14,7 @@ enum PlayerState {
     STATE_STARTED,
     STATE_PLAYING,
     STATE_PAUSED_USER,
+    STATE_PAUSED_AUDIOFOCUS,
     STATE_STOPPED,
 };
 
@@ -44,7 +45,7 @@ public:
 
     PlayerState getState() const;
     void play(Track *track);
-    void pause();
+    void pause(PlayerState reason);
     void resume();
     void seek(int progressMs);
     void setNextTrack(Track *track);
