@@ -10,6 +10,7 @@ import android.os.IBinder;
 public class SpotifyService extends android.app.Service {
     static final String ACTION_NEXT = "next";
     static final String ACTION_PAUSE = "pause";
+    public static final String ACTION_PAUSE_NOISY = "pause_noisy";
     public static final String ACTION_PLAY_PLAYLIST = "play_playlist";
     static final String ACTION_RESUME = "resume";
     static final String ACTION_TOGGLE_PAUSE = "toggle_pause";
@@ -52,6 +53,8 @@ public class SpotifyService extends android.app.Service {
             final String action = intent.getAction();
             if (ACTION_PAUSE.equals(action)) {
                 mPlayer.pause();
+            } else if (ACTION_PAUSE_NOISY.equals(action)) {
+                mPlayer.pauseNoisy();
             } else if (ACTION_RESUME.equals(action)) {
                 mPlayer.resume();
             } else if (ACTION_TOGGLE_PAUSE.equals(action)) {

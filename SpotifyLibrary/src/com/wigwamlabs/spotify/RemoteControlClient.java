@@ -39,6 +39,7 @@ class RemoteControlClient extends android.media.RemoteControlClient {
             break;
         case Player.STATE_PAUSED_USER:
         case Player.STATE_PAUSED_AUDIOFOCUS:
+        case Player.STATE_PAUSED_NOISY:
             playbackState = RemoteControlClient.PLAYSTATE_PAUSED;
             break;
         default:

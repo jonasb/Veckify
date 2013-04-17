@@ -18,7 +18,8 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     public static final int STATE_PLAYING = 1;
     public static final int STATE_PAUSED_USER = 2;
     public static final int STATE_PAUSED_AUDIOFOCUS = 3;
-    public static final int STATE_STOPPED = 4;
+    public static final int STATE_PAUSED_NOISY = 4;
+    public static final int STATE_STOPPED = 5;
     private final Handler mHandler = new Handler();
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private final Context mContext;
@@ -84,7 +85,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                 for (Callback callback : mCallbacks) {
                     callback.onStateChanged(state);
                 }
-                if (state != STATE_PLAYING && state != STATE_PAUSED_AUDIOFOCUS && state != STATE_PAUSED_USER) {
+                if (state != STATE_PLAYING && state != STATE_PAUSED_AUDIOFOCUS && state != STATE_PAUSED_USER && state != STATE_PAUSED_NOISY) {
                     abandonAudioFocus();
                 }
                 if (mRemoteControlClient != null) {
@@ -161,6 +162,10 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
         nativePause(STATE_PAUSED_USER);
     }
 
+    void pauseNoisy() {
+        nativePause(STATE_PAUSED_NOISY);
+    }
+
     public void resume() {
         if (requestAudioFocus()) {
             nativeResume();
@@ -174,6 +179,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
             break;
         case STATE_PAUSED_USER:
         case STATE_PAUSED_AUDIOFOCUS:
+        case STATE_PAUSED_NOISY:
             resume();
             break;
         case STATE_STARTED:

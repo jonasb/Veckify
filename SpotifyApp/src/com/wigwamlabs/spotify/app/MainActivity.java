@@ -220,6 +220,7 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
             break;
         case Player.STATE_PAUSED_USER:
         case Player.STATE_PAUSED_AUDIOFOCUS:
+        case Player.STATE_PAUSED_NOISY:
             mPauseButton.setVisibility(View.GONE);
             mResumeButton.setVisibility(View.VISIBLE);
             mNextButton.setVisibility(View.VISIBLE);

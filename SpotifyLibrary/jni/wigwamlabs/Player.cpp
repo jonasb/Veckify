@@ -223,7 +223,7 @@ void Player::play(sp_track *track, bool playNext) {
 }
 
 void Player::pause(PlayerState reason) {
-    if (reason != STATE_PAUSED_USER && reason != STATE_PAUSED_AUDIOFOCUS) {
+    if (reason != STATE_PAUSED_USER && reason != STATE_PAUSED_AUDIOFOCUS && reason != STATE_PAUSED_NOISY) {
         LOGE("Invalid pause reason: %d", reason);
         reason = STATE_PAUSED_USER;
     }
@@ -239,6 +239,7 @@ void Player::pause(PlayerState reason) {
         break;
     case STATE_PAUSED_USER:
     case STATE_PAUSED_AUDIOFOCUS:
+    case STATE_PAUSED_NOISY:
         // already paused, do nothing except for perhaps changing pause reason
         if (reason < mState) {
             setState(reason);
@@ -258,6 +259,7 @@ void Player::resume() {
         break;
     case STATE_PAUSED_USER:
     case STATE_PAUSED_AUDIOFOCUS:
+    case STATE_PAUSED_NOISY:
         sp_session_player_play(mSession, true);
         setState(STATE_PLAYING);
         break;
