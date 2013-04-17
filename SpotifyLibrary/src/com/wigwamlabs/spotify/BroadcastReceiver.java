@@ -23,6 +23,7 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
             switch (keyEvent.getKeyCode()) {
             case KeyEvent.KEYCODE_HEADSETHOOK:
                 Debug.logMediaButton("headset hook");
+                sendActionToService(context, SpotifyService.ACTION_TOGGLE_PAUSE);
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
                 Debug.logMediaButton("next");
@@ -45,6 +46,9 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                 break;
             case KeyEvent.KEYCODE_MEDIA_STOP:
                 Debug.logMediaButton("stop");
+                break;
+            default:
+                Debug.logMediaButton("unknown: " + keyEvent);
                 break;
             }
         }
