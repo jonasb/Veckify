@@ -14,6 +14,7 @@ jfieldID sPlayerHandleField = 0;
 jmethodID sPlayerOnStateChangedMethod = 0;
 jmethodID sPlayerOnTrackProgressMethod = 0;
 jmethodID sPlayerOnCurrentTrackUpdatedMethod = 0;
+jmethodID sPlayerOnPlayTokenLostMethod = 0;
 
 class PlayerCallbackJNI : public PlayerCallback {
 public:
@@ -40,6 +41,11 @@ public:
         LOGV("%s %d", __func__, playNext);
         mProvider->getEnv()->CallVoidMethod(mPlayer, sPlayerOnCurrentTrackUpdatedMethod, playNext);
     }
+
+    void onPlayTokenLost() {
+        LOGV(__func__);
+        mProvider->getEnv()->CallVoidMethod(mPlayer, sPlayerOnPlayTokenLostMethod);
+    }
 private:
     JNIEnvProvider *mProvider;
     jobject mPlayer;
@@ -64,6 +70,9 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Player, nativeInitClass) {
     }
     if (sPlayerOnCurrentTrackUpdatedMethod == 0) {
         sPlayerOnCurrentTrackUpdatedMethod = env->GetMethodID(klass, "onCurrentTrackUpdated", "(Z)V");
+    }
+    if (sPlayerOnPlayTokenLostMethod == 0) {
+        sPlayerOnPlayTokenLostMethod = env->GetMethodID(klass, "onPlayTokenLost", "()V");
     }
 }
 

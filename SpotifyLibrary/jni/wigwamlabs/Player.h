@@ -24,6 +24,7 @@ public:
     virtual void onStateChanged(PlayerState state) = 0;
     virtual void onTrackProgress(int secondsPlayed, int secondsDuration) = 0;
     virtual void onCurrentTrackUpdated(bool playNext) = 0;
+    virtual void onPlayTokenLost() = 0;
 };
 
 static const int SAMPLES_PER_SECOND = 44100;
@@ -43,10 +44,11 @@ public:
     void setCallback(PlayerCallback *callback);
 
     int onMusicDelivery(const sp_audioformat *format, const void *frames, int numFrames);
+    void onPlayTokenLost();
 
     PlayerState getState() const;
     void play(Track *track);
-    void pause(PlayerState reason);
+    bool pause(PlayerState reason);
     void resume();
     void seek(int progressMs);
     void setNextTrack(Track *track);

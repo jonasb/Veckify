@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.widget.Toast;
 
 import proguard.annotation.Keep;
 
@@ -130,6 +131,16 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                         mRemoteControlClient.updateMediaData(currentTrack);
                     }
                 }
+            }
+        });
+    }
+
+    @Keep
+    private void onPlayTokenLost() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mContext, R.string.toast_play_token_lost, Toast.LENGTH_SHORT).show();
             }
         });
     }

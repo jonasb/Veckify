@@ -39,6 +39,7 @@ private:
     static void onMessageToUser(sp_session *session, const char *message);
     static void onNotifyMainThread(sp_session *session);
     static int onMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int numFrames);
+    static void onPlayTokenLost(sp_session *session);
     static void onLogMessage(sp_session *session, const char *data);
     static void onEndOfTrack(sp_session *session);
     static void onCredentialsBlobUpdated(sp_session *session, const char *blob);

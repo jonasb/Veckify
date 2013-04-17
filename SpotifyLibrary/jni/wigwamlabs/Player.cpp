@@ -222,7 +222,7 @@ void Player::play(sp_track *track, bool playNext) {
     setTrackProgressMs(0);
 }
 
-void Player::pause(PlayerState reason) {
+bool Player::pause(PlayerState reason) {
     if (reason != STATE_PAUSED_USER && reason != STATE_PAUSED_AUDIOFOCUS && reason != STATE_PAUSED_NOISY) {
         LOGE("Invalid pause reason: %d", reason);
         reason = STATE_PAUSED_USER;
@@ -232,11 +232,11 @@ void Player::pause(PlayerState reason) {
     case STATE_STARTED:
     case STATE_STOPPED:
         //TODO
-        break;
+        return false;
     case STATE_PLAYING:
         sp_session_player_play(mSession, false);
         setState(reason);
-        break;
+        return true;
     case STATE_PAUSED_USER:
     case STATE_PAUSED_AUDIOFOCUS:
     case STATE_PAUSED_NOISY:
@@ -244,7 +244,7 @@ void Player::pause(PlayerState reason) {
         if (reason < mState) {
             setState(reason);
         }
-        break;
+        return false;
     }
 }
 
@@ -374,6 +374,13 @@ void Player::bqPlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) {
     // update progress
     self->mTrackProgressBytes += consumedBytes;
     self->setTrackProgressMs(self->mTrackProgressBytes / BYTES_PER_MS);
+}
+
+void Player::onPlayTokenLost() {
+    LOGV(__func__);
+    if (pause(STATE_PAUSED_USER) && mCallback) {
+        mCallback->onPlayTokenLost();
+    }
 }
 
 void Player::setTrackProgressMs(int progressMs) {

@@ -42,6 +42,7 @@ Session *Session::create(SessionCallback *callback, const char *settingsPath, co
     callbacks.message_to_user = onMessageToUser;
     callbacks.notify_main_thread = onNotifyMainThread;
     callbacks.music_delivery = onMusicDelivery;
+    callbacks.play_token_lost = onPlayTokenLost;
     callbacks.log_message = onLogMessage;
     callbacks.end_of_track = onEndOfTrack;
     callbacks.credentials_blob_updated = onCredentialsBlobUpdated;
@@ -282,6 +283,11 @@ void Session::onNotifyMainThread(sp_session *session) {
 
 int Session::onMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int numFrames) {
     return getSelf(session)->mPlayer->onMusicDelivery(format, frames, numFrames);
+}
+
+void Session::onPlayTokenLost(sp_session *session) {
+    LOGV(__func__);
+    return getSelf(session)->mPlayer->onPlayTokenLost();
 }
 
 void Session::onLogMessage(sp_session *session, const char *data) {
