@@ -1,5 +1,6 @@
 package com.wigwamlabs.spotify;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Handler;
@@ -26,6 +27,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     private Queue mQueue;
     private int mTrackProgressSec = 0;
     private int mTrackDurationSec = 0;
+    private RemoteControlClient mRemoteControlClient;
 
     public Player(Context context, int handle) {
         super(handle);
@@ -82,8 +84,11 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                 for (Callback callback : mCallbacks) {
                     callback.onStateChanged(state);
                 }
-                if (state != STATE_PLAYING && state != STATE_PAUSED_AUDIOFOCUS) {
+                if (state != STATE_PLAYING && state != STATE_PAUSED_AUDIOFOCUS && state != STATE_PAUSED_USER) {
                     abandonAudioFocus();
+                }
+                if (mRemoteControlClient != null) {
+                    mRemoteControlClient.onStateChanged(state);
                 }
             }
         });
@@ -118,6 +123,10 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                     final Track currentTrack = mQueue.getTrack(0);
                     for (Callback callback : mCallbacks) {
                         callback.onCurrentTrackUpdated(currentTrack);
+                    }
+
+                    if (mRemoteControlClient != null) {
+                        mRemoteControlClient.updateMediaData(currentTrack);
                     }
                 }
             }
@@ -158,6 +167,21 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
         }
     }
 
+    public void togglePause() {
+        switch (getState()) {
+        case STATE_PLAYING:
+            pause();
+            break;
+        case STATE_PAUSED_USER:
+        case STATE_PAUSED_AUDIOFOCUS:
+            resume();
+            break;
+        case STATE_STARTED:
+        case STATE_STOPPED:
+            break;
+        }
+    }
+
     public void next() {
         if (requestAudioFocus()) {
             nativeNext();
@@ -170,10 +194,29 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
             mHasAudioFocus = (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
             Debug.logAudioFocus("Audio focus request: " + (mHasAudioFocus ? "succeeded" : "failed"));
         }
+
+        if (mHasAudioFocus) {
+            final ComponentName receiver = new ComponentName(mContext, BroadcastReceiver.class);
+            // if the receiver is already registered, it will be moved to the top of the stack, so it's ok to call it multiple times
+            mAudioManager.registerMediaButtonEventReceiver(receiver);
+
+            if (mRemoteControlClient == null) {
+                mRemoteControlClient = RemoteControlClient.create(mContext, receiver);
+            }
+            mAudioManager.registerRemoteControlClient(mRemoteControlClient);
+        }
+
         return mHasAudioFocus;
     }
 
     private void abandonAudioFocus() {
+        final ComponentName receiver = new ComponentName(mContext, BroadcastReceiver.class);
+        if (mRemoteControlClient != null) {
+            mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
+            mRemoteControlClient = null;
+        }
+        mAudioManager.unregisterMediaButtonEventReceiver(receiver);
+
         if (mHasAudioFocus) {
             Debug.logAudioFocus("Abandoning audio focus");
             mHasAudioFocus = false;

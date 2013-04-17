@@ -16,4 +16,10 @@ final class Debug {
             Log.v(TAG, msg);
         }
     }
+
+    public static void logMediaButton(String button) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Received media button: " + button);
+        }
+    }
 }

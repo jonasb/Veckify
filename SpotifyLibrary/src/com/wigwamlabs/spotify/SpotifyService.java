@@ -8,10 +8,11 @@ import android.os.Handler;
 import android.os.IBinder;
 
 public class SpotifyService extends android.app.Service {
-    private static final String ACTION_PAUSE = "pause";
-    private static final String ACTION_RESUME = "resume";
-    private static final String ACTION_NEXT = "next";
+    static final String ACTION_NEXT = "next";
+    static final String ACTION_PAUSE = "pause";
     public static final String ACTION_PLAY_PLAYLIST = "play_playlist";
+    static final String ACTION_RESUME = "resume";
+    static final String ACTION_TOGGLE_PAUSE = "toggle_pause";
     public static final String EXTRA_LINK = "link";
     private final IBinder mBinder = new LocalBinder();
     private final Handler mHandler = new Handler();
@@ -53,6 +54,8 @@ public class SpotifyService extends android.app.Service {
                 mPlayer.pause();
             } else if (ACTION_RESUME.equals(action)) {
                 mPlayer.resume();
+            } else if (ACTION_TOGGLE_PAUSE.equals(action)) {
+                mPlayer.togglePause();
             } else if (ACTION_NEXT.equals(action)) {
                 mPlayer.next();
             } else if (ACTION_PLAY_PLAYLIST.equals(action)) {

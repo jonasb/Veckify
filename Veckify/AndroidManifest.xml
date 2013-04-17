@@ -35,5 +35,10 @@
         <service
             android:name="com.wigwamlabs.spotify.SpotifyService"
             android:exported="false" />
+        <receiver android:name="com.wigwamlabs.spotify.BroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
