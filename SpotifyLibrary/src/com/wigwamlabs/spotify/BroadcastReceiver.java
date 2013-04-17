@@ -46,6 +46,7 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                 break;
             case KeyEvent.KEYCODE_MEDIA_STOP:
                 Debug.logMediaButton("stop");
+                sendActionToService(context, SpotifyService.ACTION_PAUSE); //TODO add support for stop
                 break;
             default:
                 Debug.logMediaButton("unknown: " + keyEvent);
