@@ -4,10 +4,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <TimePicker
-        android:id="@+id/timePicker"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/alarmTime"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10:00" />
 
     <Spinner
         android:id="@+id/playlistSpinner"

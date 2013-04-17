@@ -1,10 +1,9 @@
 package com.wigwamlabs.veckify;
 
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.Spinner;
-import android.widget.TimePicker;
+import android.widget.TextView;
 
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
@@ -14,14 +13,14 @@ import com.wigwamlabs.spotify.ui.SpotifyActivity;
 import com.wigwamlabs.veckify.alarms.Alarm;
 import com.wigwamlabs.veckify.alarms.AlarmCollection;
 
-import java.util.Calendar;
-
 public class MainActivity extends SpotifyActivity {
     private AlarmCollection mAlarmCollection;
     private Alarm mAlarm;
-    private TimePicker mTimePicker;
     private PlaylistContainer mPlaylistContainer;
+    private TextView mAlarmTime;
     private Spinner mPlaylistSpinner;
+    private int mAlarmHour;
+    private int mAlarmMinute;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +28,8 @@ public class MainActivity extends SpotifyActivity {
 
         mAlarmCollection = new AlarmCollection(this);
         mAlarm = mAlarmCollection.getAlarm();
+        mAlarmHour = mAlarm.getHour();
+        mAlarmMinute = mAlarm.getMinute();
 
         initUi();
 
@@ -39,17 +40,14 @@ public class MainActivity extends SpotifyActivity {
         setContentView(R.layout.activity_main);
 
         // set up time picker
-        mTimePicker = (TimePicker) findViewById(R.id.timePicker);
-        final String twelveOrTwentyFour = Settings.System.getString(getContentResolver(), Settings.System.TIME_12_24);
-        mTimePicker.setIs24HourView(Boolean.valueOf("24".equals(twelveOrTwentyFour)));
-        if (mAlarm != null) {
-            mTimePicker.setCurrentHour(Integer.valueOf(mAlarm.getHour()));
-            mTimePicker.setCurrentMinute(Integer.valueOf(mAlarm.getMinute()));
-        } else {
-            final Calendar calendar = Calendar.getInstance();
-            mTimePicker.setCurrentHour(Integer.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
-            mTimePicker.setCurrentMinute(Integer.valueOf(calendar.get(Calendar.MINUTE)));
-        }
+        mAlarmTime = (TextView) findViewById(R.id.alarmTime);
+        mAlarmTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onEditTime();
+            }
+        });
+        onAlarmTimeSet(mAlarmHour, mAlarmMinute);
         // set up spinner
         mPlaylistSpinner = (Spinner) findViewById(R.id.playlistSpinner);
         //
@@ -67,6 +65,27 @@ public class MainActivity extends SpotifyActivity {
         });
     }
 
+    private void onEditTime() {
+        final TimePickerDialogFragment fragment = new TimePickerDialogFragment();
+        fragment.show(getFragmentManager(), "timepicker");
+    }
+
+    public int getAlarmHour() {
+        return mAlarmHour;
+    }
+
+    public int getAlarmMinute() {
+        return mAlarmMinute;
+    }
+
+    public void onAlarmTimeSet(int hour, int minute) {
+        mAlarmHour = hour;
+        mAlarmMinute = minute;
+
+        //TODO am/pm
+        mAlarmTime.setText(String.format("%d:%02d", hour, minute));
+    }
+
     private Playlist getSelectedPlaylist() {
         final Object item = mPlaylistSpinner.getSelectedItem();
         if (item != null && item instanceof Playlist) {
@@ -76,7 +95,7 @@ public class MainActivity extends SpotifyActivity {
     }
 
     private void onSetAlarm() {
-        mAlarm.setTime(mTimePicker.getCurrentHour().intValue(), mTimePicker.getCurrentMinute().intValue());
+        mAlarm.setTime(mAlarmHour, mAlarmMinute);
         final Playlist playlist = getSelectedPlaylist();
         mAlarm.setPlaylistLink(playlist == null ? null : playlist.getLink());
         mAlarmCollection.onAlarmUpdated(mAlarm);
