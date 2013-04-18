@@ -4,10 +4,19 @@ import java.util.Calendar;
 
 public class Alarm {
     private static final long MINIMUM_TIME_TO_ALARM_MS = 60 * 1000;
+    private boolean mEnabled;
     private int mHour;
     private int mMinute;
     private String mPlaylistName;
     private String mPlaylistLink;
+
+    public void setEnabled(boolean enabled) {
+        mEnabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return mEnabled;
+    }
 
     public int getHour() {
         return mHour;

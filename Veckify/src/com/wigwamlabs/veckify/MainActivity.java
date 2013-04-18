@@ -2,6 +2,8 @@ package com.wigwamlabs.veckify;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.wigwamlabs.spotify.Playlist;
@@ -17,6 +19,7 @@ public class MainActivity extends SpotifyActivity {
     private PlaylistContainer mPlaylistContainer;
     private TextView mAlarmTime;
     private TextView mPlaylistName;
+    private Switch mAlarmEnabled;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,14 @@ public class MainActivity extends SpotifyActivity {
                 onEditTime();
             }
         });
+        // set up enable switch
+        mAlarmEnabled = (Switch) findViewById(R.id.alarmEnabled);
+        mAlarmEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                onAlarmEnabledChanged(isChecked);
+            }
+        });
         // set up playlist picker
         mPlaylistName = (TextView) findViewById(R.id.playlistName);
         mPlaylistName.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +71,7 @@ public class MainActivity extends SpotifyActivity {
     }
 
     private void updateUi() {
+        mAlarmEnabled.setChecked(mAlarm.isEnabled());
         //TODO am/pm
         mAlarmTime.setText(String.format("%d:%02d", mAlarm.getHour(), mAlarm.getMinute()));
 
@@ -76,9 +88,15 @@ public class MainActivity extends SpotifyActivity {
     }
 
     public void onAlarmTimeSet(int hour, int minute) {
+        mAlarm.setEnabled(true);
         mAlarm.setTime(hour, minute);
         mAlarmCollection.onAlarmUpdated(mAlarm, true);
         updateUi();
+    }
+
+    private void onAlarmEnabledChanged(boolean enabled) {
+        mAlarm.setEnabled(enabled);
+        mAlarmCollection.onAlarmUpdated(mAlarm, true);
     }
 
     private void onPickPlaylist() {
@@ -88,6 +106,7 @@ public class MainActivity extends SpotifyActivity {
 
     public void onPlaylistPicked(Playlist playlist) {
         if (playlist != null) {
+            mAlarm.setEnabled(true);
             mAlarm.setPlaylistLink(playlist.getLink());
             mAlarm.setPlaylistName(playlist.getName());
         } else {
@@ -100,6 +119,7 @@ public class MainActivity extends SpotifyActivity {
 
     private void runAlarmNow() {
         final Alarm alarm = new Alarm();
+        alarm.setEnabled(true);
         alarm.setPlaylistLink(mAlarm.getPlaylistLink());
         mAlarmCollection.runAlarmNow(alarm);
     }

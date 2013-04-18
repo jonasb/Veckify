@@ -14,6 +14,7 @@ import com.wigwamlabs.veckify.Debug;
 import java.util.Calendar;
 
 public class AlarmCollection {
+    private static final String ALARM_ENABLED = "alarm_enabled";
     private static final String ALARM_HOUR = "alarm_hour";
     private static final String ALARM_MINUTE = "alarm_minute";
     private static final String ALARM_PLAYLIST_NAME = "alarm_playlist_name";
@@ -29,6 +30,7 @@ public class AlarmCollection {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         mAlarm = new Alarm();
+        mAlarm.setEnabled(mPreferences.getBoolean(ALARM_ENABLED, false));
         mAlarm.setTime(mPreferences.getInt(ALARM_HOUR, 9), mPreferences.getInt(ALARM_MINUTE, 0));
         mAlarm.setPlaylistName(mPreferences.getString(ALARM_PLAYLIST_NAME, null));
         mAlarm.setPlaylistLink(mPreferences.getString(ALARM_PLAYLIST_LINK, null));
@@ -41,16 +43,20 @@ public class AlarmCollection {
     }
 
     private Pair<Alarm, Calendar> getNextAlarm() {
-        if (mAlarmRunNow != null) {
+        if (mAlarmRunNow != null && mAlarmRunNow.isEnabled()) {
             final Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(System.currentTimeMillis());
             return Pair.create(mAlarmRunNow, cal);
         }
-        return Pair.create(mAlarm, mAlarm.getNextAlarmTime());
+        if (mAlarm.isEnabled()) {
+            return Pair.create(mAlarm, mAlarm.getNextAlarmTime());
+        }
+        return null;
     }
 
     public void onAlarmUpdated(Alarm alarm, boolean reschedule) {
         mPreferences.edit()
+                .putBoolean(ALARM_ENABLED, alarm.isEnabled())
                 .putInt(ALARM_HOUR, alarm.getHour())
                 .putInt(ALARM_MINUTE, alarm.getMinute())
                 .putString(ALARM_PLAYLIST_NAME, alarm.getPlaylistName())
