@@ -16,6 +16,7 @@ import java.util.Calendar;
 public class AlarmCollection {
     private static final String ALARM_HOUR = "alarm_hour";
     private static final String ALARM_MINUTE = "alarm_minute";
+    private static final String ALARM_PLAYLIST_NAME = "alarm_playlist_name";
     private static final String ALARM_PLAYLIST_LINK = "alarm_playlist_link";
     private final SharedPreferences mPreferences;
     private final Context mContext;
@@ -29,6 +30,7 @@ public class AlarmCollection {
 
         mAlarm = new Alarm();
         mAlarm.setTime(mPreferences.getInt(ALARM_HOUR, 9), mPreferences.getInt(ALARM_MINUTE, 0));
+        mAlarm.setPlaylistName(mPreferences.getString(ALARM_PLAYLIST_NAME, null));
         mAlarm.setPlaylistLink(mPreferences.getString(ALARM_PLAYLIST_LINK, null));
 
         mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -47,14 +49,17 @@ public class AlarmCollection {
         return Pair.create(mAlarm, mAlarm.getNextAlarmTime());
     }
 
-    public void onAlarmUpdated(Alarm alarm) {
+    public void onAlarmUpdated(Alarm alarm, boolean reschedule) {
         mPreferences.edit()
                 .putInt(ALARM_HOUR, alarm.getHour())
                 .putInt(ALARM_MINUTE, alarm.getMinute())
+                .putString(ALARM_PLAYLIST_NAME, alarm.getPlaylistName())
                 .putString(ALARM_PLAYLIST_LINK, alarm.getPlaylistLink())
                 .apply();
 
-        rescheduleAlarm();
+        if (reschedule) {
+            rescheduleAlarm();
+        }
     }
 
     public void runAlarmNow(Alarm alarm) {

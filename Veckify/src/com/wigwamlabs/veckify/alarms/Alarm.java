@@ -6,6 +6,7 @@ public class Alarm {
     private static final long MINIMUM_TIME_TO_ALARM_MS = 60 * 1000;
     private int mHour;
     private int mMinute;
+    private String mPlaylistName;
     private String mPlaylistLink;
 
     public int getHour() {
@@ -19,6 +20,14 @@ public class Alarm {
     public void setTime(int hour, int minute) {
         mHour = hour;
         mMinute = minute;
+    }
+
+    public void setPlaylistName(String name) {
+        mPlaylistName = name;
+    }
+
+    public String getPlaylistName() {
+        return mPlaylistName;
     }
 
     public void setPlaylistLink(String link) {

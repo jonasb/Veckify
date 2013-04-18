@@ -2,13 +2,11 @@ package com.wigwamlabs.veckify;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
-import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 import com.wigwamlabs.spotify.ui.SpotifyActivity;
 import com.wigwamlabs.veckify.alarms.Alarm;
 import com.wigwamlabs.veckify.alarms.AlarmCollection;
@@ -18,9 +16,7 @@ public class MainActivity extends SpotifyActivity {
     private Alarm mAlarm;
     private PlaylistContainer mPlaylistContainer;
     private TextView mAlarmTime;
-    private Spinner mPlaylistSpinner;
-    private int mAlarmHour;
-    private int mAlarmMinute;
+    private TextView mPlaylistName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,10 +24,9 @@ public class MainActivity extends SpotifyActivity {
 
         mAlarmCollection = new AlarmCollection(this);
         mAlarm = mAlarmCollection.getAlarm();
-        mAlarmHour = mAlarm.getHour();
-        mAlarmMinute = mAlarm.getMinute();
 
         initUi();
+        updateUi();
 
         bindSpotifyService();
     }
@@ -47,16 +42,15 @@ public class MainActivity extends SpotifyActivity {
                 onEditTime();
             }
         });
-        onAlarmTimeSet(mAlarmHour, mAlarmMinute);
-        // set up spinner
-        mPlaylistSpinner = (Spinner) findViewById(R.id.playlistSpinner);
-        //
-        findViewById(R.id.setAlarmButton).setOnClickListener(new View.OnClickListener() {
+        // set up playlist picker
+        mPlaylistName = (TextView) findViewById(R.id.playlistName);
+        mPlaylistName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSetAlarm();
+                onPickPlaylist();
             }
         });
+        //
         findViewById(R.id.runNowButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,46 +59,48 @@ public class MainActivity extends SpotifyActivity {
         });
     }
 
+    private void updateUi() {
+        //TODO am/pm
+        mAlarmTime.setText(String.format("%d:%02d", mAlarm.getHour(), mAlarm.getMinute()));
+
+        mPlaylistName.setText(mAlarm.getPlaylistName()); //TODO deal with empty
+    }
+
     private void onEditTime() {
         final TimePickerDialogFragment fragment = new TimePickerDialogFragment();
         fragment.show(getFragmentManager(), "timepicker");
     }
 
-    public int getAlarmHour() {
-        return mAlarmHour;
-    }
-
-    public int getAlarmMinute() {
-        return mAlarmMinute;
+    Alarm getAlarm() {
+        return mAlarm;
     }
 
     public void onAlarmTimeSet(int hour, int minute) {
-        mAlarmHour = hour;
-        mAlarmMinute = minute;
-
-        //TODO am/pm
-        mAlarmTime.setText(String.format("%d:%02d", hour, minute));
+        mAlarm.setTime(hour, minute);
+        mAlarmCollection.onAlarmUpdated(mAlarm, true);
+        updateUi();
     }
 
-    private Playlist getSelectedPlaylist() {
-        final Object item = mPlaylistSpinner.getSelectedItem();
-        if (item != null && item instanceof Playlist) {
-            return (Playlist) item;
+    private void onPickPlaylist() {
+        final PlaylistPickerFragment fragment = new PlaylistPickerFragment();
+        fragment.show(getFragmentManager(), "playlist-picker");
+    }
+
+    public void onPlaylistPicked(Playlist playlist) {
+        if (playlist != null) {
+            mAlarm.setPlaylistLink(playlist.getLink());
+            mAlarm.setPlaylistName(playlist.getName());
+        } else {
+            mAlarm.setPlaylistLink(null);
+            mAlarm.setPlaylistName(null);
         }
-        return null;
-    }
-
-    private void onSetAlarm() {
-        mAlarm.setTime(mAlarmHour, mAlarmMinute);
-        final Playlist playlist = getSelectedPlaylist();
-        mAlarm.setPlaylistLink(playlist == null ? null : playlist.getLink());
-        mAlarmCollection.onAlarmUpdated(mAlarm);
+        mAlarmCollection.onAlarmUpdated(mAlarm, false);
+        updateUi();
     }
 
     private void runAlarmNow() {
         final Alarm alarm = new Alarm();
-        final Playlist playlist = getSelectedPlaylist();
-        alarm.setPlaylistLink(playlist == null ? null : playlist.getLink());
+        alarm.setPlaylistLink(mAlarm.getPlaylistLink());
         mAlarmCollection.runAlarmNow(alarm);
     }
 
@@ -124,7 +120,10 @@ public class MainActivity extends SpotifyActivity {
 
         if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
             mPlaylistContainer = getSpotifySession().getPlaylistContainer();
-            mPlaylistSpinner.setAdapter(new PlaylistContainerAdapter(this, mPlaylistContainer));
         }
+    }
+
+    public PlaylistContainer getPlaylistContainer() {
+        return mPlaylistContainer;
     }
 }

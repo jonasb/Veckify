@@ -26,8 +26,11 @@ public class PendingAction implements Session.Callback, Playlist.Callback {
     public void onLoggedIn(int error) {
         mSession.removeCallback(this);
         if (error == SpotifyError.OK) {
-            mPlaylist = new Playlist(mSession, mLink);
-            mPlaylist.setCallback(this, true);
+            mPlaylist = Playlist.create(mSession, mLink);
+            if (mPlaylist != null) {
+                mPlaylist.setCallback(this, true);
+            }
+            //TODO deal with invalid link
         }
     }
 

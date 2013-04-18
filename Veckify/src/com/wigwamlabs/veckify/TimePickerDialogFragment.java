@@ -7,14 +7,18 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
-public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+import com.wigwamlabs.veckify.alarms.Alarm;
+
+class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        MainActivity activity = (MainActivity) getActivity();
+        final MainActivity activity = (MainActivity) getActivity();
+        final Alarm alarm = activity.getAlarm();
 
-        return new TimePickerDialog(getActivity(), this, activity.getAlarmHour(), activity.getAlarmMinute(), DateFormat.is24HourFormat(activity));
+        return new TimePickerDialog(getActivity(), this, alarm.getHour(), alarm.getMinute(), DateFormat.is24HourFormat(activity));
     }
 
+    @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         ((MainActivity) getActivity()).onAlarmTimeSet(hourOfDay, minute);
     }

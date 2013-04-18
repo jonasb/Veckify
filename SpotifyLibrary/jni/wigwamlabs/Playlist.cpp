@@ -14,11 +14,13 @@ Playlist *Playlist::create(Session *session, const char *linkStr) {
     Playlist *instance = NULL;
     sp_link *link = sp_link_create_from_string(linkStr);
     if (!link) {
+        LOGW("%s: Link: '%s' seems to be invalid", __func__, linkStr);
         return NULL;
     }
 
     sp_playlist *playlist = sp_playlist_create(session->getSession(), link);
     if (playlist) {
+        LOGW("%s: failed to get playlist from link: '%s'", __func__, linkStr);
         instance = new Playlist(playlist);
 
         sp_playlist_release(playlist);

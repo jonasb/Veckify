@@ -18,9 +18,12 @@ public class Playlist extends NativeItemCollection<Track> {
         nativeInitInstance();
     }
 
-    public Playlist(Session session, String link) {
-        super(0);
-        setHandle(nativeCreate(session, link));
+    public static Playlist create(Session session, String link) {
+        final int handle = nativeCreate(session, link);
+        if (handle != 0) {
+            return new Playlist(handle);
+        }
+        return null;
     }
 
     private static native void nativeInitClass();
@@ -33,7 +36,7 @@ public class Playlist extends NativeItemCollection<Track> {
 
     private native void nativeInitInstance();
 
-    native int nativeCreate(Session session, String link);
+    native static int nativeCreate(Session session, String link);
 
     @Override
     native void nativeDestroy();

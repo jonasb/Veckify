@@ -100,7 +100,7 @@ JNI_METHOD(void, com_wigwamlabs_spotify_Playlist, nativeInitInstance) {
     playlist->setCallback(callback);
 }
 
-JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Playlist, nativeCreate, jobject sessionObj, jstring link) {
+JNI_STATIC_METHOD_ARGS(jint, com_wigwamlabs_spotify_Playlist, nativeCreate, jobject sessionObj, jstring link) {
     LOGV("nativeCreate()");
 
     Session *session = getNativeSession(env, sessionObj);
