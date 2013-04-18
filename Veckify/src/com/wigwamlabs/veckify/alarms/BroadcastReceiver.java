@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import com.wigwamlabs.spotify.SpotifyService;
 import com.wigwamlabs.veckify.Debug;
+import com.wigwamlabs.veckify.NowPlayingActivity;
 
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     static final String ACTION_ALARM = "com.wigwamlabs.veckify.alarms.BroadcastReceiver.ALARM";
@@ -43,9 +44,16 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
     }
 
     private void startAlarm(Context context, String playlistLink) {
-        final Intent intent = new Intent(context, SpotifyService.class);
-        intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
-        intent.putExtra(SpotifyService.EXTRA_LINK, playlistLink);
-        context.startService(intent);
+        {
+            final Intent intent = new Intent(context, SpotifyService.class);
+            intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
+            intent.putExtra(SpotifyService.EXTRA_LINK, playlistLink);
+            context.startService(intent);
+        }
+        {
+            final Intent intent = new Intent(context, NowPlayingActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
     }
 }
