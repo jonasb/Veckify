@@ -36,7 +36,7 @@ public class Playlist extends NativeItemCollection<Track> {
 
     private native void nativeInitInstance();
 
-    native static int nativeCreate(Session session, String link);
+    static native int nativeCreate(Session session, String link);
 
     @Override
     native void nativeDestroy();

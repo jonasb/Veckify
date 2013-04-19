@@ -20,10 +20,11 @@ Playlist *Playlist::create(Session *session, const char *linkStr) {
 
     sp_playlist *playlist = sp_playlist_create(session->getSession(), link);
     if (playlist) {
-        LOGW("%s: failed to get playlist from link: '%s'", __func__, linkStr);
         instance = new Playlist(playlist);
 
         sp_playlist_release(playlist);
+    } else {
+        LOGW("%s: failed to get playlist from link: '%s'", __func__, linkStr);
     }
 
     sp_link_release(link);

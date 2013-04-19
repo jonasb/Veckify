@@ -29,6 +29,7 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
     private Track mTrack;
     private boolean mAlarmLaunchedWithKeyguard;
     private boolean mAlarmIsDismissed;
+    private Runnable mCheckKeyguardActivation;
     private TextView mTrackArtists;
     private TextView mTrackName;
     private SeekBar mSeekBar;

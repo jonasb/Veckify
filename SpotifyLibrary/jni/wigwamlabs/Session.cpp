@@ -1,5 +1,5 @@
 #define LOG_TAG "Session"
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 #include "log.h"
 #if 0
 #define LOG_RUN_LOOP(...) LOGV(__VA_ARGS__)
