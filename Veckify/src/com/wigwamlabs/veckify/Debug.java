@@ -8,4 +8,10 @@ public final class Debug {
     public static void logAlarmScheduling(String msg) {
         Log.v(TAG, msg);
     }
+
+    public static void logLifecycle(String event) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, event);
+        }
+    }
 }
