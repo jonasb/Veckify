@@ -75,7 +75,12 @@ public class MainActivity extends SpotifyActivity {
         //TODO am/pm
         mAlarmTime.setText(String.format("%d:%02d", mAlarm.getHour(), mAlarm.getMinute()));
 
-        mPlaylistName.setText(mAlarm.getPlaylistName()); //TODO deal with empty
+        final String name = mAlarm.getPlaylistName();
+        if (name == null || name.length() == 0) {
+            mPlaylistName.setText(R.string.noPlaylistSelected);
+        } else {
+            mPlaylistName.setText(name);
+        }
     }
 
     private void onEditTime() {
