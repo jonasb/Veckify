@@ -14,6 +14,8 @@ import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.SpotifyActivity;
 
+import java.util.Calendar;
+
 import static android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
 import static android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
 import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
@@ -30,6 +32,8 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
     private boolean mAlarmLaunchedWithKeyguard;
     private boolean mAlarmIsDismissed;
     private Runnable mCheckKeyguardActivation;
+    private Runnable mUpdateCurrentTimeRunnable;
+    private TextView mCurrentTime;
     private TextView mTrackArtists;
     private TextView mTrackName;
     private SeekBar mSeekBar;
@@ -88,6 +92,15 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
             mHandler.postDelayed(mCheckKeyguardActivation, 5000);
         }
 
+        mUpdateCurrentTimeRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long timeToNextMinuteMs = updateCurrentTime();
+                mHandler.postDelayed(this, timeToNextMinuteMs);
+            }
+        };
+        mHandler.postDelayed(mUpdateCurrentTimeRunnable, updateCurrentTime());
+
         if (mPlayer != null) {
             mPlayer.addCallback(this, true);
         }
@@ -106,6 +119,11 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
         if (mCheckKeyguardActivation != null) {
             mHandler.removeCallbacks(mCheckKeyguardActivation);
             mCheckKeyguardActivation = null;
+        }
+
+        if (mUpdateCurrentTimeRunnable != null) {
+            mHandler.removeCallbacks(mUpdateCurrentTimeRunnable);
+            mUpdateCurrentTimeRunnable = null;
         }
 
         if (mPlayer != null) {
@@ -130,6 +148,8 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
 
     private void initUi() {
         setContentView(R.layout.activity_now_playing);
+
+        mCurrentTime = (TextView) findViewById(R.id.currentTime);
 
         mTrackArtists = (TextView) findViewById(R.id.trackArtists);
         mTrackName = (TextView) findViewById(R.id.trackName);
@@ -171,6 +191,23 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
                 mPlayer.next();
             }
         });
+    }
+
+    private long updateCurrentTime() {
+        final Calendar cal = Calendar.getInstance();
+
+        // calculate current time and time to next minute
+        final int secs = cal.get(Calendar.SECOND);
+        int secsToNextMinute = 60 - secs;
+        if (secsToNextMinute < 2) { // allow for some slack in scheduling
+            cal.add(Calendar.MINUTE, 1);
+            secsToNextMinute += 60;
+        }
+
+        final String time = String.format("%d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+        mCurrentTime.setText(time);
+
+        return secsToNextMinute * 1000;
     }
 
     private boolean isKeyguardActive() {
