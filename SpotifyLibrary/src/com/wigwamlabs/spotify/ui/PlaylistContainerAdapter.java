@@ -2,11 +2,10 @@ package com.wigwamlabs.spotify.ui;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ListAdapter;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.wigwamlabs.spotify.FolderEnd;
@@ -14,14 +13,15 @@ import com.wigwamlabs.spotify.FolderStart;
 import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
+import com.wigwamlabs.spotify.R;
 
-public class PlaylistContainerAdapter implements ListAdapter, SpinnerAdapter, PlaylistContainer.Callback, Playlist.Callback {
-    private final Context mContext;
+public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.Callback, Playlist.Callback {
+    private final LayoutInflater mLayoutInflater;
     private final PlaylistContainer mContainer;
     private DataSetObserver mObserver;
 
     public PlaylistContainerAdapter(Context context, PlaylistContainer container) {
-        mContext = context;
+        mLayoutInflater = LayoutInflater.from(context);
         mContainer = container;
         mContainer.setCallback(this, false);
     }
@@ -72,58 +72,55 @@ public class PlaylistContainerAdapter implements ListAdapter, SpinnerAdapter, Pl
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        TextView view = (TextView) convertView;
-        if (view == null) {
-            view = new TextView(mContext);
-            view.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
         final NativeItem item = getItem(position);
-        if (item instanceof Playlist) {
-            final Playlist playlist = (Playlist) item;
-            view.setText(playlist.getName());
-            playlist.setCallback(this, false);
-        } else if (item instanceof FolderStart) {
-            view.setText(((FolderStart) item).getName());
-        } else if (item instanceof FolderEnd) {
-            view.setText("/>");
-        } else {
-            view.setText("---"); //Placeholder
-        }
-        view.setVisibility(item == null ? View.GONE : View.VISIBLE);
-        return view;
-    }
+        if (item != null) {
+            if (item instanceof Playlist) {
+                final Playlist playlist = (Playlist) item;
 
-    @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        TextView view = (TextView) convertView;
+                TextView view = (TextView) convertView;
+                if (view == null) {
+                    view = (TextView) mLayoutInflater.inflate(R.layout.playlistcontainer_playlist, parent, false);
+                }
+                view.setText(playlist.getName());
+                playlist.setCallback(this, false);
+                return view;
+            } else if (item instanceof FolderStart) {
+                final FolderStart folderStart = (FolderStart) item;
+                TextView view = (TextView) convertView;
+                if (view == null) {
+                    view = (TextView) mLayoutInflater.inflate(R.layout.playlistcontainer_folderstart, parent, false);
+                }
+                view.setText(folderStart.getName());
+                return view;
+            }
+        }
+        // null, FolderEnd or Placeholder
+        View view = convertView;
         if (view == null) {
-            view = new TextView(mContext);
-            view.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            view = mLayoutInflater.inflate(R.layout.playlistcontainer_folderend, parent, false);
         }
-        final NativeItem item = getItem(position);
-        if (item instanceof Playlist) {
-            final Playlist playlist = (Playlist) item;
-            view.setText(playlist.getName());
-            playlist.setCallback(this, false);
-        } else if (item instanceof FolderStart) {
-            view.setText(((FolderStart) item).getName());
-        } else if (item instanceof FolderEnd) {
-            view.setText("/>");
-        } else {
-            view.setText("---"); //Placeholder
-        }
-        view.setVisibility(item == null ? View.GONE : View.VISIBLE);
+        view.setVisibility(item != null && item instanceof FolderEnd ? View.VISIBLE : View.GONE);
         return view;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return 0;
+        final NativeItem item = getItem(position);
+        if (item != null) {
+            if (item instanceof Playlist) {
+                return 0;
+            }
+            if (item instanceof FolderStart) {
+                return 1;
+            }
+        }
+        // null, FolderEnd or Placeholder
+        return 2;
     }
 
     @Override
     public int getViewTypeCount() {
-        return 1; //TODO 2, playlist and folder
+        return 3;
     }
 
     @Override
