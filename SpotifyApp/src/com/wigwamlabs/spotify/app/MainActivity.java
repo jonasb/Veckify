@@ -18,9 +18,9 @@ import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.PlaylistAdapter;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
-import com.wigwamlabs.spotify.ui.SpotifyActivity;
+import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 
-public class MainActivity extends SpotifyActivity implements Player.Callback {
+public class MainActivity extends SpotifyPlayerActivity {
     private TextView mConnectionState;
     private PlaylistContainer mPlaylistContainer;
     private ListView mPlaylistsList;
@@ -29,7 +29,6 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
     private Track mTrack;
     private TextView mTrackName;
     private TextView mTrackArtists;
-    private Player mPlayer;
     private SeekBar mSeekBar;
     private View mResumeButton;
     private View mPauseButton;
@@ -81,21 +80,21 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
         mResumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayer.resume();
+                getPlayer().resume();
             }
         });
         mPauseButton = findViewById(R.id.pauseButton);
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayer.pause();
+                getPlayer().pause();
             }
         });
         mNextButton = findViewById(R.id.nextButton);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayer.next();
+                getPlayer().next();
             }
         });
 
@@ -104,28 +103,8 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
 
     @Override
     protected void onSpotifySessionAttached(Session spotifySession) {
+        super.onSpotifySessionAttached(spotifySession);
         setAutoLogin(true);
-
-        mPlayer = spotifySession.getPlayer();
-        mPlayer.addCallback(this, true);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (mPlayer != null) {
-            mPlayer.removeCallback(this);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mPlayer != null) {
-            mPlayer.addCallback(this, true);
-        }
     }
 
     @Override
@@ -141,10 +120,6 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
         if (mPlaylistContainer != null) {
             mPlaylistContainer.destroy();
             mPlaylistContainer = null;
-        }
-        if (mPlayer != null) {
-            mPlayer.removeCallback(this);
-            mPlayer = null;
         }
 
         super.onDestroy();
@@ -197,11 +172,11 @@ public class MainActivity extends SpotifyActivity implements Player.Callback {
     private void onTrackClicked(int position) {
         //TODO change queue if current queue is using the same playlist, instead of always creating a new queue
         getSpotifyService().setPlayIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
-        mPlayer.play(new PlaylistQueue(mPlaylist, position));
+        getPlayer().play(new PlaylistQueue(mPlaylist, position));
     }
 
     private void onSeekToPosition(int progressSeconds) {
-        mPlayer.seek(progressSeconds * 1000);
+        getPlayer().seek(progressSeconds * 1000);
     }
 
     @Override

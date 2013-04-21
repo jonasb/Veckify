@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.Track;
-import com.wigwamlabs.spotify.ui.SpotifyActivity;
+import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 
 import java.util.Calendar;
 
@@ -26,10 +26,9 @@ import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
 import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
-public class NowPlayingActivity extends SpotifyActivity implements Player.Callback {
+public class NowPlayingActivity extends SpotifyPlayerActivity {
     public static final String ACTION_ALARM = "alarm";
     private final Handler mHandler = new Handler();
-    private Player mPlayer;
     private Track mTrack;
     private boolean mAlarmLaunchedWithKeyguard;
     private boolean mAlarmIsDismissed;
@@ -107,10 +106,6 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
             }
         };
         mHandler.postDelayed(mUpdateCurrentTimeRunnable, updateCurrentTime());
-
-        if (mPlayer != null) {
-            mPlayer.addCallback(this, true);
-        }
     }
 
     @Override
@@ -132,10 +127,6 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
             mHandler.removeCallbacks(mUpdateCurrentTimeRunnable);
             mUpdateCurrentTimeRunnable = null;
         }
-
-        if (mPlayer != null) {
-            mPlayer.removeCallback(this);
-        }
     }
 
     @Override
@@ -144,10 +135,6 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
         if (mTrack != null) {
             mTrack.destroy();
             mTrack = null;
-        }
-        if (mPlayer != null) {
-            mPlayer.removeCallback(this);
-            mPlayer = null;
         }
 
         super.onDestroy();
@@ -181,21 +168,21 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
         mResumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayer.resume();
+                getPlayer().resume();
             }
         });
         mPauseButton = findViewById(R.id.pauseButton);
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayer.pause();
+                getPlayer().pause();
             }
         });
         mNextButton = findViewById(R.id.nextButton);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayer.next();
+                getPlayer().next();
             }
         });
     }
@@ -285,18 +272,17 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
 
     @Override
     protected void onSpotifySessionAttached(Session spotifySession) {
+        super.onSpotifySessionAttached(spotifySession);
         setAutoLogin(true);
-
-        mPlayer = spotifySession.getPlayer();
-        mPlayer.addCallback(this, true);
     }
 
     private void onSeekToPosition(int progressSeconds) {
-        mPlayer.seek(progressSeconds * 1000);
+        getPlayer().seek(progressSeconds * 1000);
     }
 
     @Override
     public void onStateChanged(int state) {
+        //TODO update seekbar
         switch (state) {
         case Player.STATE_STARTED:
         case Player.STATE_STOPPED:
