@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -54,6 +55,8 @@ public abstract class SpotifyActivity extends Activity implements Session.Callba
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         mLoginDialog = (LoginDialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_LOGIN_DIALOG);
     }
