@@ -30,6 +30,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     private int mTrackProgressSec = 0;
     private int mTrackDurationSec = 0;
     private RemoteControlClient mRemoteControlClient;
+    private boolean mPrefetchRequested;
 
     public Player(Context context, int handle) {
         super(handle);
@@ -52,28 +53,13 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
 
     private native void nativePlay(Track track);
 
+    private native void nativePrefetchTrack(Track track);
+
     private native void nativePause(int reasonState);
 
     private native void nativeResume();
 
-    private native void nativeNext();
-
-    private native void nativeSetNextTrack(Track track);
-
     private native void nativeSeek(int progressMs);
-
-    public void play(Queue queue) {
-        if (mQueue != null) {
-            mQueue.destroy();
-        }
-        mQueue = queue;
-
-        // TODO if the play call fails we should probably abandon the focus (applies for all uses of focus)
-        if (requestAudioFocus()) {
-            nativePlay(mQueue.getTrack(0));
-            nativeSetNextTrack(mQueue.getTrack(1));
-        }
-    }
 
     @Keep
     private void onStateChanged(final int state) {
@@ -100,36 +86,21 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     private void onTrackProgress(final int secondsPlayed, final int secondsDuration) {
         mTrackProgressSec = secondsPlayed;
         mTrackDurationSec = secondsDuration;
-        if (mCallbacks.isEmpty()) {
-            return;
-        }
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 for (Callback callback : mCallbacks) {
                     callback.onTrackProgress(secondsPlayed, secondsDuration);
                 }
-            }
-        });
-    }
-
-    @Keep
-    private void onCurrentTrackUpdated(final boolean playNext) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mQueue != null) {
-                    mQueue.onCurrentTrackUpdated(playNext);
-                    nativeSetNextTrack(mQueue.getTrack(1));
-
-                    final Track currentTrack = mQueue.getTrack(0);
-                    for (Callback callback : mCallbacks) {
-                        callback.onCurrentTrackUpdated(currentTrack);
+                if (secondsPlayed >= secondsDuration) {
+                    mQueue.next();
+                    playTrack();
+                } else if (secondsDuration - secondsPlayed <= 20 && !mPrefetchRequested) {
+                    final Track next = mQueue.getTrack(1);
+                    if (next != null) {
+                        nativePrefetchTrack(next);
                     }
-
-                    if (mRemoteControlClient != null) {
-                        mRemoteControlClient.updateMediaData(currentTrack);
-                    }
+                    mPrefetchRequested = true;
                 }
             }
         });
@@ -163,6 +134,32 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
 
     public void removeCallback(Callback callback) {
         mCallbacks.remove(callback);
+    }
+
+    public void play(Queue queue) {
+        if (mQueue != null) {
+            mQueue.destroy();
+        }
+        mQueue = queue;
+
+        // TODO if the play call fails we should probably abandon the focus (applies for all uses of focus)
+        if (requestAudioFocus()) {
+            playTrack();
+        }
+    }
+
+    private void playTrack() {
+        final Track track = mQueue.getTrack(0);
+        nativePlay(track);
+        mPrefetchRequested = false;
+
+        for (Callback callback : mCallbacks) {
+            callback.onCurrentTrackUpdated(track);
+        }
+
+        if (mRemoteControlClient != null) {
+            mRemoteControlClient.updateMediaData(track);
+        }
     }
 
     public void seek(int progressMs) {
@@ -201,7 +198,8 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
 
     public void next() {
         if (requestAudioFocus()) {
-            nativeNext();
+            mQueue.next();
+            playTrack();
         }
     }
 

@@ -23,12 +23,10 @@ public class PlaylistQueue implements Queue {
     }
 
     @Override
-    public void onCurrentTrackUpdated(boolean playNext) {
-        if (playNext) {
-            mIndex++;
-            if (mIndex >= mPlaylist.getCount()) {
-                mIndex = 0;
-            }
+    public void next() {
+        mIndex++;
+        if (mIndex >= mPlaylist.getCount()) {
+            mIndex = 0;
         }
     }
 }

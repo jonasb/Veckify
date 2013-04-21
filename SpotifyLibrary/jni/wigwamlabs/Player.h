@@ -23,7 +23,6 @@ class PlayerCallback {
 public:
     virtual void onStateChanged(PlayerState state) = 0;
     virtual void onTrackProgress(int secondsPlayed, int secondsDuration) = 0;
-    virtual void onCurrentTrackUpdated(bool playNext) = 0;
     virtual void onPlayTokenLost() = 0;
 };
 
@@ -48,11 +47,10 @@ public:
 
     PlayerState getState() const;
     void play(Track *track);
+    void prefetchTrack(Track *track);
     bool pause(PlayerState reason);
     void resume();
     void seek(int progressMs);
-    void setNextTrack(Track *track);
-    void playNextTrack();
 
 private:
     struct Buffer {
@@ -64,7 +62,6 @@ private:
     Player(sp_session *session);
     void setState(PlayerState state);
     bool initialize();
-    void play(sp_track *track, bool playNext);
     void setTrackProgressMs(int progressMs);
 
 private:
@@ -87,8 +84,6 @@ private:
     int mTrackProgressReportedSec;
 
     PlayerState mState;
-    sp_track *mTrackNext;
-    bool mPrefetchRequested;
 };
 
 }

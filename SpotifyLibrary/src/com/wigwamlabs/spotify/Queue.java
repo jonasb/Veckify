@@ -5,5 +5,5 @@ public interface Queue {
 
     Track getTrack(int index);
 
-    void onCurrentTrackUpdated(boolean playNext);
+    void next();
 }

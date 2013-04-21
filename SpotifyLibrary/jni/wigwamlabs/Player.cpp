@@ -146,11 +146,6 @@ sp_error Player::destroy() {
     LOGV(__func__);
     sp_error error = SP_ERROR_OK;
 
-    if (mTrackNext) {
-        sp_track_release(mTrackNext);
-        mTrackNext = NULL;
-    }
-
     // destroy buffer queue audio player object, and invalidate all associated interfaces
     if (mBqPlayerObject != NULL) {
         (*mBqPlayerObject)->Destroy(mBqPlayerObject);
@@ -201,16 +196,13 @@ void Player::setState(PlayerState state) {
 }
 
 void Player::play(Track *track) {
-    play(track->getTrack(), false);
-}
-
-void Player::play(sp_track *track, bool playNext) {
     mTrackProgressBytes = 0;
     if (track) {
-        LOGV("%s name: %s, playNext: %d", __func__, sp_track_name(track), playNext);
-        sp_session_player_load(mSession, track);
+        LOGV("%s name: %s", __func__, track->getName());
+        sp_error error;
+        sp_session_player_load(mSession, track->getTrack());
         sp_session_player_play(mSession, true);
-        mTrackDurationMs = sp_track_duration(track);
+        mTrackDurationMs = track->getDurationMs();
         setState(STATE_PLAYING);
     } else {
         LOGV("%s null", __func__);
@@ -218,10 +210,14 @@ void Player::play(sp_track *track, bool playNext) {
         mTrackDurationMs = 0;
         setState(STATE_STOPPED);
     }
-    if (mCallback) {
-        mCallback->onCurrentTrackUpdated(playNext);
-    }
     setTrackProgressMs(0);
+}
+
+void Player::prefetchTrack(Track *track) {
+    if (track) {
+        LOGV("Prefetching track: %s", track->getName());
+        sp_session_player_prefetch(mSession, track->getTrack());
+    }
 }
 
 bool Player::pause(PlayerState reason) {
@@ -265,35 +261,6 @@ void Player::resume() {
         sp_session_player_play(mSession, true);
         setState(STATE_PLAYING);
         break;
-    }
-}
-
-void Player::setNextTrack(Track *track) {
-    if (mTrackNext) {
-        sp_track_release(mTrackNext);
-        mTrackNext = NULL;
-    }
-
-    if (track) {
-        mTrackNext = track->getTrack();
-        sp_track_add_ref(mTrackNext);
-    }
-    mPrefetchRequested = false;
-}
-
-void Player::playNextTrack() {
-    if (mTrackNext) {
-        LOGV("%s: Start playing next track", __func__);
-        sp_track *track = mTrackNext;
-        sp_track_add_ref(track);
-
-        setNextTrack(NULL);
-        play(track, true);
-
-        sp_track_release(track);
-    } else {
-        LOGV("%s: No track queued up, stop", __func__);
-        play(NULL, true);
     }
 }
 
@@ -393,15 +360,6 @@ void Player::setTrackProgressMs(int progressMs) {
         LOGV("Track progress: %ds/%ds", mTrackProgressReportedSec, trackDurationSec);
         if (mCallback) {
             mCallback->onTrackProgress(mTrackProgressReportedSec, trackDurationSec);
-        }
-
-        // play next at end or prefetch 10s before end
-        if (progressSec >= trackDurationSec) {
-            playNextTrack();
-        } else if (mTrackNext != NULL && !mPrefetchRequested && trackDurationSec - progressSec < 20) {
-            LOGV("Prefetching track: %s", sp_track_name(mTrackNext));
-            sp_session_player_prefetch(mSession, mTrackNext);
-            mPrefetchRequested = true;
         }
     }
 }
