@@ -9,7 +9,8 @@ import android.widget.TimePicker;
 
 import com.wigwamlabs.veckify.alarms.Alarm;
 
-class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+@SuppressWarnings("WeakerAccess")
+public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final MainActivity activity = (MainActivity) getActivity();
