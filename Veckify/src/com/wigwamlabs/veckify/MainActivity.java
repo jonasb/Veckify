@@ -30,6 +30,7 @@ public class MainActivity extends SpotifyPlayerActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Debug.logLifecycle("MainActivity.onCreate()");
         super.onCreate(savedInstanceState);
 
         mAlarmCollection = new AlarmCollection(this);
@@ -39,6 +40,24 @@ public class MainActivity extends SpotifyPlayerActivity {
         updateUi();
 
         bindSpotifyService();
+    }
+
+    @Override
+    protected void onResume() {
+        Debug.logLifecycle("MainActivity.onResume()");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Debug.logLifecycle("MainActivity.onPause()");
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Debug.logLifecycle("MainActivity.onDestroy()");
+        super.onDestroy();
     }
 
     private void initUi() {
