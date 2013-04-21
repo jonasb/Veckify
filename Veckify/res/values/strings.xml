@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Veckify</string>
     <string name="noPlaylistSelected">Select playlist</string>
+    <string name="runNowButton">Play now</string>
 </resources>

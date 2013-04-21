@@ -101,7 +101,7 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
         mUpdateCurrentTimeRunnable = new Runnable() {
             @Override
             public void run() {
-                long timeToNextMinuteMs = updateCurrentTime();
+                final long timeToNextMinuteMs = updateCurrentTime();
                 mHandler.postDelayed(this, timeToNextMinuteMs);
             }
         };

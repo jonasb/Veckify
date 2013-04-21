@@ -23,6 +23,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     private TextView mAlarmTime;
     private TextView mPlaylistName;
     private Switch mAlarmEnabled;
+    private View mRunNowButton;
     private View mNowPlaying;
     private TextView mTrackArtists;
     private TextView mTrackName;
@@ -68,7 +69,8 @@ public class MainActivity extends SpotifyPlayerActivity {
             }
         });
         //
-        findViewById(R.id.runNowButton).setOnClickListener(new View.OnClickListener() {
+        mRunNowButton = findViewById(R.id.runNowButton);
+        mRunNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 runAlarmNow();
@@ -94,8 +96,10 @@ public class MainActivity extends SpotifyPlayerActivity {
         final String name = mAlarm.getPlaylistName();
         if (name == null || name.length() == 0) {
             mPlaylistName.setText(R.string.noPlaylistSelected);
+            mRunNowButton.setEnabled(false);
         } else {
             mPlaylistName.setText(name);
+            mRunNowButton.setEnabled(true);
         }
     }
 
@@ -139,10 +143,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     }
 
     private void runAlarmNow() {
-        final Alarm alarm = new Alarm();
-        alarm.setEnabled(true);
-        alarm.setPlaylistLink(mAlarm.getPlaylistLink());
-        mAlarmCollection.runAlarmNow(alarm);
+        Alarm.startAlarm(this, mAlarm.getPlaylistLink());
     }
 
     @Override

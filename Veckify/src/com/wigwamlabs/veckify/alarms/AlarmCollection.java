@@ -23,7 +23,6 @@ public class AlarmCollection {
     private final Context mContext;
     private final AlarmManager mAlarmManager;
     private final Alarm mAlarm;
-    private Alarm mAlarmRunNow;
 
     public AlarmCollection(Context context) {
         mContext = context;
@@ -43,11 +42,6 @@ public class AlarmCollection {
     }
 
     private Pair<Alarm, Calendar> getNextAlarm() {
-        if (mAlarmRunNow != null && mAlarmRunNow.isEnabled()) {
-            final Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(System.currentTimeMillis());
-            return Pair.create(mAlarmRunNow, cal);
-        }
         if (mAlarm.isEnabled()) {
             return Pair.create(mAlarm, mAlarm.getNextAlarmTime());
         }
@@ -66,12 +60,6 @@ public class AlarmCollection {
         if (reschedule) {
             rescheduleAlarm();
         }
-    }
-
-    public void runAlarmNow(Alarm alarm) {
-        mAlarmRunNow = alarm;
-        rescheduleAlarm();
-        mAlarmRunNow = null;
     }
 
     void rescheduleAlarm() {

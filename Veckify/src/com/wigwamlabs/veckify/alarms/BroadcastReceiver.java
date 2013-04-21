@@ -1,12 +1,9 @@
 package com.wigwamlabs.veckify.alarms;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.wigwamlabs.spotify.SpotifyService;
 import com.wigwamlabs.veckify.Debug;
-import com.wigwamlabs.veckify.NowPlayingActivity;
 
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     static final String ACTION_ALARM = "com.wigwamlabs.veckify.alarms.BroadcastReceiver.ALARM";
@@ -25,7 +22,7 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                 Debug.logAlarmScheduling("Received alarm broadcast " + timeSinceEventMs / 1000 + "s after scheduled");
 
                 if (timeSinceEventMs < MAX_TIME_SINCE_SCHEDULED_MS) {
-                    startAlarm(context, intent.getStringExtra(EXTRA_PLAYLIST_LINK));
+                    Alarm.startAlarm(context, intent.getStringExtra(EXTRA_PLAYLIST_LINK));
                 } else {
                     Debug.logAlarmScheduling("Skipping alarm since too long since scheduled");
                 }
@@ -42,22 +39,5 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                 alarmCollection.rescheduleAlarm();
             }
         }
-    }
-
-    private void startAlarm(Context context, String playlistLink) {
-        // setup intent to launch now playing
-        final Intent nowPlayingIntent = new Intent(context, NowPlayingActivity.class);
-        nowPlayingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // tell service to start playing
-        final Intent intent = new Intent(context, SpotifyService.class);
-        intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
-        intent.putExtra(SpotifyService.EXTRA_LINK, playlistLink);
-        intent.putExtra(SpotifyService.EXTRA_INTENT, PendingIntent.getActivity(context, 0, nowPlayingIntent, 0));
-        context.startService(intent);
-
-        // launch now playing in alarm mode
-        nowPlayingIntent.setAction(NowPlayingActivity.ACTION_ALARM);
-        context.startActivity(nowPlayingIntent);
     }
 }
