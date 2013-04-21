@@ -46,7 +46,7 @@ public:
     void onPlayTokenLost();
 
     PlayerState getState() const;
-    void play(Track *track);
+    sp_error play(Track *track);
     void prefetchTrack(Track *track);
     bool pause(PlayerState reason);
     void resume();

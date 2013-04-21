@@ -195,22 +195,27 @@ void Player::setState(PlayerState state) {
     }
 }
 
-void Player::play(Track *track) {
+sp_error Player::play(Track *track) {
+    sp_error error = SP_ERROR_OK;
     mTrackProgressBytes = 0;
     if (track) {
         LOGV("%s name: %s", __func__, track->getName());
-        sp_error error;
-        sp_session_player_load(mSession, track->getTrack());
-        sp_session_player_play(mSession, true);
-        mTrackDurationMs = track->getDurationMs();
-        setState(STATE_PLAYING);
+        error = sp_session_player_load(mSession, track->getTrack());
+        if (error == SP_ERROR_OK) {
+            error = sp_session_player_play(mSession, true);
+        }
+        if (error == SP_ERROR_OK) {
+            mTrackDurationMs = track->getDurationMs();
+            setState(STATE_PLAYING);
+        }
     } else {
         LOGV("%s null", __func__);
-        sp_session_player_unload(mSession);
+        error = sp_session_player_unload(mSession);
         mTrackDurationMs = 0;
         setState(STATE_STOPPED);
     }
     setTrackProgressMs(0);
+    return error;
 }
 
 void Player::prefetchTrack(Track *track) {

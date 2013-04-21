@@ -83,13 +83,13 @@ JNI_METHOD(jint, com_wigwamlabs_spotify_Player, nativeGetState) {
     return player->getState();
 }
 
-JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativePlay, jobject trackHandle) {
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Player, nativePlay, jobject trackHandle) {
     LOGV("nativePlay()");
 
     Player *player = getNativePlayer(env, self);
     Track *track = getNativeTrack(env, trackHandle);
 
-    player->play(track);
+    return player->play(track);
 }
 
 JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Player, nativePrefetchTrack, jobject trackHandle) {

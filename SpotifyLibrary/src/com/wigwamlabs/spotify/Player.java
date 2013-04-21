@@ -51,7 +51,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
 
     private native int nativeGetState();
 
-    private native void nativePlay(Track track);
+    private native int nativePlay(Track track);
 
     private native void nativePrefetchTrack(Track track);
 
@@ -149,8 +149,20 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     }
 
     private void playTrack() {
-        final Track track = mQueue.getTrack(0);
-        nativePlay(track);
+        Track track;
+        while (true) {
+            track = mQueue.getTrack(0);
+            int error = nativePlay(track);
+            if (error == SpotifyError.TRACK_NOT_PLAYABLE) {
+                Debug.logQueue("Queue: track '" + track.getName() + "' not playable, skip");
+                //TODO what if all tracks are non playable
+                //TODO keep track of which tracks are playable?
+                mQueue.next();
+                continue;
+            } else {
+                break;
+            }
+        }
         mPrefetchRequested = false;
 
         for (Callback callback : mCallbacks) {
