@@ -12,7 +12,6 @@ import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
-import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 import com.wigwamlabs.veckify.alarms.Alarm;
 import com.wigwamlabs.veckify.alarms.AlarmCollection;
@@ -26,12 +25,6 @@ public class MainActivity extends SpotifyPlayerActivity {
     private Switch mAlarmEnabled;
     private View mRunNowButton;
     private View mNowPlaying;
-    private TextView mTrackArtists;
-    private TextView mTrackName;
-    private ProgressBar mTrackProgress;
-    private View mResumeButton;
-    private View mPauseButton;
-    private View mNextButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,30 +101,12 @@ public class MainActivity extends SpotifyPlayerActivity {
                 startActivity(new Intent(MainActivity.this, NowPlayingActivity.class));
             }
         });
-        mTrackArtists = (TextView) findViewById(R.id.trackArtists);
-        mTrackName = (TextView) findViewById(R.id.trackName);
-        mTrackProgress = (ProgressBar) findViewById(R.id.trackProgress);
-        mResumeButton = findViewById(R.id.resumeButton);
-        mResumeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPlayer().resume();
-            }
-        });
-        mPauseButton = findViewById(R.id.pauseButton);
-        mPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPlayer().pause();
-            }
-        });
-        mNextButton = findViewById(R.id.nextButton);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPlayer().next();
-            }
-        });
+        setTrackArtists((TextView) findViewById(R.id.trackArtists));
+        setTrackName((TextView) findViewById(R.id.trackName));
+        setTrackProgress((ProgressBar) findViewById(R.id.trackProgress));
+        setResumeButton(findViewById(R.id.resumeButton));
+        setPauseButton(findViewById(R.id.pauseButton));
+        setNextButton(findViewById(R.id.nextButton));
     }
 
     private void updateUi() {
@@ -199,11 +174,6 @@ public class MainActivity extends SpotifyPlayerActivity {
     }
 
     @Override
-    public void onLoggedIn(int error) {
-        super.onLoggedIn(error);
-    }
-
-    @Override
     public void onConnectionStateUpdated(int state) {
         super.onConnectionStateUpdated(state);
 
@@ -218,44 +188,9 @@ public class MainActivity extends SpotifyPlayerActivity {
 
     @Override
     public void onStateChanged(int state) {
+        super.onStateChanged(state);
+
         final boolean showNowPlaying = (state == Player.STATE_PLAYING || state == Player.STATE_PAUSED_USER || state == Player.STATE_PAUSED_NOISY || state == Player.STATE_PAUSED_AUDIOFOCUS);
         mNowPlaying.setVisibility(showNowPlaying ? View.VISIBLE : View.GONE);
-
-        if (showNowPlaying) {
-            switch (state) {
-            case Player.STATE_STARTED:
-            case Player.STATE_STOPPED:
-                mPauseButton.setVisibility(View.GONE);
-                mResumeButton.setVisibility(View.GONE);
-                mNextButton.setVisibility(View.GONE);
-                break;
-            case Player.STATE_PLAYING:
-                mPauseButton.setVisibility(View.VISIBLE);
-                mResumeButton.setVisibility(View.GONE);
-                mNextButton.setVisibility(View.VISIBLE);
-                break;
-            case Player.STATE_PAUSED_USER:
-            case Player.STATE_PAUSED_AUDIOFOCUS:
-            case Player.STATE_PAUSED_NOISY:
-                mPauseButton.setVisibility(View.GONE);
-                mResumeButton.setVisibility(View.VISIBLE);
-                mNextButton.setVisibility(View.VISIBLE);
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onCurrentTrackUpdated(Track track) {
-        if (track != null) {
-            mTrackArtists.setText(track.getArtistsString());
-            mTrackName.setText(track.getName());
-        }
-    }
-
-    @Override
-    public void onTrackProgress(int secondsPlayed, int secondsDuration) {
-        mTrackProgress.setMax(secondsDuration);
-        mTrackProgress.setProgress(secondsPlayed);
     }
 }

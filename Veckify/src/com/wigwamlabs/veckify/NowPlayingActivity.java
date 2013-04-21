@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.Track;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
@@ -35,12 +33,6 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
     private Runnable mCheckKeyguardActivation;
     private Runnable mUpdateCurrentTimeRunnable;
     private TextView mCurrentTime;
-    private TextView mTrackArtists;
-    private TextView mTrackName;
-    private SeekBar mSeekBar;
-    private View mResumeButton;
-    private View mPauseButton;
-    private View mNextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,46 +137,12 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
 
         mCurrentTime = (TextView) findViewById(R.id.currentTime);
 
-        mTrackArtists = (TextView) findViewById(R.id.trackArtists);
-        mTrackName = (TextView) findViewById(R.id.trackName);
-
-        mSeekBar = (SeekBar) findViewById(R.id.seekBar);
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                onSeekToPosition(seekBar.getProgress());
-            }
-        });
-
-        mResumeButton = findViewById(R.id.resumeButton);
-        mResumeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPlayer().resume();
-            }
-        });
-        mPauseButton = findViewById(R.id.pauseButton);
-        mPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPlayer().pause();
-            }
-        });
-        mNextButton = findViewById(R.id.nextButton);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPlayer().next();
-            }
-        });
+        setTrackArtists((TextView) findViewById(R.id.trackArtists));
+        setTrackName((TextView) findViewById(R.id.trackName));
+        setTrackProgress((SeekBar) findViewById(R.id.seekBar));
+        setResumeButton(findViewById(R.id.resumeButton));
+        setPauseButton(findViewById(R.id.pauseButton));
+        setNextButton(findViewById(R.id.nextButton));
     }
 
     private long updateCurrentTime() {
@@ -274,55 +232,5 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
     protected void onSpotifySessionAttached(Session spotifySession) {
         super.onSpotifySessionAttached(spotifySession);
         setAutoLogin(true);
-    }
-
-    private void onSeekToPosition(int progressSeconds) {
-        getPlayer().seek(progressSeconds * 1000);
-    }
-
-    @Override
-    public void onStateChanged(int state) {
-        //TODO update seekbar
-        switch (state) {
-        case Player.STATE_STARTED:
-        case Player.STATE_STOPPED:
-            mPauseButton.setVisibility(View.GONE);
-            mResumeButton.setVisibility(View.GONE);
-            mNextButton.setVisibility(View.GONE);
-            break;
-        case Player.STATE_PLAYING:
-            mPauseButton.setVisibility(View.VISIBLE);
-            mResumeButton.setVisibility(View.GONE);
-            mNextButton.setVisibility(View.VISIBLE);
-            break;
-        case Player.STATE_PAUSED_USER:
-        case Player.STATE_PAUSED_AUDIOFOCUS:
-        case Player.STATE_PAUSED_NOISY:
-            mPauseButton.setVisibility(View.GONE);
-            mResumeButton.setVisibility(View.VISIBLE);
-            mNextButton.setVisibility(View.VISIBLE);
-            break;
-        }
-    }
-
-    @Override
-    public void onTrackProgress(int secondsPlayed, int secondsDuration) {
-        mSeekBar.setMax(secondsDuration);
-        mSeekBar.setProgress(secondsPlayed);
-    }
-
-    @Override
-    public void onCurrentTrackUpdated(Track track) {
-        if (mTrack != null) {
-            mTrack.destroy();
-        }
-        mTrack = (track != null ? track.clone() : null);
-
-        if (mTrack != null) {
-            mTrackName.setText(mTrack.getName());
-            mTrackArtists.setText(mTrack.getArtistsString());
-        } else {
-            //TODO
-        }
     }
 }

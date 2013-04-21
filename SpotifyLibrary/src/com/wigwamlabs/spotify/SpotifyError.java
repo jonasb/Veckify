@@ -1,5 +1,6 @@
 package com.wigwamlabs.spotify;
 
+@SuppressWarnings("UnusedDeclaration")
 public final class SpotifyError {
     public static final int OK = 0;
     public static final int BAD_API_VERSION = 1;
