@@ -22,4 +22,10 @@ final class Debug {
             Log.v(TAG, "Received media button: " + button);
         }
     }
+
+    public static void logQueue(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, msg);
+        }
+    }
 }
