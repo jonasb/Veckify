@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -27,6 +28,10 @@ public class MainActivity extends SpotifyPlayerActivity {
     private View mNowPlaying;
     private TextView mTrackArtists;
     private TextView mTrackName;
+    private ProgressBar mTrackProgress;
+    private View mResumeButton;
+    private View mPauseButton;
+    private View mNextButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,6 +110,28 @@ public class MainActivity extends SpotifyPlayerActivity {
         });
         mTrackArtists = (TextView) findViewById(R.id.trackArtists);
         mTrackName = (TextView) findViewById(R.id.trackName);
+        mTrackProgress = (ProgressBar) findViewById(R.id.trackProgress);
+        mResumeButton = findViewById(R.id.resumeButton);
+        mResumeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPlayer().resume();
+            }
+        });
+        mPauseButton = findViewById(R.id.pauseButton);
+        mPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPlayer().pause();
+            }
+        });
+        mNextButton = findViewById(R.id.nextButton);
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPlayer().next();
+            }
+        });
     }
 
     private void updateUi() {
@@ -191,7 +218,31 @@ public class MainActivity extends SpotifyPlayerActivity {
 
     @Override
     public void onStateChanged(int state) {
-        mNowPlaying.setVisibility(state == Player.STATE_PLAYING ? View.VISIBLE : View.GONE);
+        final boolean showNowPlaying = (state == Player.STATE_PLAYING || state == Player.STATE_PAUSED_USER || state == Player.STATE_PAUSED_NOISY || state == Player.STATE_PAUSED_AUDIOFOCUS);
+        mNowPlaying.setVisibility(showNowPlaying ? View.VISIBLE : View.GONE);
+
+        if (showNowPlaying) {
+            switch (state) {
+            case Player.STATE_STARTED:
+            case Player.STATE_STOPPED:
+                mPauseButton.setVisibility(View.GONE);
+                mResumeButton.setVisibility(View.GONE);
+                mNextButton.setVisibility(View.GONE);
+                break;
+            case Player.STATE_PLAYING:
+                mPauseButton.setVisibility(View.VISIBLE);
+                mResumeButton.setVisibility(View.GONE);
+                mNextButton.setVisibility(View.VISIBLE);
+                break;
+            case Player.STATE_PAUSED_USER:
+            case Player.STATE_PAUSED_AUDIOFOCUS:
+            case Player.STATE_PAUSED_NOISY:
+                mPauseButton.setVisibility(View.GONE);
+                mResumeButton.setVisibility(View.VISIBLE);
+                mNextButton.setVisibility(View.VISIBLE);
+                break;
+            }
+        }
     }
 
     @Override
@@ -204,5 +255,7 @@ public class MainActivity extends SpotifyPlayerActivity {
 
     @Override
     public void onTrackProgress(int secondsPlayed, int secondsDuration) {
+        mTrackProgress.setMax(secondsDuration);
+        mTrackProgress.setProgress(secondsPlayed);
     }
 }
