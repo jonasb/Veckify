@@ -3,7 +3,7 @@ package com.wigwamlabs.spotify;
 import android.util.Log;
 
 final class Debug {
-    private static final String TAG = "SpotifyApp";
+    private static final String TAG = "SpotifyLibrary";
 
     static void logLifecycle(String msg) {
         if (BuildConfig.DEBUG) {

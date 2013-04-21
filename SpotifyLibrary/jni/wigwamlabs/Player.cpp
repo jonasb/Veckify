@@ -207,11 +207,13 @@ void Player::play(Track *track) {
 void Player::play(sp_track *track, bool playNext) {
     mTrackProgressBytes = 0;
     if (track) {
+        LOGV("%s name: %s, playNext: %d", __func__, sp_track_name(track), playNext);
         sp_session_player_load(mSession, track);
         sp_session_player_play(mSession, true);
         mTrackDurationMs = sp_track_duration(track);
         setState(STATE_PLAYING);
     } else {
+        LOGV("%s null", __func__);
         sp_session_player_unload(mSession);
         mTrackDurationMs = 0;
         setState(STATE_STOPPED);
@@ -397,7 +399,7 @@ void Player::setTrackProgressMs(int progressMs) {
         if (progressSec >= trackDurationSec) {
             playNextTrack();
         } else if (mTrackNext != NULL && !mPrefetchRequested && trackDurationSec - progressSec < 20) {
-            LOGV("Prefetching track");
+            LOGV("Prefetching track: %s", sp_track_name(mTrackNext));
             sp_session_player_prefetch(mSession, mTrackNext);
             mPrefetchRequested = true;
         }
