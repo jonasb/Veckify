@@ -1,25 +1,31 @@
 package com.wigwamlabs.veckify;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
-import com.wigwamlabs.spotify.ui.SpotifyActivity;
+import com.wigwamlabs.spotify.Track;
+import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 import com.wigwamlabs.veckify.alarms.Alarm;
 import com.wigwamlabs.veckify.alarms.AlarmCollection;
 
-public class MainActivity extends SpotifyActivity {
+public class MainActivity extends SpotifyPlayerActivity {
     private AlarmCollection mAlarmCollection;
     private Alarm mAlarm;
     private PlaylistContainer mPlaylistContainer;
     private TextView mAlarmTime;
     private TextView mPlaylistName;
     private Switch mAlarmEnabled;
+    private View mNowPlaying;
+    private TextView mTrackArtists;
+    private TextView mTrackName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,16 @@ public class MainActivity extends SpotifyActivity {
                 runAlarmNow();
             }
         });
+        // now playing
+        mNowPlaying = findViewById(R.id.nowPlaying);
+        mNowPlaying.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, NowPlayingActivity.class));
+            }
+        });
+        mTrackArtists = (TextView) findViewById(R.id.trackArtists);
+        mTrackName = (TextView) findViewById(R.id.trackName);
     }
 
     private void updateUi() {
@@ -131,6 +147,7 @@ public class MainActivity extends SpotifyActivity {
 
     @Override
     protected void onSpotifySessionAttached(Session spotifySession) {
+        super.onSpotifySessionAttached(spotifySession);
         setAutoLogin(true);
     }
 
@@ -150,5 +167,22 @@ public class MainActivity extends SpotifyActivity {
 
     public PlaylistContainer getPlaylistContainer() {
         return mPlaylistContainer;
+    }
+
+    @Override
+    public void onStateChanged(int state) {
+        mNowPlaying.setVisibility(state == Player.STATE_PLAYING ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onCurrentTrackUpdated(Track track) {
+        if (track != null) {
+            mTrackArtists.setText(track.getArtistsString());
+            mTrackName.setText(track.getName());
+        }
+    }
+
+    @Override
+    public void onTrackProgress(int secondsPlayed, int secondsDuration) {
     }
 }
