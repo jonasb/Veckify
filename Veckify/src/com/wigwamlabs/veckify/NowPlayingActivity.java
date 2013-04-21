@@ -26,6 +26,7 @@ import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
 import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
 public class NowPlayingActivity extends SpotifyActivity implements Player.Callback {
+    public static final String ACTION_ALARM = "alarm";
     private final Handler mHandler = new Handler();
     private Player mPlayer;
     private Track mTrack;
@@ -62,8 +63,13 @@ public class NowPlayingActivity extends SpotifyActivity implements Player.Callba
     }
 
     private void handleIntent(Intent intent) {
-        mAlarmIsDismissed = false;
-        mAlarmLaunchedWithKeyguard = isKeyguardActive();
+        if (intent != null && ACTION_ALARM.equals(intent.getAction())) {
+            Debug.logAlarmScheduling("New alarm, turn screen on etc.");
+            mAlarmIsDismissed = false;
+            mAlarmLaunchedWithKeyguard = isKeyguardActive();
+        } else {
+            mAlarmIsDismissed = true;
+        }
     }
 
     @Override

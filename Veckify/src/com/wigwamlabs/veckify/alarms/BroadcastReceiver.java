@@ -1,5 +1,6 @@
 package com.wigwamlabs.veckify.alarms;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
@@ -44,16 +45,19 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
     }
 
     private void startAlarm(Context context, String playlistLink) {
-        {
-            final Intent intent = new Intent(context, SpotifyService.class);
-            intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
-            intent.putExtra(SpotifyService.EXTRA_LINK, playlistLink);
-            context.startService(intent);
-        }
-        {
-            final Intent intent = new Intent(context, NowPlayingActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        }
+        // setup intent to launch now playing
+        final Intent nowPlayingIntent = new Intent(context, NowPlayingActivity.class);
+        nowPlayingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // tell service to start playing
+        final Intent intent = new Intent(context, SpotifyService.class);
+        intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
+        intent.putExtra(SpotifyService.EXTRA_LINK, playlistLink);
+        intent.putExtra(SpotifyService.EXTRA_INTENT, PendingIntent.getActivity(context, 0, nowPlayingIntent, 0));
+        context.startService(intent);
+
+        // launch now playing in alarm mode
+        nowPlayingIntent.setAction(NowPlayingActivity.ACTION_ALARM);
+        context.startActivity(nowPlayingIntent);
     }
 }
