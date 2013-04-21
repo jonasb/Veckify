@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.wigwamlabs.spotify.FolderEnd;
 import com.wigwamlabs.spotify.FolderStart;
 import com.wigwamlabs.spotify.NativeItem;
 import com.wigwamlabs.spotify.Playlist;
@@ -16,11 +15,13 @@ import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.R;
 
 public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.Callback, Playlist.Callback {
+    private final Context mContext;
     private final LayoutInflater mLayoutInflater;
     private final PlaylistContainer mContainer;
     private DataSetObserver mObserver;
 
     public PlaylistContainerAdapter(Context context, PlaylistContainer container) {
+        mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mContainer = container;
         mContainer.setCallback(this, false);
@@ -95,11 +96,8 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
             }
         }
         // null, FolderEnd or Placeholder
-        View view = convertView;
-        if (view == null) {
-            view = mLayoutInflater.inflate(R.layout.playlistcontainer_folderend, parent, false);
-        }
-        view.setVisibility(item != null && item instanceof FolderEnd ? View.VISIBLE : View.GONE);
+        final View view = (convertView != null ? convertView : new View(mContext));
+        view.setVisibility(View.GONE);
         return view;
     }
 
