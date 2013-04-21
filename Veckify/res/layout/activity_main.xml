@@ -44,7 +44,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         android:layout_alignTop="@id/playlistName"
-        android:src="@drawable/ic_button_resume" />
+        android:src="@drawable/ic_button_resume_inverse" />
 
     <RelativeLayout
         android:id="@+id/nowPlaying"
