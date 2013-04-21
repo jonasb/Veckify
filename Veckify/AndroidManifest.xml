@@ -16,6 +16,7 @@
         <activity
             android:name="MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Holo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +26,9 @@
         <activity
             android:name="NowPlayingActivity"
             android:parentActivityName="MainActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
 
         <receiver
