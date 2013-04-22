@@ -43,7 +43,7 @@
         android:layout_alignTop="@id/playlistName"
         android:layout_alignParentRight="true"
         android:layout_marginRight="68dp"
-        android:src="@drawable/ic_button_volume_inverse"/>
+        android:src="@drawable/ic_button_volume_inverse" />
 
     <ImageButton
         android:id="@+id/runNowButton"
@@ -53,6 +53,65 @@
         android:layout_marginRight="16dp"
         android:layout_alignTop="@id/playlistName"
         android:src="@drawable/ic_button_resume_inverse" />
+
+    <CheckBox
+        android:id="@+id/repeatCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/playlistName"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="8dp"
+        android:text="Repeat" />
+
+    <LinearLayout
+        android:id="@+id/repeatToggles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/repeatCheckBox">
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayMonday"
+            android:textOn="@string/repeatDayMonday"
+            android:textOff="@string/repeatDayMonday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayTuesday"
+            android:textOn="@string/repeatDayTuesday"
+            android:textOff="@string/repeatDayTuesday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayWednesday"
+            android:textOn="@string/repeatDayWednesday"
+            android:textOff="@string/repeatDayWednesday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayThursday"
+            android:textOn="@string/repeatDayThursday"
+            android:textOff="@string/repeatDayThursday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayFriday"
+            android:textOn="@string/repeatDayFriday"
+            android:textOff="@string/repeatDayFriday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDaySaturday"
+            android:textOn="@string/repeatDaySaturday"
+            android:textOff="@string/repeatDaySaturday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDaySunday"
+            android:textOn="@string/repeatDaySunday"
+            android:textOff="@string/repeatDaySunday" />
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/nowPlaying"

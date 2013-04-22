@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
@@ -20,7 +22,10 @@ import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 import com.wigwamlabs.veckify.alarms.Alarm;
 import com.wigwamlabs.veckify.alarms.AlarmCollection;
 
+import static android.widget.CompoundButton.OnCheckedChangeListener;
+
 public class MainActivity extends SpotifyPlayerActivity {
+    private static final int[] REPEAT_DAY_IDS = new int[]{R.id.repeatDayMonday, R.id.repeatDayTuesday, R.id.repeatDayWednesday, R.id.repeatDayThursday, R.id.repeatDayFriday, R.id.repeatDaySaturday, R.id.repeatDaySunday};
     private final Handler mHandler = new Handler();
     private AlarmCollection mAlarmCollection;
     private Alarm mAlarm;
@@ -32,6 +37,9 @@ public class MainActivity extends SpotifyPlayerActivity {
     private View mNowPlaying;
     private View mVolume;
     private ContentObserver mContentObserver;
+    private CheckBox mRepeatCheckBox;
+    private ToggleButton[] mRepeatDayToggles;
+    private View mRepeatToggles;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +104,7 @@ public class MainActivity extends SpotifyPlayerActivity {
         });
         // set up enable switch
         mAlarmEnabled = (Switch) findViewById(R.id.alarmEnabled);
-        mAlarmEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mAlarmEnabled.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 onAlarmEnabledChanged(isChecked);
@@ -126,6 +134,29 @@ public class MainActivity extends SpotifyPlayerActivity {
                 runAlarmNow();
             }
         });
+        // repeats
+        mRepeatCheckBox = (CheckBox) findViewById(R.id.repeatCheckBox);
+        mRepeatCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                onRepeatChanged(isChecked);
+            }
+        });
+        mRepeatToggles = findViewById(R.id.repeatToggles);
+        final OnCheckedChangeListener changeListener = new
+
+                OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        onRepeatDatChanged(buttonView.getId(), isChecked);
+                    }
+                };
+        mRepeatDayToggles = new ToggleButton[REPEAT_DAY_IDS.length];
+        for (int i = 0; i < REPEAT_DAY_IDS.length; i++) {
+            mRepeatDayToggles[i] = (ToggleButton) findViewById(REPEAT_DAY_IDS[i]);
+            mRepeatDayToggles[i].setOnCheckedChangeListener(changeListener);
+        }
+        //TODO ensure toggles follow locale's first weekday: Calendar.getFirstDayOfWeek()
         // now playing
         mNowPlaying = findViewById(R.id.nowPlaying);
         mNowPlaying.setOnClickListener(new View.OnClickListener() {
@@ -155,6 +186,15 @@ public class MainActivity extends SpotifyPlayerActivity {
         } else {
             mPlaylistName.setText(name);
             mRunNowButton.setEnabled(true);
+        }
+
+        final int repeatDays = mAlarm.getRepeatDays();
+        mRepeatCheckBox.setChecked(repeatDays != Alarm.DAYS_NONE);
+        mRepeatToggles.setVisibility(repeatDays != Alarm.DAYS_NONE ? View.VISIBLE : View.GONE);
+        int day = 1;
+        for (final ToggleButton toggle : mRepeatDayToggles) {
+            toggle.setChecked((repeatDays & day) != 0);
+            day <<= 1;
         }
     }
 
@@ -214,6 +254,44 @@ public class MainActivity extends SpotifyPlayerActivity {
 
     private void runAlarmNow() {
         mAlarm.startAlarm(this);
+    }
+
+    private void onRepeatChanged(boolean checked) {
+        mAlarm.setRepeatDays(checked ? Alarm.DAYS_ALL : Alarm.DAYS_NONE);
+        mAlarmCollection.onAlarmUpdated(mAlarm, true);
+        updateUi();
+    }
+
+    private void onRepeatDatChanged(int id, boolean checked) {
+        final int day;
+        switch (id) {
+        case R.id.repeatDayMonday:
+            day = Alarm.DAY_MONDAY;
+            break;
+        case R.id.repeatDayTuesday:
+            day = Alarm.DAY_TUESDAY;
+            break;
+        case R.id.repeatDayWednesday:
+            day = Alarm.DAY_WEDNESDAY;
+            break;
+        case R.id.repeatDayThursday:
+            day = Alarm.DAY_THURSDAY;
+            break;
+        case R.id.repeatDayFriday:
+            day = Alarm.DAY_FRIDAY;
+            break;
+        case R.id.repeatDaySaturday:
+            day = Alarm.DAY_SATURDAY;
+            break;
+        case R.id.repeatDaySunday:
+            day = Alarm.DAY_SUNDAY;
+            break;
+        default:
+            return;
+        }
+        mAlarm.setRepeatDay(day, checked);
+        mAlarmCollection.onAlarmUpdated(mAlarm, true);
+        updateUi();
     }
 
     @Override

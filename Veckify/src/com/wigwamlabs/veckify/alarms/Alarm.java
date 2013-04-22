@@ -10,10 +10,20 @@ import com.wigwamlabs.veckify.NowPlayingActivity;
 import java.util.Calendar;
 
 public class Alarm {
+    public static final int DAY_MONDAY = 0x01;
+    public static final int DAY_TUESDAY = 0x02;
+    public static final int DAY_WEDNESDAY = 0x04;
+    public static final int DAY_THURSDAY = 0x08;
+    public static final int DAY_FRIDAY = 0x10;
+    public static final int DAY_SATURDAY = 0x20;
+    public static final int DAY_SUNDAY = 0x40;
+    public static final int DAYS_NONE = 0x00;
+    public static final int DAYS_ALL = DAY_MONDAY | DAY_TUESDAY | DAY_WEDNESDAY | DAY_THURSDAY | DAY_FRIDAY | DAY_SATURDAY | DAY_SUNDAY;
     private static final long MINIMUM_TIME_TO_ALARM_MS = 60 * 1000;
     private boolean mEnabled;
     private int mHour;
     private int mMinute;
+    private int mRepeatDays;
     private String mPlaylistName;
     private String mPlaylistLink;
     private int mVolume;
@@ -37,6 +47,22 @@ public class Alarm {
     public void setTime(int hour, int minute) {
         mHour = hour;
         mMinute = minute;
+    }
+
+    public int getRepeatDays() {
+        return mRepeatDays;
+    }
+
+    public void setRepeatDays(int repeatDays) {
+        mRepeatDays = repeatDays;
+    }
+
+    public void setRepeatDay(int day, boolean enabled) {
+        if (enabled) {
+            mRepeatDays |= day;
+        } else {
+            mRepeatDays &= ~day;
+        }
     }
 
     public String getPlaylistName() {
