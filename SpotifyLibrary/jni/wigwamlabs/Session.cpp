@@ -1,5 +1,5 @@
 #define LOG_TAG "Session"
-//#define LOG_NDEBUG 0
+#define LOG_NDEBUG 0
 #include "log.h"
 #if 0
 #define LOG_RUN_LOOP(...) LOGV(__VA_ARGS__)
@@ -45,6 +45,8 @@ Session *Session::create(SessionCallback *callback, const char *settingsPath, co
     callbacks.play_token_lost = onPlayTokenLost;
     callbacks.log_message = onLogMessage;
     callbacks.end_of_track = onEndOfTrack;
+    callbacks.streaming_error = onStreamingError;
+    //callbacks.get_audio_buffer_stats = onGetAudioBufferStats;
     callbacks.credentials_blob_updated = onCredentialsBlobUpdated;
     callbacks.connectionstate_updated = onConnectionStateUpdated;
 
@@ -296,6 +298,10 @@ void Session::onLogMessage(sp_session *session, const char *data) {
 
 void Session::onEndOfTrack(sp_session *session) {
     LOGV(__func__);
+}
+
+void Session::onStreamingError(sp_session *session, sp_error error) {
+    LOGV("%s, %s", __func__, sp_error_message(error));
 }
 
 void Session::onCredentialsBlobUpdated(sp_session *session, const char *blob) {

@@ -41,6 +41,7 @@ private:
     static int onMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int numFrames);
     static void onPlayTokenLost(sp_session *session);
     static void onLogMessage(sp_session *session, const char *data);
+    static void onStreamingError(sp_session *session, sp_error error);
     static void onEndOfTrack(sp_session *session);
     static void onCredentialsBlobUpdated(sp_session *session, const char *blob);
     static void onConnectionStateUpdated(sp_session *session);

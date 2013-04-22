@@ -208,6 +208,9 @@ sp_error Player::play(Track *track) {
             mTrackDurationMs = track->getDurationMs();
             setState(STATE_PLAYING);
         }
+        if (error != SP_ERROR_OK) {
+            LOGW("Error %d (%s) when playing track: %s", error, sp_error_message(error), track->getName());
+        }
     } else {
         LOGV("%s null", __func__);
         error = sp_session_player_unload(mSession);
@@ -221,7 +224,10 @@ sp_error Player::play(Track *track) {
 void Player::prefetchTrack(Track *track) {
     if (track) {
         LOGV("Prefetching track: %s", track->getName());
-        sp_session_player_prefetch(mSession, track->getTrack());
+        sp_error error = sp_session_player_prefetch(mSession, track->getTrack());
+        if (error != SP_ERROR_OK) {
+            LOGW("Error when prefetching track '%s': %s", track->getName(), sp_error_message(error));
+        }
     }
 }
 
