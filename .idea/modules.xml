@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/test/SpotifyAppTest.iml" filepath="$PROJECT_DIR$/test/SpotifyAppTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/SpotifyLibrary/SpotifyLibrary.iml" filepath="$PROJECT_DIR$/SpotifyLibrary/SpotifyLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/Veckify/Veckify.iml" filepath="$PROJECT_DIR$/Veckify/Veckify.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VeckifyTest/VeckifyTest.iml" filepath="$PROJECT_DIR$/VeckifyTest/VeckifyTest.iml" />
     </modules>
   </component>
 </project>
