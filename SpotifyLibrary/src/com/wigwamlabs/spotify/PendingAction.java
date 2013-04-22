@@ -1,19 +1,23 @@
 package com.wigwamlabs.spotify;
 
 import android.app.PendingIntent;
+import android.content.Context;
+import android.media.AudioManager;
 
 public class PendingAction implements Session.Callback, Playlist.Callback {
     private final SpotifyService mService;
     private final Session mSession;
     private final String mLink;
     private final PendingIntent mPlayIntent;
+    private final int mVolume;
     private Playlist mPlaylist;
 
-    public PendingAction(SpotifyService service, Session session, String link, PendingIntent playIntent) {
+    public PendingAction(SpotifyService service, Session session, String link, PendingIntent playIntent, int volume) {
         mService = service;
         mSession = session;
         mLink = link;
         mPlayIntent = playIntent;
+        mVolume = volume;
         switch (session.getConnectionState()) {
         case Session.CONNECTION_STATE_LOGGED_OUT:
         case Session.CONNECTION_STATE_UNDEFINED:

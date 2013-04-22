@@ -1,7 +1,11 @@
 package com.wigwamlabs.veckify;
 
 import android.content.Intent;
+import android.database.ContentObserver;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
@@ -17,6 +21,7 @@ import com.wigwamlabs.veckify.alarms.Alarm;
 import com.wigwamlabs.veckify.alarms.AlarmCollection;
 
 public class MainActivity extends SpotifyPlayerActivity {
+    private final Handler mHandler = new Handler();
     private AlarmCollection mAlarmCollection;
     private Alarm mAlarm;
     private PlaylistContainer mPlaylistContainer;
@@ -25,6 +30,8 @@ public class MainActivity extends SpotifyPlayerActivity {
     private Switch mAlarmEnabled;
     private View mRunNowButton;
     private View mNowPlaying;
+    private View mVolume;
+    private ContentObserver mContentObserver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,11 @@ public class MainActivity extends SpotifyPlayerActivity {
 
         mAlarmCollection = new AlarmCollection(this);
         mAlarm = mAlarmCollection.getAlarm();
+
+        if (mAlarm.getVolume() < 0) {
+            mAlarm.setVolume(getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            mAlarmCollection.onAlarmUpdated(mAlarm, false);
+        }
 
         initUi();
         updateUi();
@@ -44,12 +56,25 @@ public class MainActivity extends SpotifyPlayerActivity {
     protected void onResume() {
         Debug.logLifecycle("MainActivity.onResume()");
         super.onResume();
+
+        // detect volume changes
+        mContentObserver = new ContentObserver(mHandler) {
+            @Override
+            public void onChange(boolean selfChange) {
+                super.onChange(selfChange);
+                onVolumeChanged(getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC));
+            }
+        };
+        getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, mContentObserver);
     }
 
     @Override
     protected void onPause() {
         Debug.logLifecycle("MainActivity.onPause()");
         super.onPause();
+
+        getContentResolver().unregisterContentObserver(mContentObserver);
+        mContentObserver = null;
     }
 
     @Override
@@ -85,6 +110,14 @@ public class MainActivity extends SpotifyPlayerActivity {
                 onPickPlaylist();
             }
         });
+        // volume
+        mVolume = findViewById(R.id.volume);
+        mVolume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editVolume();
+            }
+        });
         //
         mRunNowButton = findViewById(R.id.runNowButton);
         mRunNowButton.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +143,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     }
 
     private void updateUi() {
+        //TODO disable switch if not playable
         mAlarmEnabled.setChecked(mAlarm.isEnabled());
         //TODO am/pm
         mAlarmTime.setText(String.format("%d:%02d", mAlarm.getHour(), mAlarm.getMinute()));
@@ -163,8 +197,23 @@ public class MainActivity extends SpotifyPlayerActivity {
         updateUi();
     }
 
+    private void editVolume() {
+        final AudioManager audioManager = getAudioManager();
+        final int volume = mAlarm.getVolume();
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+    }
+
+    private void onVolumeChanged(int volume) {
+        if (volume != mAlarm.getVolume()) {
+            mAlarm.setVolume(volume);
+            mAlarmCollection.onAlarmUpdated(mAlarm, false);
+            updateUi();
+        }
+    }
+
     private void runAlarmNow() {
-        Alarm.startAlarm(this, mAlarm.getPlaylistLink());
+        mAlarm.startAlarm(this);
     }
 
     @Override

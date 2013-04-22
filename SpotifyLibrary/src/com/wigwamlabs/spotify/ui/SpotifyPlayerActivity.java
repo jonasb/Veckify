@@ -1,5 +1,7 @@
 package com.wigwamlabs.spotify.ui;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -181,5 +183,9 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
 
     private void onSeekToPosition(int progressSeconds) {
         mPlayer.seek(progressSeconds * 1000);
+    }
+
+    protected AudioManager getAudioManager() {
+        return (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }
 }

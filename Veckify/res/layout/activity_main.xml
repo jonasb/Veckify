@@ -37,6 +37,15 @@
         android:singleLine="true" />
 
     <ImageButton
+        android:id="@+id/volume"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignTop="@id/playlistName"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="68dp"
+        android:src="@drawable/ic_button_volume_inverse"/>
+
+    <ImageButton
         android:id="@+id/runNowButton"
         android:layout_width="48dp"
         android:layout_height="48dp"

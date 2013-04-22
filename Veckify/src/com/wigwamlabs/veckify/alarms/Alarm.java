@@ -16,30 +16,14 @@ public class Alarm {
     private int mMinute;
     private String mPlaylistName;
     private String mPlaylistLink;
+    private int mVolume;
 
-    public static void startAlarm(Context context, String playlistLink) {
-        // setup intent to launch now playing
-        final Intent nowPlayingIntent = new Intent(context, NowPlayingActivity.class);
-        nowPlayingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // tell service to start playing
-        final Intent intent = new Intent(context, SpotifyService.class);
-        intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
-        intent.putExtra(SpotifyService.EXTRA_LINK, playlistLink);
-        intent.putExtra(SpotifyService.EXTRA_INTENT, PendingIntent.getActivity(context, 0, nowPlayingIntent, 0));
-        context.startService(intent);
-
-        // launch now playing in alarm mode
-        nowPlayingIntent.setAction(NowPlayingActivity.ACTION_ALARM);
-        context.startActivity(nowPlayingIntent);
+    public boolean isEnabled() {
+        return mEnabled;
     }
 
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;
-    }
-
-    public boolean isEnabled() {
-        return mEnabled;
     }
 
     public int getHour() {
@@ -55,20 +39,28 @@ public class Alarm {
         mMinute = minute;
     }
 
+    public String getPlaylistName() {
+        return mPlaylistName;
+    }
+
     public void setPlaylistName(String name) {
         mPlaylistName = name;
     }
 
-    public String getPlaylistName() {
-        return mPlaylistName;
+    public String getPlaylistLink() {
+        return mPlaylistLink;
     }
 
     public void setPlaylistLink(String link) {
         mPlaylistLink = link;
     }
 
-    public String getPlaylistLink() {
-        return mPlaylistLink;
+    public int getVolume() {
+        return mVolume;
+    }
+
+    public void setVolume(int volume) {
+        mVolume = volume;
     }
 
     public Calendar getNextAlarmTime() {
@@ -87,5 +79,23 @@ public class Alarm {
         }
 
         return cal;
+    }
+
+    public void startAlarm(Context context) {
+        // setup intent to launch now playing
+        final Intent nowPlayingIntent = new Intent(context, NowPlayingActivity.class);
+        nowPlayingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // tell service to start playing
+        final Intent intent = new Intent(context, SpotifyService.class);
+        intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
+        intent.putExtra(SpotifyService.EXTRA_LINK, mPlaylistLink);
+        intent.putExtra(SpotifyService.EXTRA_INTENT, PendingIntent.getActivity(context, 0, nowPlayingIntent, 0));
+        intent.putExtra(SpotifyService.EXTRA_VOLUME, mVolume);
+        context.startService(intent);
+
+        // launch now playing in alarm mode
+        nowPlayingIntent.setAction(NowPlayingActivity.ACTION_ALARM);
+        context.startActivity(nowPlayingIntent);
     }
 }

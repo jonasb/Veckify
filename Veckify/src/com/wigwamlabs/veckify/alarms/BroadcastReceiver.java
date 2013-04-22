@@ -22,7 +22,8 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
                 Debug.logAlarmScheduling("Received alarm broadcast " + timeSinceEventMs / 1000 + "s after scheduled");
 
                 if (timeSinceEventMs < MAX_TIME_SINCE_SCHEDULED_MS) {
-                    Alarm.startAlarm(context, intent.getStringExtra(EXTRA_PLAYLIST_LINK));
+                    final Alarm alarm = alarmCollection.getAlarm();
+                    alarm.startAlarm(context);
                 } else {
                     Debug.logAlarmScheduling("Skipping alarm since too long since scheduled");
                 }
