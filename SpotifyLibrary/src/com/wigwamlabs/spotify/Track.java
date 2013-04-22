@@ -16,13 +16,13 @@ public class Track extends NativeItem {
         setHandle(nativeCreate(uri));
     }
 
+    private static native void nativeInitClass();
+
     @Override
     public Track clone() {
         final int handle = nativeClone();
         return new Track(handle);
     }
-
-    private static native void nativeInitClass();
 
     private native int nativeCreate(String uri);
 
@@ -57,6 +57,10 @@ public class Track extends NativeItem {
             return mArtists;
         }
         final int count = nativeGetArtistCount();
+        if (count == 0) {
+            return new Artist[0];
+        }
+
         mArtists = new Artist[count];
         for (int i = 0; i < mArtists.length; i++) {
             final int handle = nativeGetArtist(i);
