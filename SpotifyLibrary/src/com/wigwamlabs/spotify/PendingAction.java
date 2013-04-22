@@ -61,6 +61,11 @@ public class PendingAction implements Session.Callback, Playlist.Callback {
         if (mPlaylist.isLoaded()) {
             mPlaylist.setCallback(null, false);
 
+            if (mVolume >= 0) {
+                final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mVolume, 0);
+            }
+
             mService.setPlayIntent(mPlayIntent);
             mSession.getPlayer().play(new PlaylistQueue(mPlaylist, 0));
             mPlaylist = null;
