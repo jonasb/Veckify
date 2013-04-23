@@ -4,6 +4,7 @@
 
 #include "Track.h"
 #include "Artist.h"
+#include "Session.h"
 
 namespace wigwamlabs {
 
@@ -63,6 +64,10 @@ Artist *Track::getArtist(int index) const {
 
 int Track::getDurationMs() const {
     return sp_track_duration(mTrack);
+}
+
+sp_track_availability Track::getAvailability(Session *session) const {
+    return sp_track_get_availability(session->getSession(), mTrack);
 }
 
 } // namespace wigwamlabs

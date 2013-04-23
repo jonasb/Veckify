@@ -88,3 +88,12 @@ JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Track, nativeGetArtist, jint index)
 
     return reinterpret_cast<jint>(artist);
 }
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Track, nativeGetAvailability, jobject sessionHandle) {
+    LOGV("nativeGetAvailability()");
+
+    Track *track = getNativeTrack(env, self);
+    Session *session = getNativeSession(env, sessionHandle);
+
+    return track->getAvailability(session);
+}

@@ -5,6 +5,11 @@ public class Track extends NativeItem {
         nativeInitClass();
     }
 
+    public static final int AVAILABILITY_UNAVAILABLE = 0;
+    public static final int AVAILABILITY_AVAILABLE = 1;
+    public static final int AVAILABILITY_NOT_STREAMABLE = 2;
+    public static final int AVAILABILITY_BANNED_BY_ARTIST = 3;
+
     private Artist[] mArtists;
 
     Track(int handle) {
@@ -36,6 +41,8 @@ public class Track extends NativeItem {
     private native int nativeGetArtistCount();
 
     private native int nativeGetArtist(int index);
+
+    private native int nativeGetAvailability(Session session);
 
     @Override
     public void destroy() {
@@ -79,5 +86,9 @@ public class Track extends NativeItem {
             sb.append(artist.getName());
         }
         return sb.toString();
+    }
+
+    public int getAvailability(Session session) {
+        return nativeGetAvailability(session);
     }
 }

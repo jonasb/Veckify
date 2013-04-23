@@ -6,6 +6,7 @@
 namespace wigwamlabs {
 
 class Artist;
+class Session;
 
 class Track {
 public:
@@ -20,6 +21,7 @@ public:
     int getArtistCount() const;
     Artist *getArtist(int index) const;
     int getDurationMs() const;
+    sp_track_availability getAvailability(Session *session) const;
 
 private:
     sp_track *mTrack;
