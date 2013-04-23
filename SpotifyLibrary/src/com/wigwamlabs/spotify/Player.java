@@ -224,6 +224,9 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     }
 
     public void next() {
+        if (mQueue == null) {
+            return;
+        }
         if (requestAudioFocus()) {
             mQueue.next();
             playTrack();
