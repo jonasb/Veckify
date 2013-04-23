@@ -21,10 +21,12 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     public static final int STATE_PAUSED_NOISY = 3;
     public static final int STATE_PAUSED_AUDIOFOCUS = 4;
     public static final int STATE_STOPPED = 5;
+    private static final long DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS = 5 * 1000;
     private final Handler mHandler = new Handler();
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private final Context mContext;
     private final AudioManager mAudioManager;
+    private final Runnable mResondToUnresponsiveAudio;
     private boolean mHasAudioFocus;
     private Queue mQueue;
     private int mTrackProgressSec = 0;
@@ -38,6 +40,12 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
 
         mContext = context;
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        mResondToUnresponsiveAudio = new Runnable() {
+            @Override
+            public void run() {
+                onUnresponsiveAudio();
+            }
+        };
     }
 
     private static native void nativeInitClass();
@@ -63,9 +71,6 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
 
     @Keep
     private void onStateChanged(final int state) {
-        if (mCallbacks.isEmpty()) {
-            return;
-        }
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -77,6 +82,14 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                 }
                 if (mRemoteControlClient != null) {
                     mRemoteControlClient.onStateChanged(state);
+                }
+                if (state == STATE_PLAYING) {
+                    Debug.logAudioResponsivenessVerbose("Start checking since we start playing");
+                    mHandler.removeCallbacks(mResondToUnresponsiveAudio);
+                    mHandler.postDelayed(mResondToUnresponsiveAudio, DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS);
+                } else {
+                    Debug.logAudioResponsivenessVerbose("Stop checking, since we're not playing");
+                    mHandler.removeCallbacks(mResondToUnresponsiveAudio);
                 }
             }
         });
@@ -102,6 +115,9 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                     }
                     mPrefetchRequested = true;
                 }
+                Debug.logAudioResponsivenessVerbose("Got audio, postpone check");
+                mHandler.removeCallbacks(mResondToUnresponsiveAudio);
+                mHandler.postDelayed(mResondToUnresponsiveAudio, DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS);
             }
         });
     }
@@ -152,13 +168,12 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
         Track track;
         while (true) {
             track = mQueue.getTrack(0);
-            int error = nativePlay(track);
+            final int error = nativePlay(track);
             if (error == SpotifyError.TRACK_NOT_PLAYABLE) {
                 Debug.logQueue("Queue: track '" + track.getName() + "' not playable, skip");
                 //TODO what if all tracks are non playable
                 //TODO keep track of which tracks are playable?
                 mQueue.next();
-                continue;
             } else {
                 break;
             }
@@ -275,6 +290,21 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
             nativePause(STATE_PAUSED_AUDIOFOCUS);
             break;
         }
+    }
+
+    private void onUnresponsiveAudio() {
+        if (getState() != STATE_PLAYING) {
+            Debug.logAudioResponsiveness("Is not playing when reacting to unresponsiveness, ignore.");
+            return;
+        }
+        Debug.logAudioResponsiveness("Audio is unresponsive, skip track");
+        Debug.notifyAudioUnresponsive(mContext, "Audio unresponsive", "Skipping current track.");
+
+        mQueue.next();
+        playTrack();
+
+        mHandler.removeCallbacks(mResondToUnresponsiveAudio);
+        mHandler.postDelayed(mResondToUnresponsiveAudio, DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS);
     }
 
     public interface Callback {
