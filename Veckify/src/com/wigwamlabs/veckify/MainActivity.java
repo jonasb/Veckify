@@ -52,6 +52,12 @@ public class MainActivity extends SpotifyPlayerActivity {
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Debug.logLifecycle("MainActivity.onRestoreInstanceState()");
+        // prevent default restoration since we get the new state in onResume()
+    }
+
+    @Override
     protected void onResume() {
         Debug.logLifecycle("MainActivity.onResume()");
         super.onResume();
