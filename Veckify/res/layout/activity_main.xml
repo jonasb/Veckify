@@ -42,8 +42,17 @@
         android:layout_height="48dp"
         android:layout_alignTop="@id/playlistName"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="68dp"
+        android:layout_marginRight="120dp"
         android:src="@drawable/ic_button_volume_inverse" />
+
+    <ImageButton
+        android:id="@+id/repeatShuffleToggle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="68dp"
+        android:layout_alignTop="@id/playlistName"
+        android:src="@drawable/ic_button_repeat_shuffle_toggle_inverse" />
 
     <ImageButton
         android:id="@+id/runNowButton"

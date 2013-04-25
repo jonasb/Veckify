@@ -10,14 +10,16 @@ public class PendingAction implements Session.Callback, Playlist.Callback {
     private final String mLink;
     private final PendingIntent mPlayIntent;
     private final int mVolume;
+    private final boolean mShuffle;
     private Playlist mPlaylist;
 
-    public PendingAction(SpotifyService service, Session session, String link, PendingIntent playIntent, int volume) {
+    public PendingAction(SpotifyService service, Session session, String link, PendingIntent playIntent, int volume, boolean shuffle) {
         mService = service;
         mSession = session;
         mLink = link;
         mPlayIntent = playIntent;
         mVolume = volume;
+        mShuffle = shuffle;
         switch (session.getConnectionState()) {
         case Session.CONNECTION_STATE_LOGGED_OUT:
         case Session.CONNECTION_STATE_UNDEFINED:
@@ -67,7 +69,7 @@ public class PendingAction implements Session.Callback, Playlist.Callback {
             }
 
             mService.setPlayIntent(mPlayIntent);
-            mSession.getPlayer().play(new PlaylistQueue(mPlaylist, 0, false));
+            mSession.getPlayer().play(new PlaylistQueue(mPlaylist, mShuffle ? -1 : 0, mShuffle));
             mPlaylist = null;
         }
     }

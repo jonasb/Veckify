@@ -9,6 +9,7 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     private TextView mAlarmTime;
     private TextView mPlaylistName;
     private Switch mAlarmEnabled;
+    private ImageButton mRepeatShuffleToggle;
     private View mRunNowButton;
     private View mNowPlaying;
     private ContentObserver mContentObserver;
@@ -135,6 +137,14 @@ public class MainActivity extends SpotifyPlayerActivity {
                 editVolume();
             }
         });
+        // repeat/shuffle
+        mRepeatShuffleToggle = (ImageButton) findViewById(R.id.repeatShuffleToggle);
+        mRepeatShuffleToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onRepeatShuffleClicked();
+            }
+        });
         //
         mRunNowButton = findViewById(R.id.runNowButton);
         mRunNowButton.setOnClickListener(new View.OnClickListener() {
@@ -202,6 +212,8 @@ public class MainActivity extends SpotifyPlayerActivity {
             mRunNowButton.setEnabled(true);
         }
 
+        mRepeatShuffleToggle.setImageResource(mAlarm.isShuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
+
         final int repeatDays = mAlarm.getRepeatDays();
         mRepeatCheckBox.setChecked(repeatDays != Alarm.DAYS_NONE);
         mRepeatToggles.setVisibility(repeatDays != Alarm.DAYS_NONE ? View.VISIBLE : View.GONE);
@@ -265,6 +277,12 @@ public class MainActivity extends SpotifyPlayerActivity {
             mAlarmCollection.onAlarmUpdated(mAlarm, false);
             updateUi();
         }
+    }
+
+    private void onRepeatShuffleClicked() {
+        mAlarm.setShuffle(!mAlarm.isShuffle());
+        mAlarmCollection.onAlarmUpdated(mAlarm, false);
+        updateUi();
     }
 
     private void runAlarmNow() {

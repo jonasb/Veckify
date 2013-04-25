@@ -29,6 +29,7 @@ public class Alarm {
     private String mPlaylistName;
     private String mPlaylistLink;
     private int mVolume;
+    private boolean mShuffle;
 
     public boolean isEnabled() {
         return mEnabled;
@@ -97,6 +98,14 @@ public class Alarm {
 
     public void setVolume(int volume) {
         mVolume = volume;
+    }
+
+    public boolean isShuffle() {
+        return mShuffle;
+    }
+
+    public void setShuffle(boolean shuffle) {
+        mShuffle = shuffle;
     }
 
     void updateBeforeSaving(long nowMs) {
@@ -187,6 +196,7 @@ public class Alarm {
         intent.putExtra(SpotifyService.EXTRA_LINK, mPlaylistLink);
         intent.putExtra(SpotifyService.EXTRA_INTENT, PendingIntent.getActivity(context, 0, nowPlayingIntent, 0));
         intent.putExtra(SpotifyService.EXTRA_VOLUME, mVolume);
+        intent.putExtra(SpotifyService.EXTRA_SHUFFLE, mShuffle);
         context.startService(intent);
 
         // launch now playing in alarm mode

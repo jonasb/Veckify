@@ -22,6 +22,7 @@ public class AlarmCollection {
     private static final String ALARM_PLAYLIST_NAME = "alarm_playlist_name";
     private static final String ALARM_PLAYLIST_LINK = "alarm_playlist_link";
     private static final String ALARM_VOLUME = "alarm_volume";
+    private static final String ALARM_SHUFFLE = "alarm_shuffle";
     private final SharedPreferences mPreferences;
     private final Context mContext;
     private final AlarmManager mAlarmManager;
@@ -39,6 +40,7 @@ public class AlarmCollection {
         mAlarm.setPlaylistName(mPreferences.getString(ALARM_PLAYLIST_NAME, null));
         mAlarm.setPlaylistLink(mPreferences.getString(ALARM_PLAYLIST_LINK, null));
         mAlarm.setVolume(mPreferences.getInt(ALARM_VOLUME, -1));
+        mAlarm.setShuffle(mPreferences.getBoolean(ALARM_SHUFFLE, false));
 
         mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
@@ -71,6 +73,7 @@ public class AlarmCollection {
                 .putString(ALARM_PLAYLIST_NAME, alarm.getPlaylistName())
                 .putString(ALARM_PLAYLIST_LINK, alarm.getPlaylistLink())
                 .putInt(ALARM_VOLUME, alarm.getVolume())
+                .putBoolean(ALARM_SHUFFLE, alarm.isShuffle())
                 .apply();
 
         if (reschedule) {

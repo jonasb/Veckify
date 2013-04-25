@@ -16,6 +16,7 @@ public class SpotifyService extends android.app.Service {
     public static final String EXTRA_LINK = "link";
     public static final String EXTRA_INTENT = "intent";
     public static final String EXTRA_VOLUME = "volume";
+    public static final String EXTRA_SHUFFLE = "shuffle";
     private final IBinder mBinder = new LocalBinder();
     private final Handler mHandler = new Handler();
     private Session mSession;
@@ -66,7 +67,8 @@ public class SpotifyService extends android.app.Service {
                 final String link = intent.getStringExtra(EXTRA_LINK);
                 final PendingIntent playIntent = intent.getParcelableExtra(EXTRA_INTENT);
                 final int volume = intent.getIntExtra(EXTRA_VOLUME, -1);
-                new PendingAction(this, getSession(), link, playIntent, volume);
+                final boolean shuffle = intent.getBooleanExtra(EXTRA_SHUFFLE, false);
+                new PendingAction(this, getSession(), link, playIntent, volume, shuffle);
             }
         }
 
