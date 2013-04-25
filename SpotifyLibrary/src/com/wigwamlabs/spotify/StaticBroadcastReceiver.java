@@ -1,11 +1,11 @@
 package com.wigwamlabs.spotify;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.view.KeyEvent;
 
-public class BroadcastReceiver extends android.content.BroadcastReceiver {
+public class StaticBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
@@ -14,8 +14,6 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
             if (keyEvent != null) {
                 handleMediaButton(context, keyEvent);
             }
-        } else if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
-            sendActionToService(context, SpotifyService.ACTION_PAUSE_NOISY);
         }
     }
 

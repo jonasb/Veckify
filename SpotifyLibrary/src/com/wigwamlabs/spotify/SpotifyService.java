@@ -9,7 +9,6 @@ import android.os.IBinder;
 public class SpotifyService extends android.app.Service {
     static final String ACTION_NEXT = "next";
     static final String ACTION_PAUSE = "pause";
-    public static final String ACTION_PAUSE_NOISY = "pause_noisy";
     public static final String ACTION_PLAY_PLAYLIST = "play_playlist";
     static final String ACTION_RESUME = "resume";
     static final String ACTION_TOGGLE_PAUSE = "toggle_pause";
@@ -23,6 +22,7 @@ public class SpotifyService extends android.app.Service {
     private int mClientCount;
     private PlayerNotification mPlayerNotification;
     private Player mPlayer;
+    private RuntimeBroadcastReceiver mRuntimeBroadcastReceiver;
 
     @Override
     public void onCreate() {
@@ -32,6 +32,11 @@ public class SpotifyService extends android.app.Service {
         mSession = new Session(this, null, null, null);
         mPlayer = mSession.getPlayer();
 
+        //
+        mRuntimeBroadcastReceiver = new RuntimeBroadcastReceiver(mPlayer);
+        registerReceiver(mRuntimeBroadcastReceiver, mRuntimeBroadcastReceiver.getFilter());
+
+        // init notification
         final Intent pauseIntent = new Intent(this, SpotifyService.class);
         pauseIntent.setAction(ACTION_PAUSE);
 
@@ -55,8 +60,6 @@ public class SpotifyService extends android.app.Service {
             final String action = intent.getAction();
             if (ACTION_PAUSE.equals(action)) {
                 mPlayer.pause();
-            } else if (ACTION_PAUSE_NOISY.equals(action)) {
-                mPlayer.pauseNoisy();
             } else if (ACTION_RESUME.equals(action)) {
                 mPlayer.resume();
             } else if (ACTION_TOGGLE_PAUSE.equals(action)) {
@@ -99,6 +102,10 @@ public class SpotifyService extends android.app.Service {
     public void onDestroy() {
         Debug.logLifecycle("SpotifyService onDestroy()");
         super.onDestroy();
+
+        if (mRuntimeBroadcastReceiver != null) {
+            unregisterReceiver(mRuntimeBroadcastReceiver);
+        }
 
         if (mSession != null) {
             mSession.logout();

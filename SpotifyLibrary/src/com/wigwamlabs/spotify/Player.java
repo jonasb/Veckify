@@ -241,7 +241,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
         }
 
         if (mHasAudioFocus) {
-            final ComponentName receiver = new ComponentName(mContext, BroadcastReceiver.class);
+            final ComponentName receiver = new ComponentName(mContext, StaticBroadcastReceiver.class);
             // if the receiver is already registered, it will be moved to the top of the stack, so it's ok to call it multiple times
             mAudioManager.registerMediaButtonEventReceiver(receiver);
 
@@ -255,7 +255,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     }
 
     private void abandonAudioFocus() {
-        final ComponentName receiver = new ComponentName(mContext, BroadcastReceiver.class);
+        final ComponentName receiver = new ComponentName(mContext, StaticBroadcastReceiver.class);
         if (mRemoteControlClient != null) {
             mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
             mRemoteControlClient = null;
