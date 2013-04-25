@@ -40,6 +40,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     private CheckBox mRepeatCheckBox;
     private ToggleButton[] mRepeatDayToggles;
     private View mRepeatToggles;
+    private boolean mUiIsUpdating;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,7 +115,9 @@ public class MainActivity extends SpotifyPlayerActivity {
         mAlarmEnabled.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onAlarmEnabledChanged(isChecked);
+                if (!mUiIsUpdating) {
+                    onAlarmEnabledChanged(isChecked);
+                }
             }
         });
         // set up playlist picker
@@ -146,7 +149,9 @@ public class MainActivity extends SpotifyPlayerActivity {
         mRepeatCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onRepeatChanged(isChecked);
+                if (!mUiIsUpdating) {
+                    onRepeatChanged(isChecked);
+                }
             }
         });
         mRepeatToggles = findViewById(R.id.repeatToggles);
@@ -155,7 +160,9 @@ public class MainActivity extends SpotifyPlayerActivity {
                 OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        onRepeatDatChanged(buttonView.getId(), isChecked);
+                        if (!mUiIsUpdating) {
+                            onRepeatDayChanged(buttonView.getId(), isChecked);
+                        }
                     }
                 };
         mRepeatDayToggles = new ToggleButton[REPEAT_DAY_IDS.length];
@@ -181,6 +188,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     }
 
     private void updateUi() {
+        mUiIsUpdating = true;
         //TODO disable switch if not playable
         mAlarmEnabled.setChecked(mAlarm.isEnabled());
         //TODO am/pm
@@ -203,6 +211,7 @@ public class MainActivity extends SpotifyPlayerActivity {
             toggle.setChecked((repeatDays & day) != 0);
             day <<= 1;
         }
+        mUiIsUpdating = false;
     }
 
     private void onEditTime() {
@@ -269,7 +278,7 @@ public class MainActivity extends SpotifyPlayerActivity {
         updateUi();
     }
 
-    private void onRepeatDatChanged(int id, boolean checked) {
+    private void onRepeatDayChanged(int id, boolean checked) {
         final int day;
         switch (id) {
         case R.id.repeatDayMonday:
