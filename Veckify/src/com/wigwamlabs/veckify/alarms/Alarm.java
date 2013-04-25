@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.wigwamlabs.spotify.SpotifyService;
+import com.wigwamlabs.veckify.Debug;
 import com.wigwamlabs.veckify.NowPlayingActivity;
 
 import java.util.Calendar;
@@ -24,6 +25,7 @@ public class Alarm {
     private int mHour;
     private int mMinute;
     private int mRepeatDays;
+    private long mOneOffTimeMs;
     private String mPlaylistName;
     private String mPlaylistLink;
     private int mVolume;
@@ -65,6 +67,14 @@ public class Alarm {
         }
     }
 
+    long getOneOffTimeMs() {
+        return mOneOffTimeMs;
+    }
+
+    void setOneOffTimeMs(long oneOffTimeMs) {
+        mOneOffTimeMs = oneOffTimeMs;
+    }
+
     public String getPlaylistName() {
         return mPlaylistName;
     }
@@ -87,6 +97,38 @@ public class Alarm {
 
     public void setVolume(int volume) {
         mVolume = volume;
+    }
+
+    void updateBeforeSaving(long nowMs) {
+        if (!mEnabled) {
+            return;
+        }
+
+        if (mRepeatDays == DAYS_NONE) {
+            mOneOffTimeMs = getNextAlarmTime(nowMs).getTimeInMillis();
+        }
+    }
+
+    boolean updateBeforeScheduling(long nowMs) {
+        if (!mEnabled) {
+            return false; //unchanged
+        }
+
+        if (mRepeatDays == DAYS_NONE) { // one-off
+            // check if in past
+            if (mOneOffTimeMs < nowMs) {
+                Debug.logAlarmScheduling("Disabling alarm since it's one-off and in the past");
+                mEnabled = false;
+                return true; // changed
+            }
+            // update one-off time if needed
+            final long nextTimeMs = getNextAlarmTime(nowMs).getTimeInMillis();
+            if (nextTimeMs != mOneOffTimeMs) {
+                mOneOffTimeMs = nextTimeMs;
+                return true; // changed
+            }
+        }
+        return false; //unchanged
     }
 
     public Calendar getNextAlarmTime(long nowMs) {

@@ -18,6 +18,7 @@ public class AlarmCollection {
     private static final String ALARM_HOUR = "alarm_hour";
     private static final String ALARM_MINUTE = "alarm_minute";
     private static final String ALARM_REPEAT_DAYS = "alarm_repeat_days";
+    private static final String ALARM_ONEOFFTIME_MS = "alarm_oneofftime_ms";
     private static final String ALARM_PLAYLIST_NAME = "alarm_playlist_name";
     private static final String ALARM_PLAYLIST_LINK = "alarm_playlist_link";
     private static final String ALARM_VOLUME = "alarm_volume";
@@ -34,6 +35,7 @@ public class AlarmCollection {
         mAlarm.setEnabled(mPreferences.getBoolean(ALARM_ENABLED, false));
         mAlarm.setTime(mPreferences.getInt(ALARM_HOUR, 9), mPreferences.getInt(ALARM_MINUTE, 0));
         mAlarm.setRepeatDays(mPreferences.getInt(ALARM_REPEAT_DAYS, Alarm.DAYS_NONE));
+        mAlarm.setOneOffTimeMs(mPreferences.getLong(ALARM_ONEOFFTIME_MS, 0));
         mAlarm.setPlaylistName(mPreferences.getString(ALARM_PLAYLIST_NAME, null));
         mAlarm.setPlaylistLink(mPreferences.getString(ALARM_PLAYLIST_LINK, null));
         mAlarm.setVolume(mPreferences.getInt(ALARM_VOLUME, -1));
@@ -46,18 +48,26 @@ public class AlarmCollection {
     }
 
     private Pair<Alarm, Calendar> getNextAlarm() {
+        final long nowMs = System.currentTimeMillis();
+        if (mAlarm.updateBeforeScheduling(nowMs)) {
+            onAlarmUpdated(mAlarm, false);
+        }
+
         if (mAlarm.isEnabled()) {
-            return Pair.create(mAlarm, mAlarm.getNextAlarmTime(System.currentTimeMillis()));
+            return Pair.create(mAlarm, mAlarm.getNextAlarmTime(nowMs));
         }
         return null;
     }
 
     public void onAlarmUpdated(Alarm alarm, boolean reschedule) {
+        alarm.updateBeforeSaving(System.currentTimeMillis());
+
         mPreferences.edit()
                 .putBoolean(ALARM_ENABLED, alarm.isEnabled())
                 .putInt(ALARM_HOUR, alarm.getHour())
                 .putInt(ALARM_MINUTE, alarm.getMinute())
                 .putInt(ALARM_REPEAT_DAYS, alarm.getRepeatDays())
+                .putLong(ALARM_ONEOFFTIME_MS, alarm.getOneOffTimeMs())
                 .putString(ALARM_PLAYLIST_NAME, alarm.getPlaylistName())
                 .putString(ALARM_PLAYLIST_LINK, alarm.getPlaylistLink())
                 .putInt(ALARM_VOLUME, alarm.getVolume())
