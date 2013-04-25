@@ -89,9 +89,8 @@ public class Alarm {
         mVolume = volume;
     }
 
-    public Calendar getNextAlarmTime() {
+    public Calendar getNextAlarmTime(long nowMs) {
         final Calendar cal = Calendar.getInstance();
-        final long nowMs = System.currentTimeMillis();
         cal.setTimeInMillis(nowMs);
         cal.set(Calendar.HOUR_OF_DAY, mHour);
         cal.set(Calendar.MINUTE, mMinute);
@@ -102,6 +101,34 @@ public class Alarm {
 
         if (timeToAlarmMs < MINIMUM_TIME_TO_ALARM_MS) {
             cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        if (mRepeatDays != DAYS_NONE) {
+            for (int i = 0; i < 7; i++) {
+                final int day = cal.get(Calendar.DAY_OF_WEEK);
+                if (day == Calendar.MONDAY && (mRepeatDays & DAY_MONDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.TUESDAY && (mRepeatDays & DAY_TUESDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.WEDNESDAY && (mRepeatDays & DAY_WEDNESDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.THURSDAY && (mRepeatDays & DAY_THURSDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.FRIDAY && (mRepeatDays & DAY_FRIDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.SATURDAY && (mRepeatDays & DAY_SATURDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.SUNDAY && (mRepeatDays & DAY_SUNDAY) != 0) {
+                    break;
+                }
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+            }
         }
 
         return cal;

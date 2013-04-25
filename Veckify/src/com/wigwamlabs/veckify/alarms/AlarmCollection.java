@@ -47,7 +47,7 @@ public class AlarmCollection {
 
     private Pair<Alarm, Calendar> getNextAlarm() {
         if (mAlarm.isEnabled()) {
-            return Pair.create(mAlarm, mAlarm.getNextAlarmTime());
+            return Pair.create(mAlarm, mAlarm.getNextAlarmTime(System.currentTimeMillis()));
         }
         return null;
     }
