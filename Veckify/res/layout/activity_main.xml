@@ -52,7 +52,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="68dp"
         android:layout_alignTop="@id/playlistName"
-        android:src="@drawable/ic_button_repeat_shuffle_toggle_inverse" />
+        android:src="@drawable/ic_button_shuffle_inverse" />
 
     <ImageButton
         android:id="@+id/runNowButton"
