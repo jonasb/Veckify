@@ -21,7 +21,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     public static final int STATE_PAUSED_NOISY = 3;
     public static final int STATE_PAUSED_AUDIOFOCUS = 4;
     public static final int STATE_STOPPED = 5;
-    private static final long DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS = 5 * 1000;
+    private static final long DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS = 10 * 1000;
     private final Handler mHandler = new Handler();
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private final Context mContext;
