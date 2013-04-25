@@ -46,16 +46,7 @@ public class MainActivity extends SpotifyPlayerActivity {
         Debug.logLifecycle("MainActivity.onCreate()");
         super.onCreate(savedInstanceState);
 
-        mAlarmCollection = new AlarmCollection(this);
-        mAlarm = mAlarmCollection.getAlarm();
-
-        if (mAlarm.getVolume() < 0) {
-            mAlarm.setVolume(getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-            mAlarmCollection.onAlarmUpdated(mAlarm, false);
-        }
-
         initUi();
-        updateUi();
 
         bindSpotifyService();
     }
@@ -64,6 +55,16 @@ public class MainActivity extends SpotifyPlayerActivity {
     protected void onResume() {
         Debug.logLifecycle("MainActivity.onResume()");
         super.onResume();
+
+        mAlarmCollection = new AlarmCollection(this);
+        mAlarm = mAlarmCollection.getAlarm();
+
+        if (mAlarm.getVolume() < 0) {
+            mAlarm.setVolume(getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            mAlarmCollection.onAlarmUpdated(mAlarm, false);
+        }
+
+        updateUi();
 
         // detect volume changes
         mContentObserver = new ContentObserver(mHandler) {
