@@ -143,5 +143,4 @@ public class NativeItemContainerTest extends TestCase {
         container.onItemsMoved(new int[]{1, 3}, 4);
         assertEquals(container.getNativeItems(), container.getContainerItems());
     }
-
 }

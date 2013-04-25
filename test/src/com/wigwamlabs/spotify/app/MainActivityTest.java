@@ -17,5 +17,4 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     public MainActivityTest() {
         super("com.wigwamlabs.spotify.app", MainActivity.class);
     }
-
 }

@@ -35,7 +35,6 @@ public class MainActivity extends SpotifyPlayerActivity {
     private Switch mAlarmEnabled;
     private View mRunNowButton;
     private View mNowPlaying;
-    private View mVolume;
     private ContentObserver mContentObserver;
     private CheckBox mRepeatCheckBox;
     private ToggleButton[] mRepeatDayToggles;
@@ -129,8 +128,8 @@ public class MainActivity extends SpotifyPlayerActivity {
             }
         });
         // volume
-        mVolume = findViewById(R.id.volume);
-        mVolume.setOnClickListener(new View.OnClickListener() {
+        final View volume = findViewById(R.id.volume);
+        volume.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editVolume();
