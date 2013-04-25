@@ -125,6 +125,6 @@ public class MainActivity extends SpotifyPlayerActivity {
     private void onTrackClicked(int position) {
         //TODO change queue if current queue is using the same playlist, instead of always creating a new queue
         getSpotifyService().setPlayIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
-        getPlayer().play(new PlaylistQueue(mPlaylist, position));
+        getPlayer().play(new PlaylistQueue(mPlaylist, position, false));
     }
 }

@@ -3,10 +3,12 @@ package com.wigwamlabs.spotify;
 public class PlaylistQueue implements Queue, Playlist.Callback {
     private final Track[] mTracks = new Track[2];
     private final int[] mTrackIds = new int[mTracks.length];
+    private final boolean mRandom;
     private Playlist mPlaylist;
     private int mPlaylistIndex = 0;
 
-    public PlaylistQueue(Playlist playlist, int initialIndex) {
+    public PlaylistQueue(Playlist playlist, int initialIndex, boolean random) {
+        mRandom = random;
         mPlaylist = playlist.clone();
         mPlaylist.setCallback(this, false);
         mPlaylistIndex = initialIndex;
@@ -31,7 +33,7 @@ public class PlaylistQueue implements Queue, Playlist.Callback {
     @Override
     public Track getTrack(int index) {
         if (mTracks[index] == null) {
-            final Track track = getTrackAtPlaylistIndex(index);
+            final Track track = getTrackUncached(index);
             if (track != null) {
                 mTracks[index] = track.clone();
                 mTrackIds[index] = track.getId();
@@ -40,15 +42,27 @@ public class PlaylistQueue implements Queue, Playlist.Callback {
         return mTracks[index];
     }
 
-    private Track getTrackAtPlaylistIndex(int index) {
-        return mPlaylist.getItem((mPlaylistIndex + index) % mPlaylist.getCount());
+    private Track getTrackUncached(int index) {
+        final int count = mPlaylist.getCount();
+        if (mRandom) {
+            // special case for first track which can be at a specific index
+            if (index == 0 && mPlaylistIndex >= 0) {
+                return mPlaylist.getItem((mPlaylistIndex + index) % count);
+            }
+            return mPlaylist.getItem((int) (count * Math.random()));
+        }
+        return mPlaylist.getItem((mPlaylistIndex + index) % count);
     }
 
     @Override
     public void next() {
-        mPlaylistIndex = calculateIndexOfNext();
-        if (mPlaylistIndex >= mPlaylist.getCount()) {
-            mPlaylistIndex = 0;
+        if (mRandom) {
+            mPlaylistIndex = -1;
+        } else {
+            mPlaylistIndex = calculateIndexOfNext();
+            if (mPlaylistIndex >= mPlaylist.getCount()) {
+                mPlaylistIndex = 0;
+            }
         }
 
         // remove item 0 in array
@@ -64,13 +78,15 @@ public class PlaylistQueue implements Queue, Playlist.Callback {
         mTrackIds[mTracks.length - 1] = -1;
 
         // check that current is still valid
-        for (int i = 0; i < mTracks.length; i++) {
-            final Track track = mTracks[i];
-            if (track != null && !trackIsWhereItShould(i)) {
-                Debug.logQueue("Queue next: removing invalid track '" + track.getName() + "' at " + i);
-                track.destroy();
-                mTracks[i] = null;
-                mTrackIds[i] = -1;
+        if (!mRandom) {
+            for (int i = 0; i < mTracks.length; i++) {
+                final Track track = mTracks[i];
+                if (track != null && !trackIsWhereItShould(i)) {
+                    Debug.logQueue("Queue next: removing invalid track '" + track.getName() + "' at " + i);
+                    track.destroy();
+                    mTracks[i] = null;
+                    mTrackIds[i] = -1;
+                }
             }
         }
     }
@@ -124,7 +140,7 @@ public class PlaylistQueue implements Queue, Playlist.Callback {
             return false;
         }
         final int id = mTrackIds[index];
-        final Track track = getTrackAtPlaylistIndex(index);
+        final Track track = getTrackUncached(index);
         return (track != null && track.getId() == id);
     }
 

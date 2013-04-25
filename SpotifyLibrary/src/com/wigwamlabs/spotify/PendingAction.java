@@ -67,7 +67,7 @@ public class PendingAction implements Session.Callback, Playlist.Callback {
             }
 
             mService.setPlayIntent(mPlayIntent);
-            mSession.getPlayer().play(new PlaylistQueue(mPlaylist, 0));
+            mSession.getPlayer().play(new PlaylistQueue(mPlaylist, 0, false));
             mPlaylist = null;
         }
     }
