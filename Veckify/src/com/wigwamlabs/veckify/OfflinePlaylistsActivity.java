@@ -1,6 +1,7 @@
 package com.wigwamlabs.veckify;
 
 import android.os.Bundle;
+import android.view.Window;
 import android.widget.ListView;
 
 import com.wigwamlabs.spotify.PlaylistContainer;
@@ -17,6 +18,8 @@ public class OfflinePlaylistsActivity extends SpotifyActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Debug.logLifecycle("OfflinePlaylistsActivity.onCreate()");
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_PROGRESS);
 
         setContentView(R.layout.activity_offline_playlists);
         mList = (ListView) findViewById(R.id.list);
@@ -53,8 +56,15 @@ public class OfflinePlaylistsActivity extends SpotifyActivity {
     }
 
     @Override
-    public void onOfflineTracksToSyncChanged(int tracks) {
-        super.onOfflineTracksToSyncChanged(tracks);
+    public void onOfflineTracksToSyncChanged(int remainingTracks, int approxTotalTracks) {
+        super.onOfflineTracksToSyncChanged(remainingTracks, approxTotalTracks);
+
+        if (remainingTracks == 0) {
+            setProgressBarVisibility(false);
+        } else {
+            setProgressBarVisibility(true);
+            setProgress((10000 * (approxTotalTracks - remainingTracks)) / approxTotalTracks);
+        }
 
         if (mListAdapter != null) {
             mListAdapter.refresh();

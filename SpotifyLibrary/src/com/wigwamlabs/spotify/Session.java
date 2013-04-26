@@ -18,9 +18,11 @@ public class Session extends NativeItem {
     private static final Handler mHandler = new Handler();
     private final Context mContext;
     private final Preferences mPreferences;
-    private int mState;
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
+    private int mState;
     private Player mPlayer;
+    private int mSyncApproxTotalTracks = 0;
+    private int mSyncLastTrackDownloaded;
 
     public Session(Context context, String settingsPath, String cachePath, String deviceId) {
         super(0);
@@ -94,6 +96,7 @@ public class Session extends NativeItem {
         mCallbacks.add(callback);
         if (callbackNow) {
             callback.onConnectionStateUpdated(nativeGetConnectionState());
+            //TODO onOfflineTracksToSyncChanged
         }
     }
 
@@ -168,15 +171,25 @@ public class Session extends NativeItem {
     }
 
     @Keep
-    private void onOfflineTracksToSyncChanged(final int tracks) {
-        if (mCallbacks.isEmpty()) {
-            return;
-        }
+    private void onOfflineTracksToSyncChanged(final int remainingTracks) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
+                // deal with tracks added to queue
+                if (remainingTracks > mSyncApproxTotalTracks) {
+                    mSyncApproxTotalTracks = remainingTracks + mSyncLastTrackDownloaded;
+                }
+
+                //
+                if (remainingTracks == 0) {
+                    mSyncApproxTotalTracks = 0;
+                    mSyncLastTrackDownloaded = 0;
+                } else {
+                    mSyncLastTrackDownloaded = mSyncApproxTotalTracks - remainingTracks;
+                }
+
                 for (Callback callback : mCallbacks) {
-                    callback.onOfflineTracksToSyncChanged(tracks);
+                    callback.onOfflineTracksToSyncChanged(remainingTracks, mSyncApproxTotalTracks);
                 }
             }
         });
@@ -194,6 +207,6 @@ public class Session extends NativeItem {
 
         void onConnectionStateUpdated(int state);
 
-        void onOfflineTracksToSyncChanged(int tracks);
+        void onOfflineTracksToSyncChanged(int remainingTracks, int approxTotalTracks);
     }
 }

@@ -14,7 +14,6 @@ class OfflineSyncNotification implements Session.Callback {
     private final Session mSession;
     private final NotificationManager mNotificationManager;
     private final PendingIntent mPendingIntent;
-    private int mMaxOfflineTracksToSync = 0;
 
     OfflineSyncNotification(Service service, Session session) {
         mService = service;
@@ -44,27 +43,22 @@ class OfflineSyncNotification implements Session.Callback {
     }
 
     @Override
-    public void onOfflineTracksToSyncChanged(int tracks) {
-        if (tracks == 0) {
-            mMaxOfflineTracksToSync = 0;
-
+    public void onOfflineTracksToSyncChanged(int remainingTracks, int approxTotalTracks) {
+        if (remainingTracks == 0) {
             mNotificationManager.cancel(R.id.notificationOfflineSync);
         } else {
-            if (tracks > mMaxOfflineTracksToSync) {
-                mMaxOfflineTracksToSync = tracks;
-            }
-            mNotificationManager.notify(R.id.notificationOfflineSync, getNotification(tracks));
+            mNotificationManager.notify(R.id.notificationOfflineSync, getNotification(remainingTracks, approxTotalTracks));
         }
     }
 
-    private Notification getNotification(int tracks) {
+    private Notification getNotification(int remainingTracks, int approxTotalTracks) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(mService)
                 .setSmallIcon(R.drawable.ic_stat_offline_sync)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(mPendingIntent)
                 .setContentTitle(mService.getString(R.string.offline_sync_notification_title))
-                .setContentText(String.format(mService.getString(R.string.offline_sync_notification_text), mMaxOfflineTracksToSync - tracks, mMaxOfflineTracksToSync))
-                .setProgress(mMaxOfflineTracksToSync, mMaxOfflineTracksToSync - tracks, false)
+                .setContentText(String.format(mService.getString(R.string.offline_sync_notification_text), approxTotalTracks - remainingTracks, approxTotalTracks))
+                .setProgress(approxTotalTracks, approxTotalTracks - remainingTracks, false)
                 .setOngoing(true);
         return builder.build();
     }
