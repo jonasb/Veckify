@@ -134,9 +134,7 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
 
     @Override
     public void onContainerLoaded() {
-        if (mObserver != null) {
-            mObserver.onChanged();
-        }
+        refresh();
     }
 
     @Override
@@ -145,12 +143,16 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
 
     @Override
     public void onPlaylistRenamed() {
-        if (mObserver != null) {
-            mObserver.onChanged();
-        }
+        refresh();
     }
 
     @Override
     public void onPlaylistStateChanged() {
+    }
+
+    public void refresh() {
+        if (mObserver != null) {
+            mObserver.onChanged();
+        }
     }
 }

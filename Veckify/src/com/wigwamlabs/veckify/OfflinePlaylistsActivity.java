@@ -11,6 +11,7 @@ import com.wigwamlabs.spotify.ui.SpotifyActivity;
 public class OfflinePlaylistsActivity extends SpotifyActivity {
     private ListView mList;
     private PlaylistContainer mPlaylistContainer;
+    private ConfigureOfflinePlaylistContainerAdapter mListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,17 @@ public class OfflinePlaylistsActivity extends SpotifyActivity {
 
         if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
             mPlaylistContainer = getSpotifySession().getPlaylistContainer();
-            mList.setAdapter(new ConfigureOfflinePlaylistContainerAdapter(this, getSpotifySession(), mPlaylistContainer));
+            mListAdapter = new ConfigureOfflinePlaylistContainerAdapter(this, getSpotifySession(), mPlaylistContainer);
+            mList.setAdapter(mListAdapter);
+        }
+    }
+
+    @Override
+    public void onOfflineTracksToSyncChanged(int tracks) {
+        super.onOfflineTracksToSyncChanged(tracks);
+
+        if (mListAdapter != null) {
+            mListAdapter.refresh();
         }
     }
 }

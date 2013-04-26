@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -13,6 +13,9 @@ import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.R;
 import com.wigwamlabs.spotify.Session;
+
+import static com.wigwamlabs.spotify.Playlist.OFFLINE_STATUS_DOWNLOADING;
+import static com.wigwamlabs.spotify.Playlist.OFFLINE_STATUS_NO;
 
 public class ConfigureOfflinePlaylistContainerAdapter extends PlaylistContainerAdapter {
     private final Session mSession;
@@ -26,10 +29,10 @@ public class ConfigureOfflinePlaylistContainerAdapter extends PlaylistContainerA
     @Override
     protected View getPlaylistView(Playlist playlist, View convertView, ViewGroup parent, LayoutInflater layoutInflater) {
         // initialise view
-        LinearLayout view = (LinearLayout) convertView;
+        ViewGroup view = (ViewGroup) convertView;
         final ViewHolder viewHolder;
         if (view == null) {
-            view = (LinearLayout) layoutInflater.inflate(R.layout.playlistcontainer_playlist_offline, parent, false);
+            view = (ViewGroup) layoutInflater.inflate(R.layout.playlistcontainer_playlist_offline, parent, false);
             viewHolder = new ViewHolder(view);
             view.setTag(viewHolder);
 
@@ -47,11 +50,19 @@ public class ConfigureOfflinePlaylistContainerAdapter extends PlaylistContainerA
         }
 
         // update view
-        viewHolder.playlist = playlist;
         mUpdatesUi = true;
+
+        viewHolder.playlist = playlist;
         viewHolder.name.setText(playlist.getName());
-        final int offlineStatus = playlist.getOfflineStatus(mSession);
-        viewHolder.offlineSwitch.setChecked(offlineStatus != Playlist.OFFLINE_STATUS_NO);
+
+        final int status = playlist.getOfflineStatus(mSession);
+        //TODO the status for OFFLINE_STATUS_WAITING is really unreliable, so treat waiting and yes as the same
+        viewHolder.offlineSwitch.setChecked(status != OFFLINE_STATUS_NO);
+        viewHolder.syncProgress.setVisibility(status == OFFLINE_STATUS_DOWNLOADING ? View.VISIBLE : View.GONE);
+        if (status == OFFLINE_STATUS_DOWNLOADING) {
+            viewHolder.syncProgress.setProgress(playlist.getOfflineDownloadComplete(mSession));
+        }
+
         mUpdatesUi = false;
 
         return view;
@@ -62,13 +73,15 @@ public class ConfigureOfflinePlaylistContainerAdapter extends PlaylistContainerA
     }
 
     private static class ViewHolder {
-        public final TextView name;
-        public final Switch offlineSwitch;
-        public Playlist playlist;
+        final TextView name;
+        final Switch offlineSwitch;
+        final ProgressBar syncProgress;
+        Playlist playlist;
 
-        public ViewHolder(LinearLayout view) {
+        public ViewHolder(ViewGroup view) {
             name = (TextView) view.findViewById(R.id.name);
             offlineSwitch = (Switch) view.findViewById(R.id.offlineSwitch);
+            syncProgress = (ProgressBar) view.findViewById(R.id.syncProgress);
         }
     }
 }
