@@ -29,6 +29,7 @@ class PlayerNotification implements Player.Callback {
         mPlayer.addCallback(this, false);
 
         mNotificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(R.id.notificationPlayer);
     }
 
     void destroy() {

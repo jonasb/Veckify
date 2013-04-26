@@ -30,6 +30,12 @@
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
+        <activity
+            android:name="OfflinePlaylistsActivity"
+            android:label="@string/activity_offline_playlists"
+            android:parentActivityName="MainActivity"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Holo" />
 
         <receiver
             android:name="com.wigwamlabs.veckify.alarms.BroadcastReceiver"

@@ -63,11 +63,28 @@
         android:layout_alignTop="@id/playlistName"
         android:src="@drawable/ic_button_resume_inverse" />
 
+    <Button
+        android:id="@+id/setPlaylistOfflineButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/playlistName"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Download" />
+
+    <ProgressBar
+        style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+        android:id="@+id/offlineSyncProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/setPlaylistOfflineButton"
+        android:layout_alignTop="@id/setPlaylistOfflineButton" />
+
     <CheckBox
         android:id="@+id/repeatCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/playlistName"
+        android:layout_below="@id/setPlaylistOfflineButton"
         android:layout_marginTop="16dp"
         android:layout_marginLeft="8dp"
         android:text="Repeat" />

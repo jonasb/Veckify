@@ -190,3 +190,31 @@ JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Playlist, nativeGetTrack, jint inde
 
     return reinterpret_cast<jint>(track);
 }
+
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Playlist, nativeSetOfflineMode, jobject sessionHandle, jboolean offline) {
+    LOGV("nativeSetOfflineMode(%d)", offline);
+    Playlist *playlist = getNativePlaylist(env, self);
+    Session *session = getNativeSession(env, sessionHandle);
+
+    sp_error error = playlist->setOfflineMode(session, offline);
+    if (error != SP_ERROR_OK) {
+        ExceptionUtils::throwException(env, ExceptionUtils::RUNTIME_EXCEPTION, sp_error_message(error));
+        return;
+    }
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Playlist, nativeGetOfflineStatus, jobject sessionHandle) {
+    LOGV("nativeGetOfflineStatus");
+    Playlist *playlist = getNativePlaylist(env, self);
+    Session *session = getNativeSession(env, sessionHandle);
+
+    return playlist->getOfflineStatus(session);
+}
+
+JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Playlist, nativeGetOfflineDownloadComplete, jobject sessionHandle) {
+    LOGV("nativeGetOfflineDownloadComplete");
+    Playlist *playlist = getNativePlaylist(env, self);
+    Session *session = getNativeSession(env, sessionHandle);
+
+    return playlist->getOfflineDownloadCompleted(session);
+}

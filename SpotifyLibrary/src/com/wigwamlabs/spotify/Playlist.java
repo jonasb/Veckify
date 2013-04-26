@@ -9,6 +9,11 @@ public class Playlist extends NativeItemCollection<Track> {
         nativeInitClass();
     }
 
+    public static final int OFFLINE_STATUS_NO = 0;
+    public static final int OFFLINE_STATUS_YES = 1;
+    public static final int OFFLINE_STATUS_DOWNLOADING = 2;
+    public static final int OFFLINE_STATUS_WAITING = 3;
+
     private final Handler mHandler = new Handler();
     private Callback mCallback;
 
@@ -28,6 +33,8 @@ public class Playlist extends NativeItemCollection<Track> {
 
     private static native void nativeInitClass();
 
+    static native int nativeCreate(Session session, String link);
+
     @Override
     public Playlist clone() {
         final int handle = nativeClone();
@@ -35,8 +42,6 @@ public class Playlist extends NativeItemCollection<Track> {
     }
 
     private native void nativeInitInstance();
-
-    static native int nativeCreate(Session session, String link);
 
     @Override
     native void nativeDestroy();
@@ -54,6 +59,12 @@ public class Playlist extends NativeItemCollection<Track> {
 
     private native int nativeGetTrack(int position);
 
+    private native void nativeSetOfflineMode(Session session, boolean offline);
+
+    private native int nativeGetOfflineStatus(Session session);
+
+    private native int nativeGetOfflineDownloadComplete(Session session);
+
     @Override
     Track createNewItem(int index) {
         final int handle = nativeGetTrack(index);
@@ -70,6 +81,18 @@ public class Playlist extends NativeItemCollection<Track> {
 
     public String getName() {
         return nativeGetName();
+    }
+
+    public void setOfflineMode(Session session, boolean offline) {
+        nativeSetOfflineMode(session, offline);
+    }
+
+    public int getOfflineStatus(Session session) {
+        return nativeGetOfflineStatus(session);
+    }
+
+    public int getOfflineDownloadComplete(Session session) {
+        return nativeGetOfflineDownloadComplete(session);
     }
 
     public void setCallback(Callback callback, boolean callbackNow) {

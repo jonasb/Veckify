@@ -15,6 +15,7 @@ public:
     virtual void onMetadataUpdated() = 0;
     virtual void onCredentialsBlobUpdated(const char *blob) = 0;
     virtual void onConnectionStateUpdated(int state) = 0;
+    virtual void onOfflineTracksToSyncChanged(int tracks) = 0;
 };
 
 class Session {
@@ -42,6 +43,8 @@ private:
     static void onPlayTokenLost(sp_session *session);
     static void onLogMessage(sp_session *session, const char *data);
     static void onStreamingError(sp_session *session, sp_error error);
+    static void onOfflineStatusUpdated(sp_session *session);
+    static void onOfflineError(sp_session *session, sp_error error);
     static void onEndOfTrack(sp_session *session);
     static void onCredentialsBlobUpdated(sp_session *session, const char *blob);
     static void onConnectionStateUpdated(sp_session *session);

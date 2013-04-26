@@ -37,7 +37,8 @@ public abstract class SpotifyActivity extends Activity implements Session.Callba
         }
     }
 
-    protected abstract void onSpotifySessionAttached(Session spotifySession);
+    protected void onSpotifySessionAttached(Session spotifySession) {
+    }
 
     protected SpotifyService getSpotifyService() {
         return mService;
@@ -132,5 +133,9 @@ public abstract class SpotifyActivity extends Activity implements Session.Callba
             mLoginDialog.dismissAllowingStateLoss();
             mLoginDialog = null;
         }
+    }
+
+    @Override
+    public void onOfflineTracksToSyncChanged(int tracks) {
     }
 }

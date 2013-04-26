@@ -30,6 +30,9 @@ public:
     const char *getName();
     int getCount();
     Track *getTrack(int index);
+    sp_error setOfflineMode(Session *session, bool offline);
+    sp_playlist_offline_status getOfflineStatus(Session *session);
+    int getOfflineDownloadCompleted(Session *session);
 
 private:
     static void onTracksAdded(sp_playlist *playlist, sp_track * const *tracks, int numTracks, int position, void *self);

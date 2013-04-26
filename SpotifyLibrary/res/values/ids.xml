@@ -1,3 +1,4 @@
 <resources>
     <item type="id" name="notificationPlayer" />
+    <item type="id" name="notificationOfflineSync" />
 </resources>

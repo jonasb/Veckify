@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="offline_sync_notification_activity">com.wigwamlabs.veckify.OfflinePlaylistsActivity</string>
+</resources>

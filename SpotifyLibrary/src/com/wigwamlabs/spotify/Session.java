@@ -167,6 +167,21 @@ public class Session extends NativeItem {
         });
     }
 
+    @Keep
+    private void onOfflineTracksToSyncChanged(final int tracks) {
+        if (mCallbacks.isEmpty()) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (Callback callback : mCallbacks) {
+                    callback.onOfflineTracksToSyncChanged(tracks);
+                }
+            }
+        });
+    }
+
     static {
         System.loadLibrary("spotify");
         System.loadLibrary("spotify-jni");
@@ -178,5 +193,7 @@ public class Session extends NativeItem {
         void onLoggedIn(int error);
 
         void onConnectionStateUpdated(int state);
+
+        void onOfflineTracksToSyncChanged(int tracks);
     }
 }

@@ -16,4 +16,6 @@
     <string name="notification_action_resume">Play</string>
     <string name="notification_action_next">Next</string>
     <string name="toast_play_token_lost">Pausing since you started playing Spotify somewhere else.</string>
+    <string name="offline_sync_notification_title">Syncing offline tracks</string>
+    <string name="offline_sync_notification_text">%1$d of %2$d synced.</string>
 </resources>

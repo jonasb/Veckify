@@ -77,27 +77,33 @@ public class PlaylistContainerAdapter implements ListAdapter, PlaylistContainer.
         if (item != null) {
             if (item instanceof Playlist) {
                 final Playlist playlist = (Playlist) item;
-
-                TextView view = (TextView) convertView;
-                if (view == null) {
-                    view = (TextView) mLayoutInflater.inflate(R.layout.playlistcontainer_playlist, parent, false);
-                }
-                view.setText(playlist.getName());
                 playlist.setCallback(this, false);
-                return view;
+                return getPlaylistView(playlist, convertView, parent, mLayoutInflater);
             } else if (item instanceof FolderStart) {
-                final FolderStart folderStart = (FolderStart) item;
-                TextView view = (TextView) convertView;
-                if (view == null) {
-                    view = (TextView) mLayoutInflater.inflate(R.layout.playlistcontainer_folderstart, parent, false);
-                }
-                view.setText(folderStart.getName());
-                return view;
+                return getFolderStartView((FolderStart) item, convertView, parent, mLayoutInflater);
             }
         }
         // null, FolderEnd or Placeholder
         final View view = (convertView != null ? convertView : new View(mContext));
         view.setVisibility(View.GONE);
+        return view;
+    }
+
+    protected View getFolderStartView(FolderStart folderStart, View convertView, ViewGroup parent, LayoutInflater layoutInflater) {
+        TextView view = (TextView) convertView;
+        if (view == null) {
+            view = (TextView) layoutInflater.inflate(R.layout.playlistcontainer_folderstart, parent, false);
+        }
+        view.setText(folderStart.getName());
+        return view;
+    }
+
+    protected View getPlaylistView(Playlist playlist, View convertView, ViewGroup parent, LayoutInflater layoutInflater) {
+        TextView view = (TextView) convertView;
+        if (view == null) {
+            view = (TextView) layoutInflater.inflate(R.layout.playlistcontainer_playlist, parent, false);
+        }
+        view.setText(playlist.getName());
         return view;
     }
 

@@ -6,6 +6,8 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -31,6 +33,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     private AlarmCollection mAlarmCollection;
     private Alarm mAlarm;
     private PlaylistContainer mPlaylistContainer;
+    private Playlist mPlaylist;
     private TextView mAlarmTime;
     private TextView mPlaylistName;
     private Switch mAlarmEnabled;
@@ -42,6 +45,8 @@ public class MainActivity extends SpotifyPlayerActivity {
     private ToggleButton[] mRepeatDayToggles;
     private View mRepeatToggles;
     private boolean mUiIsUpdating;
+    private View mSetPlaylistOfflineButton;
+    private ProgressBar mOfflineSyncProgress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,6 +103,32 @@ public class MainActivity extends SpotifyPlayerActivity {
     protected void onDestroy() {
         Debug.logLifecycle("MainActivity.onDestroy()");
         super.onDestroy();
+
+        if (mPlaylist != null) {
+            mPlaylist.destroy();
+            mPlaylist = null;
+        }
+
+        if (mPlaylistContainer != null) {
+            mPlaylistContainer.destroy();
+            mPlaylistContainer = null;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.offlineSync:
+            startActivity(new Intent(this, OfflinePlaylistsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initUi() {
@@ -153,6 +184,15 @@ public class MainActivity extends SpotifyPlayerActivity {
                 runAlarmNow();
             }
         });
+        // offline
+        mSetPlaylistOfflineButton = findViewById(R.id.setPlaylistOfflineButton);
+        mSetPlaylistOfflineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSetPlaylistOffline();
+            }
+        });
+        mOfflineSyncProgress = (ProgressBar) findViewById(R.id.offlineSyncProgress);
         // repeats
         mRepeatCheckBox = (CheckBox) findViewById(R.id.repeatCheckBox);
         mRepeatCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -212,6 +252,33 @@ public class MainActivity extends SpotifyPlayerActivity {
             mRunNowButton.setEnabled(true);
         }
 
+        final Session session = getSpotifySession();
+        if (mPlaylist == null) {
+            mSetPlaylistOfflineButton.setEnabled(false);
+            mOfflineSyncProgress.setVisibility(View.GONE);
+        } else {
+            switch (mPlaylist.getOfflineStatus(session)) {
+            case Playlist.OFFLINE_STATUS_NO:
+                mSetPlaylistOfflineButton.setEnabled(true);
+                mOfflineSyncProgress.setVisibility(View.GONE);
+                break;
+            case Playlist.OFFLINE_STATUS_DOWNLOADING:
+                mSetPlaylistOfflineButton.setEnabled(false);
+                mOfflineSyncProgress.setVisibility(View.VISIBLE);
+                mOfflineSyncProgress.setProgress(mPlaylist.getOfflineDownloadComplete(session));
+                break;
+            case Playlist.OFFLINE_STATUS_WAITING:
+                mSetPlaylistOfflineButton.setEnabled(false);
+                mOfflineSyncProgress.setVisibility(View.VISIBLE);
+                mOfflineSyncProgress.setIndeterminate(true);
+                break;
+            case Playlist.OFFLINE_STATUS_YES:
+                mSetPlaylistOfflineButton.setEnabled(false);
+                mOfflineSyncProgress.setVisibility(View.GONE);
+                break;
+            }
+        }
+
         mRepeatShuffleToggle.setImageResource(mAlarm.isShuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
 
         final int repeatDays = mAlarm.getRepeatDays();
@@ -252,10 +319,17 @@ public class MainActivity extends SpotifyPlayerActivity {
     }
 
     public void onPlaylistPicked(Playlist playlist) {
+        // forget old playlist
+        if (mPlaylist != null) {
+            mPlaylist.destroy();
+            mPlaylist = null;
+        }
+        //
         if (playlist != null) {
             mAlarm.setEnabled(true);
             mAlarm.setPlaylistLink(playlist.getLink());
             mAlarm.setPlaylistName(playlist.getName());
+            mPlaylist = playlist.clone();
         } else {
             mAlarm.setPlaylistLink(null);
             mAlarm.setPlaylistName(null);
@@ -277,6 +351,13 @@ public class MainActivity extends SpotifyPlayerActivity {
             mAlarmCollection.onAlarmUpdated(mAlarm, false);
             updateUi();
         }
+    }
+
+    private void onSetPlaylistOffline() {
+        if (mPlaylist == null) {
+            return;
+        }
+        mPlaylist.setOfflineMode(getSpotifySession(), true);
     }
 
     private void onRepeatShuffleClicked() {

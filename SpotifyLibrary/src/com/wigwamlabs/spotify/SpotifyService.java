@@ -21,6 +21,7 @@ public class SpotifyService extends android.app.Service {
     private Session mSession;
     private int mClientCount;
     private PlayerNotification mPlayerNotification;
+    private OfflineSyncNotification mOfflineSyncNotification;
     private Player mPlayer;
     private RuntimeBroadcastReceiver mRuntimeBroadcastReceiver;
 
@@ -51,6 +52,8 @@ public class SpotifyService extends android.app.Service {
                 PendingIntent.getService(this, 0, resumeIntent, 0),
                 PendingIntent.getService(this, 0, nextIntent, 0)
         );
+
+        mOfflineSyncNotification = new OfflineSyncNotification(this, mSession);
     }
 
     @Override
@@ -105,6 +108,7 @@ public class SpotifyService extends android.app.Service {
 
         if (mRuntimeBroadcastReceiver != null) {
             unregisterReceiver(mRuntimeBroadcastReceiver);
+            mRuntimeBroadcastReceiver = null;
         }
 
         if (mSession != null) {
@@ -115,6 +119,9 @@ public class SpotifyService extends android.app.Service {
 
         mPlayerNotification.destroy();
         mPlayerNotification = null;
+
+        mOfflineSyncNotification.destroy();
+        mOfflineSyncNotification = null;
     }
 
     private void stopSelfIfPossible() {

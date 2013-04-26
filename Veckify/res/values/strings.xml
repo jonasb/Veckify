@@ -9,4 +9,5 @@
     <string name="repeatDayFriday">FRI</string>
     <string name="repeatDaySaturday">SAT</string>
     <string name="repeatDaySunday">SUN</string>
+    <string name="activity_offline_playlists">Offline playlists</string>
 </resources>

@@ -16,6 +16,7 @@ jmethodID sSessionOnLoggedInMethod = 0;
 jmethodID sSessionOnMetadataUpdatedMethod = 0;
 jmethodID sSessionOnCredentialsBlobUpdatedMethod = 0;
 jmethodID sSessionOnConnectionStateUpdatedMethod = 0;
+jmethodID sSessionOnOfflineTracksToSyncChangedMethod = 0;
 
 class SessionCallbackJNI : public SessionCallback {
 public:
@@ -49,6 +50,9 @@ public:
         mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnConnectionStateUpdatedMethod, state);
     }
 
+    void onOfflineTracksToSyncChanged(int tracks) {
+        mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnOfflineTracksToSyncChangedMethod, tracks);
+    }
 private:
     jobject mSession;
     JNIEnvProvider *mProvider;
@@ -76,6 +80,9 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Session, nativeInitClass) {
     }
     if (sSessionOnConnectionStateUpdatedMethod == 0) {
         sSessionOnConnectionStateUpdatedMethod = env->GetMethodID(klass, "onConnectionStateUpdated", "(I)V");
+    }
+    if (sSessionOnOfflineTracksToSyncChangedMethod == 0) {
+        sSessionOnOfflineTracksToSyncChangedMethod = env->GetMethodID(klass, "onOfflineTracksToSyncChanged", "(I)V");
     }
 }
 

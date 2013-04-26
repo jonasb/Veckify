@@ -51,6 +51,10 @@ public class PendingAction implements Session.Callback, Playlist.Callback {
     }
 
     @Override
+    public void onOfflineTracksToSyncChanged(int tracks) {
+    }
+
+    @Override
     public void onPlaylistUpdateInProgress(boolean done) {
     }
 

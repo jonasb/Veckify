@@ -103,6 +103,19 @@ Track *Playlist::getTrack(int index) {
     return new Track(track);
 }
 
+sp_error Playlist::setOfflineMode(Session *session, bool offline) {
+    return sp_playlist_set_offline_mode(session->getSession(), mPlaylist, offline);
+}
+
+sp_playlist_offline_status Playlist::getOfflineStatus(Session *session) {
+    sp_playlist_offline_status status = sp_playlist_get_offline_status(session->getSession(), mPlaylist);
+    return status;
+}
+
+int Playlist::getOfflineDownloadCompleted(Session *session) {
+    return sp_playlist_get_offline_download_completed(session->getSession(), mPlaylist);
+}
+
 void Playlist::onTracksAdded(sp_playlist *playlist, sp_track * const *tracks, int numTracks, int position, void *self) {
     LOGV("%s count: %d, position: %d", __func__, numTracks, position);
     PlaylistCallback *callback = static_cast<Playlist *>(self)->mCallback;
