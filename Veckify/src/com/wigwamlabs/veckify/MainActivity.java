@@ -401,7 +401,7 @@ public class MainActivity extends SpotifyPlayerActivity {
                     }
                     playlist.destroy();
                 }
-            };
+            }.start();
         }
     }
 

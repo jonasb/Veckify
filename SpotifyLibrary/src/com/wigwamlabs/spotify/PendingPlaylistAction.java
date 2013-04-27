@@ -3,16 +3,21 @@ package com.wigwamlabs.spotify;
 public abstract class PendingPlaylistAction implements Session.Callback, Playlist.Callback {
     private final Session mSession;
     private final String mLink;
+    private final boolean mLoginIfNeeded;
     private Playlist mPlaylist;
 
     public PendingPlaylistAction(Session session, String link, boolean loginIfNeeded) {
         mSession = session;
         mLink = link;
-        switch (session.getConnectionState()) {
+        mLoginIfNeeded = loginIfNeeded;
+    }
+
+    public void start() {
+        switch (mSession.getConnectionState()) {
         case Session.CONNECTION_STATE_LOGGED_OUT:
         case Session.CONNECTION_STATE_UNDEFINED:
-            session.addCallback(this, false);
-            if (loginIfNeeded && !session.relogin()) {
+            mSession.addCallback(this, false);
+            if (mLoginIfNeeded && !mSession.relogin()) {
                 onLoggedIn(SpotifyError.NO_CREDENTIALS);
             }
             break;
