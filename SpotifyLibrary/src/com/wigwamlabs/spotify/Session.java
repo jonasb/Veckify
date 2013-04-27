@@ -8,6 +8,7 @@ import android.util.Log;
 import proguard.annotation.Keep;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 public class Session extends NativeItem {
     public static final int CONNECTION_STATE_LOGGED_OUT = 0;
@@ -123,14 +124,18 @@ public class Session extends NativeItem {
 
     @Keep
     void onLoggedIn(final int error) {
-        if (mCallbacks.isEmpty()) {
-            return;
-        }
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                for (Callback callback : mCallbacks) {
-                    callback.onLoggedIn(error);
+                for (int i = 0; i < 100; i++) {
+                    try {
+                        for (Callback callback : mCallbacks) {
+                            callback.onLoggedIn(error);
+                        }
+                        return;
+                    } catch (ConcurrentModificationException e) {
+                        // retry
+                    }
                 }
             }
         });
@@ -158,9 +163,6 @@ public class Session extends NativeItem {
     @Keep
     void onConnectionStateUpdated(int state) {
         mState = state;
-        if (mCallbacks.isEmpty()) {
-            return;
-        }
         mHandler.post(new Runnable() {
             @Override
             public void run() {

@@ -17,6 +17,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.wigwamlabs.spotify.PendingPlaylistAction;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
@@ -412,6 +413,19 @@ public class MainActivity extends SpotifyPlayerActivity {
     protected void onSpotifySessionAttached(Session spotifySession) {
         super.onSpotifySessionAttached(spotifySession);
         setAutoLogin(true);
+
+        final String link = mAlarm.getPlaylistLink();
+        if (link != null) {
+            new PendingPlaylistAction(getSpotifySession(), link, false) {
+                @Override
+                protected void onPlaylistLoaded(Playlist playlist) {
+                    if (mPlaylist == null) {
+                        onPlaylistPicked(playlist);
+                    }
+                    playlist.destroy();
+                }
+            };
+        }
     }
 
     @Override

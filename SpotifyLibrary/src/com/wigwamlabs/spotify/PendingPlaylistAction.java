@@ -1,30 +1,18 @@
 package com.wigwamlabs.spotify;
 
-import android.app.PendingIntent;
-import android.content.Context;
-import android.media.AudioManager;
-
-public class PendingAction implements Session.Callback, Playlist.Callback {
-    private final SpotifyService mService;
+public abstract class PendingPlaylistAction implements Session.Callback, Playlist.Callback {
     private final Session mSession;
     private final String mLink;
-    private final PendingIntent mPlayIntent;
-    private final int mVolume;
-    private final boolean mShuffle;
     private Playlist mPlaylist;
 
-    public PendingAction(SpotifyService service, Session session, String link, PendingIntent playIntent, int volume, boolean shuffle) {
-        mService = service;
+    public PendingPlaylistAction(Session session, String link, boolean loginIfNeeded) {
         mSession = session;
         mLink = link;
-        mPlayIntent = playIntent;
-        mVolume = volume;
-        mShuffle = shuffle;
         switch (session.getConnectionState()) {
         case Session.CONNECTION_STATE_LOGGED_OUT:
         case Session.CONNECTION_STATE_UNDEFINED:
             session.addCallback(this, false);
-            if (!session.relogin()) {
+            if (loginIfNeeded && !session.relogin()) {
                 onLoggedIn(SpotifyError.NO_CREDENTIALS);
             }
             break;
@@ -67,14 +55,11 @@ public class PendingAction implements Session.Callback, Playlist.Callback {
         if (mPlaylist.isLoaded()) {
             mPlaylist.setCallback(null, false);
 
-            if (mVolume >= 0) {
-                final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mVolume, 0);
-            }
+            onPlaylistLoaded(mPlaylist);
 
-            mService.setPlayIntent(mPlayIntent);
-            mSession.getPlayer().play(new PlaylistQueue(mPlaylist, mShuffle ? -1 : 0, mShuffle));
             mPlaylist = null;
         }
     }
+
+    protected abstract void onPlaylistLoaded(Playlist playlist);
 }
