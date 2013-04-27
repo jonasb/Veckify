@@ -136,6 +136,6 @@ public abstract class SpotifyActivity extends Activity implements Session.Callba
     }
 
     @Override
-    public void onOfflineTracksToSyncChanged(int remainingTracks, int approxTotalTracks) {
+    public void onOfflineTracksToSyncChanged(boolean syncing, int remainingTracks, int approxTotalTracks) {
     }
 }

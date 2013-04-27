@@ -308,9 +308,10 @@ void Session::onStreamingError(sp_session *session, sp_error error) {
 
 void Session::onOfflineStatusUpdated(sp_session *session) {
     Session *self = getSelf(session);
+    bool syncing = (sp_session_connectionstate(self->mSession) == SP_CONNECTION_STATE_LOGGED_IN);
     int tracks = sp_offline_tracks_to_sync(self->mSession);
-    LOGV("%s: offline tracks to sync: %d", __func__, tracks);
-    self->mCallback->onOfflineTracksToSyncChanged(tracks);
+    LOGV("%s: syncing: %d, offline tracks to sync: %d", __func__, syncing, tracks);
+    self->mCallback->onOfflineTracksToSyncChanged(syncing, tracks);
 }
 
 void Session::onOfflineError(sp_session *session, sp_error error) {

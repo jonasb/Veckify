@@ -43,8 +43,8 @@ class OfflineSyncNotification implements Session.Callback {
     }
 
     @Override
-    public void onOfflineTracksToSyncChanged(int remainingTracks, int approxTotalTracks) {
-        if (remainingTracks == 0) {
+    public void onOfflineTracksToSyncChanged(boolean syncing, int remainingTracks, int approxTotalTracks) {
+        if (!syncing || remainingTracks == 0) {
             mNotificationManager.cancel(R.id.notificationOfflineSync);
         } else {
             mNotificationManager.notify(R.id.notificationOfflineSync, getNotification(remainingTracks, approxTotalTracks));

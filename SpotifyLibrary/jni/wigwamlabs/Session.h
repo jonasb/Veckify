@@ -15,7 +15,7 @@ public:
     virtual void onMetadataUpdated() = 0;
     virtual void onCredentialsBlobUpdated(const char *blob) = 0;
     virtual void onConnectionStateUpdated(int state) = 0;
-    virtual void onOfflineTracksToSyncChanged(int tracks) = 0;
+    virtual void onOfflineTracksToSyncChanged(bool syncing, int tracks) = 0;
 };
 
 class Session {

@@ -50,8 +50,8 @@ public:
         mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnConnectionStateUpdatedMethod, state);
     }
 
-    void onOfflineTracksToSyncChanged(int tracks) {
-        mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnOfflineTracksToSyncChangedMethod, tracks);
+    void onOfflineTracksToSyncChanged(bool syncing, int tracks) {
+        mProvider->getEnv()->CallVoidMethod(mSession, sSessionOnOfflineTracksToSyncChangedMethod, syncing, tracks);
     }
 private:
     jobject mSession;
@@ -82,7 +82,7 @@ JNI_STATIC_METHOD(void, com_wigwamlabs_spotify_Session, nativeInitClass) {
         sSessionOnConnectionStateUpdatedMethod = env->GetMethodID(klass, "onConnectionStateUpdated", "(I)V");
     }
     if (sSessionOnOfflineTracksToSyncChangedMethod == 0) {
-        sSessionOnOfflineTracksToSyncChangedMethod = env->GetMethodID(klass, "onOfflineTracksToSyncChanged", "(I)V");
+        sSessionOnOfflineTracksToSyncChangedMethod = env->GetMethodID(klass, "onOfflineTracksToSyncChanged", "(ZI)V");
     }
 }
 

@@ -68,14 +68,18 @@ public class OfflinePlaylistsActivity extends SpotifyActivity {
     }
 
     @Override
-    public void onOfflineTracksToSyncChanged(int remainingTracks, int approxTotalTracks) {
-        super.onOfflineTracksToSyncChanged(remainingTracks, approxTotalTracks);
+    public void onOfflineTracksToSyncChanged(boolean syncing, int remainingTracks, int approxTotalTracks) {
+        super.onOfflineTracksToSyncChanged(syncing, remainingTracks, approxTotalTracks);
 
-        if (remainingTracks == 0) {
+        if (!syncing || remainingTracks == 0) {
             setProgressBarVisibility(false);
         } else {
             setProgressBarVisibility(true);
-            setProgress((10000 * (approxTotalTracks - remainingTracks)) / approxTotalTracks);
+            int progress = (10000 * (approxTotalTracks - remainingTracks)) / approxTotalTracks;
+            if (progress == 0) {
+                progress = 1;
+            }
+            setProgress(progress);
         }
 
         if (mListAdapter != null) {

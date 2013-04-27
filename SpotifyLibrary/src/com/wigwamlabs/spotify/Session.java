@@ -23,6 +23,7 @@ public class Session extends NativeItem {
     private Player mPlayer;
     private int mSyncApproxTotalTracks = 0;
     private int mSyncLastTrackDownloaded;
+    private boolean mLastSyncStatus;
 
     public Session(Context context, String settingsPath, String cachePath, String deviceId) {
         super(0);
@@ -96,7 +97,7 @@ public class Session extends NativeItem {
         mCallbacks.add(callback);
         if (callbackNow) {
             callback.onConnectionStateUpdated(nativeGetConnectionState());
-            //TODO onOfflineTracksToSyncChanged
+            callback.onOfflineTracksToSyncChanged(mLastSyncStatus, mSyncApproxTotalTracks - mSyncLastTrackDownloaded, mSyncApproxTotalTracks);
         }
     }
 
@@ -171,10 +172,11 @@ public class Session extends NativeItem {
     }
 
     @Keep
-    private void onOfflineTracksToSyncChanged(final int remainingTracks) {
+    private void onOfflineTracksToSyncChanged(final boolean syncing, final int remainingTracks) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
+                mLastSyncStatus = syncing;
                 // deal with tracks added to queue
                 if (remainingTracks > mSyncApproxTotalTracks) {
                     mSyncApproxTotalTracks = remainingTracks + mSyncLastTrackDownloaded;
@@ -189,7 +191,7 @@ public class Session extends NativeItem {
                 }
 
                 for (Callback callback : mCallbacks) {
-                    callback.onOfflineTracksToSyncChanged(remainingTracks, mSyncApproxTotalTracks);
+                    callback.onOfflineTracksToSyncChanged(syncing, remainingTracks, mSyncApproxTotalTracks);
                 }
             }
         });
@@ -207,6 +209,6 @@ public class Session extends NativeItem {
 
         void onConnectionStateUpdated(int state);
 
-        void onOfflineTracksToSyncChanged(int remainingTracks, int approxTotalTracks);
+        void onOfflineTracksToSyncChanged(boolean syncing, int remainingTracks, int approxTotalTracks);
     }
 }
