@@ -1,6 +1,7 @@
 package com.wigwamlabs.veckify;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ListView;
 
@@ -36,6 +37,17 @@ public class OfflinePlaylistsActivity extends SpotifyActivity {
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case android.R.id.home:
+            startActivity(getParentActivityIntent());
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
