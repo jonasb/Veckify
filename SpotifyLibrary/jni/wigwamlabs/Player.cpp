@@ -35,13 +35,14 @@ Player::Player(sp_session *session) :
     mCallback(NULL),
     mConsumeBuffer(0),
     mProduceBuffer(0),
+    mBufferUnderflow(0),
     mEngineObject(NULL),
     mOutputMixObject(NULL),
     mBqPlayerObject(NULL),
-    mState(STATE_STARTED),
     mTrackDurationMs(0),
     mTrackProgressBytes(0),
-    mTrackProgressReportedSec(0) {
+    mTrackProgressReportedSec(0),
+    mState(STATE_STARTED) {
     // init buffers
     pthread_mutex_init(&mBufferMutex, NULL);
 
@@ -133,9 +134,9 @@ bool Player::initialize() {
         result = (*mBqPlayerBufferQueue)->RegisterCallback(mBqPlayerBufferQueue, bqPlayerCallback, this);
     }
 
-    // set the player's state to playing
+    // set the player's state to paused
     if (result == SL_RESULT_SUCCESS) {
-        result = (*mBqPlayerPlay)->SetPlayState(mBqPlayerPlay, SL_PLAYSTATE_PLAYING);
+        result = (*mBqPlayerPlay)->SetPlayState(mBqPlayerPlay, SL_PLAYSTATE_PAUSED);
     }
 
     //
@@ -197,6 +198,7 @@ void Player::setState(PlayerState state) {
 
 sp_error Player::play(Track *track) {
     sp_error error = SP_ERROR_OK;
+    clearAllBuffers();
     mTrackProgressBytes = 0;
     if (track) {
         LOGV("%s name: %s", __func__, track->getName());
@@ -276,6 +278,7 @@ void Player::resume() {
 }
 
 void Player::seek(int progressMs) {
+    clearAllBuffers();
     sp_error error = sp_session_player_seek(mSession, progressMs);
     if (error == SP_ERROR_OK) {
         setTrackProgressMs(progressMs);
@@ -331,29 +334,55 @@ void Player::bqPlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) {
     pthread_mutex_lock(&self->mBufferMutex);
 
     // mark buffer as consumed
-    LOG_BUFFERS("Buffer %d has been consumed", self->mConsumeBuffer);
     Buffer &consumedBuffer = self->mBuffers[self->mConsumeBuffer];
-    const int consumedBytes = consumedBuffer.size;
-    consumedBuffer.size = 0;
-    consumedBuffer.consumed = true;
-
-    //
-    self->mConsumeBuffer = (self->mConsumeBuffer + 1) % BUFFER_COUNT;
-
-    // enqueue next buffer
-    Buffer &nextBuffer = self->mBuffers[self->mConsumeBuffer];
-    if (!nextBuffer.consumed) {
-        SLresult result = (*self->mBqPlayerBufferQueue)->Enqueue(self->mBqPlayerBufferQueue, nextBuffer.buffer, nextBuffer.size);
-        LOGW_IF_ERROR(result, "Enqueuing buffer");
+    int consumedBytes = 0;
+    if (consumedBuffer.consumed) { // already consumed, e.g. by seeking or playing other tracks
+        LOG_BUFFERS("Ignoring consumed buffer %d since it has been consumed elsewhere", self->mConsumeBuffer);
     } else {
-        LOGW("Buffer underflow");
+        LOG_BUFFERS("Buffer %d has been consumed", self->mConsumeBuffer);
+        consumedBytes = consumedBuffer.size;
+        consumedBuffer.size = 0;
+        consumedBuffer.consumed = true;
+
+        //
+        self->mConsumeBuffer = (self->mConsumeBuffer + 1) % BUFFER_COUNT;
+
+        // enqueue next buffer
+        Buffer &nextBuffer = self->mBuffers[self->mConsumeBuffer];
+        if (!nextBuffer.consumed) {
+            SLresult result = (*self->mBqPlayerBufferQueue)->Enqueue(self->mBqPlayerBufferQueue, nextBuffer.buffer, nextBuffer.size);
+            LOGW_IF_ERROR(result, "Enqueuing buffer");
+        } else {
+            LOGW("Buffer underflow");
+            self->mBufferUnderflow++;
+        }
     }
 
     pthread_mutex_unlock(&self->mBufferMutex);
 
     // update progress
-    self->mTrackProgressBytes += consumedBytes;
-    self->setTrackProgressMs(self->mTrackProgressBytes / BYTES_PER_MS);
+    if (consumedBytes > 0) {
+        self->mTrackProgressBytes += consumedBytes;
+        self->setTrackProgressMs(self->mTrackProgressBytes / BYTES_PER_MS);
+    }
+}
+
+void Player::clearAllBuffers() {
+    LOG_BUFFERS("Clearing all buffers");
+    pthread_mutex_lock(&mBufferMutex);
+    for (int i = 0; i < BUFFER_COUNT; i++) {
+        Buffer &buffer = mBuffers[i];
+        buffer.consumed = true;
+        buffer.size = 0;
+    }
+    mConsumeBuffer = 0;
+    mProduceBuffer = 0;
+    mBufferUnderflow = 0;
+
+    SLresult result = (*mBqPlayerBufferQueue)->Clear(mBqPlayerBufferQueue);
+    LOGW_IF_ERROR(result, "Clearing buffer");
+
+    pthread_mutex_unlock(&mBufferMutex);
 }
 
 void Player::onPlayTokenLost() {
@@ -361,6 +390,36 @@ void Player::onPlayTokenLost() {
     if (pause(STATE_PAUSED_USER) && mCallback) {
         mCallback->onPlayTokenLost();
     }
+}
+
+void Player::onStartPlayback() {
+    pthread_mutex_lock(&mBufferMutex);
+    SLresult result = (*mBqPlayerPlay)->SetPlayState(mBqPlayerPlay, SL_PLAYSTATE_PLAYING);
+    LOGW_IF_ERROR(result, "Resumig audio");
+    pthread_mutex_unlock(&mBufferMutex);
+}
+
+void Player::onStopPlayback() {
+    pthread_mutex_lock(&mBufferMutex);
+    SLresult result = (*mBqPlayerPlay)->SetPlayState(mBqPlayerPlay, SL_PLAYSTATE_PAUSED);
+    LOGW_IF_ERROR(result, "Pausing audio");
+    pthread_mutex_unlock(&mBufferMutex);
+}
+
+void Player::onGetAudioBufferStats(sp_audio_buffer_stats *stats) {
+    pthread_mutex_lock(&mBufferMutex);
+    int unconumedSamples = 0;
+    for (int i = 0; i < BUFFER_COUNT; i++) {
+        Buffer &buffer = mBuffers[i];
+        if (!buffer.consumed) {
+            unconumedSamples += buffer.size / BYTES_PER_SAMPLE;
+        }
+    }
+    stats->samples = unconumedSamples;
+    stats->stutter = mBufferUnderflow;
+    mBufferUnderflow = 0;
+    pthread_mutex_unlock(&mBufferMutex);
+    LOG_BUFFERS("Buffer stats: buffered samples: %d, stutter: %d", stats->samples, stats->stutter);
 }
 
 void Player::setTrackProgressMs(int progressMs) {

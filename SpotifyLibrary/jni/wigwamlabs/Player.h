@@ -30,7 +30,7 @@ static const int SAMPLES_PER_SECOND = 44100;
 static const int CHANNEL_COUNT = 2;
 static const int BYTES_PER_SAMPLE = CHANNEL_COUNT * sizeof(int16_t);
 static const int BYTES_PER_MS = SAMPLES_PER_SECOND * BYTES_PER_SAMPLE / 1000;
-static const int BUFFER_COUNT = 2;
+static const int BUFFER_COUNT = 4;
 static const int BUFFER_SIZE_MS = 250;
 static const int BUFFER_SIZE = BYTES_PER_MS * BUFFER_SIZE_MS;
 
@@ -44,6 +44,9 @@ public:
 
     int onMusicDelivery(const sp_audioformat *format, const void *frames, int numFrames);
     void onPlayTokenLost();
+    void onStartPlayback();
+    void onStopPlayback();
+    void onGetAudioBufferStats(sp_audio_buffer_stats *stats);
 
     PlayerState getState() const;
     sp_error play(Track *track);
@@ -63,6 +66,7 @@ private:
     void setState(PlayerState state);
     bool initialize();
     void setTrackProgressMs(int progressMs);
+    void clearAllBuffers();
 
 private:
     sp_session *mSession;
@@ -72,6 +76,7 @@ private:
     Buffer mBuffers[BUFFER_COUNT];
     int mConsumeBuffer;
     int mProduceBuffer;
+    int mBufferUnderflow;
 
     SLObjectItf mEngineObject;
     SLObjectItf mOutputMixObject;

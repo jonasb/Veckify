@@ -46,7 +46,9 @@ Session *Session::create(SessionCallback *callback, const char *settingsPath, co
     callbacks.log_message = onLogMessage;
     callbacks.end_of_track = onEndOfTrack;
     callbacks.streaming_error = onStreamingError;
-    //callbacks.get_audio_buffer_stats = onGetAudioBufferStats;
+    callbacks.start_playback = onStartPlayback;
+    callbacks.stop_playback = onStopPlayback;
+    callbacks.get_audio_buffer_stats = onGetAudioBufferStats;
     callbacks.offline_status_updated = onOfflineStatusUpdated;
     callbacks.offline_error = onOfflineError;
     callbacks.credentials_blob_updated = onCredentialsBlobUpdated;
@@ -304,6 +306,18 @@ void Session::onEndOfTrack(sp_session *session) {
 
 void Session::onStreamingError(sp_session *session, sp_error error) {
     LOGV("%s, %s", __func__, sp_error_message(error));
+}
+
+void Session::onStartPlayback(sp_session *session) {
+    getSelf(session)->mPlayer->onStartPlayback();
+}
+
+void Session::onStopPlayback(sp_session *session) {
+    getSelf(session)->mPlayer->onStopPlayback();
+}
+
+void Session::onGetAudioBufferStats(sp_session *session, sp_audio_buffer_stats *stats) {
+    getSelf(session)->mPlayer->onGetAudioBufferStats(stats);
 }
 
 void Session::onOfflineStatusUpdated(sp_session *session) {

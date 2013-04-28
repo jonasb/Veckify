@@ -43,6 +43,9 @@ private:
     static void onPlayTokenLost(sp_session *session);
     static void onLogMessage(sp_session *session, const char *data);
     static void onStreamingError(sp_session *session, sp_error error);
+    static void onStartPlayback(sp_session *session);
+    static void onStopPlayback(sp_session *session);
+    static void onGetAudioBufferStats(sp_session *session, sp_audio_buffer_stats *stats);
     static void onOfflineStatusUpdated(sp_session *session);
     static void onOfflineError(sp_session *session, sp_error error);
     static void onEndOfTrack(sp_session *session);
