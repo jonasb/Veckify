@@ -138,7 +138,7 @@ public class AlarmCollection {
                 alarm.getPlaylistName());
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
-                .setSmallIcon(com.wigwamlabs.spotify.R.drawable.ic_stat_alarm)
+                .setSmallIcon(R.drawable.ic_stat_alarm)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setContentIntent(mAlarmPendingIntent)
                 .setContentTitle(mContext.getString(R.string.notification_alarm_title))
