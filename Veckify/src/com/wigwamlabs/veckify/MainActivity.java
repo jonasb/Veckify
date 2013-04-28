@@ -292,7 +292,7 @@ public class MainActivity extends SpotifyPlayerActivity {
     }
 
     private void onPickPlaylist() {
-        final PlaylistPickerFragment fragment = new PlaylistPickerFragment();
+        final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(mAlarm.getPlaylistLink());
         fragment.show(getFragmentManager(), "playlist-picker");
     }
 

@@ -102,6 +102,22 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
         }
     }
 
+    public int findPlaylistIndex(String playlistLink) {
+        if (playlistLink != null) {
+            final int count = getCount();
+            for (int i = 0; i < count; i++) {
+                final NativeItem item = getItem(i);
+                if (item != null && item instanceof Playlist) {
+                    final Playlist playlist = (Playlist) item;
+                    if (playlist.getLink().equals(playlistLink)) {
+                        return i;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
     public interface Callback {
         void onContainerLoaded();
     }
