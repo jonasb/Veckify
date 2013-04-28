@@ -37,7 +37,9 @@ public class SpotifyService extends android.app.Service {
         mRuntimeBroadcastReceiver = new RuntimeBroadcastReceiver(mPlayer);
         registerReceiver(mRuntimeBroadcastReceiver, mRuntimeBroadcastReceiver.getFilter());
 
-        // init notification
+        // init notifications
+        final ForegroundNotificationManager foregroundNotificationManager = new ForegroundNotificationManager(this);
+
         final Intent pauseIntent = new Intent(this, SpotifyService.class);
         pauseIntent.setAction(ACTION_PAUSE);
 
@@ -47,13 +49,13 @@ public class SpotifyService extends android.app.Service {
         final Intent nextIntent = new Intent(this, SpotifyService.class);
         nextIntent.setAction(ACTION_NEXT);
 
-        mPlayerNotification = new PlayerNotification(this, mPlayer,
+        mPlayerNotification = new PlayerNotification(this, foregroundNotificationManager, mPlayer,
                 PendingIntent.getService(this, 0, pauseIntent, 0),
                 PendingIntent.getService(this, 0, resumeIntent, 0),
                 PendingIntent.getService(this, 0, nextIntent, 0)
         );
 
-        mOfflineSyncNotification = new OfflineSyncNotification(this, mSession);
+        mOfflineSyncNotification = new OfflineSyncNotification(this, foregroundNotificationManager, mSession);
     }
 
     @Override

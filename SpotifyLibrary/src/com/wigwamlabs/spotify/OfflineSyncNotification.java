@@ -1,27 +1,24 @@
 package com.wigwamlabs.spotify;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
-class OfflineSyncNotification implements Session.Callback {
+class OfflineSyncNotification extends ForegroundNotification implements Session.Callback {
     private final Service mService;
     private final Session mSession;
-    private final NotificationManager mNotificationManager;
     private final PendingIntent mPendingIntent;
+    private int mRemainingTracks;
+    private int mApproxTotalTracks;
 
-    OfflineSyncNotification(Service service, Session session) {
+    OfflineSyncNotification(Service service, ForegroundNotificationManager manager, Session session) {
+        super(manager);
         mService = service;
         mSession = session;
         mSession.addCallback(this, false);
-
-        mNotificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel(R.id.notificationOfflineSync);
 
         final Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -29,9 +26,15 @@ class OfflineSyncNotification implements Session.Callback {
         mPendingIntent = PendingIntent.getActivity(mService, 0, intent, 0);
     }
 
-    public void destroy() {
+    @Override
+    int getNotificationId() {
+        return R.id.notificationOfflineSync;
+    }
+
+    @Override
+    void destroy() {
+        super.destroy();
         mSession.removeCallback(this);
-        mNotificationManager.cancel(R.id.notificationOfflineSync);
     }
 
     @Override
@@ -44,21 +47,30 @@ class OfflineSyncNotification implements Session.Callback {
 
     @Override
     public void onOfflineTracksToSyncChanged(boolean syncing, int remainingTracks, int approxTotalTracks) {
-        if (!syncing || remainingTracks == 0) {
-            mNotificationManager.cancel(R.id.notificationOfflineSync);
-        } else {
-            mNotificationManager.notify(R.id.notificationOfflineSync, getNotification(remainingTracks, approxTotalTracks));
+        mRemainingTracks = remainingTracks;
+        mApproxTotalTracks = approxTotalTracks;
+
+        final boolean shouldBeForeground = (syncing && remainingTracks > 0);
+        if (shouldBeForeground != isForeground()) {
+            if (!setForeground(shouldBeForeground)) {
+                onNotificationUpdated();
+            }
         }
+        onNotificationUpdated();
     }
 
-    private Notification getNotification(int remainingTracks, int approxTotalTracks) {
+    @Override
+    Notification getNotification() {
+        if (!isForeground()) {
+            return null;
+        }
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(mService)
                 .setSmallIcon(R.drawable.ic_stat_offline_sync)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(mPendingIntent)
                 .setContentTitle(mService.getString(R.string.offline_sync_notification_title))
-                .setContentText(String.format(mService.getString(R.string.offline_sync_notification_text), approxTotalTracks - remainingTracks, approxTotalTracks))
-                .setProgress(approxTotalTracks, approxTotalTracks - remainingTracks, false)
+                .setContentText(String.format(mService.getString(R.string.offline_sync_notification_text), mApproxTotalTracks - mRemainingTracks, mApproxTotalTracks))
+                .setProgress(mApproxTotalTracks, mApproxTotalTracks - mRemainingTracks, false)
                 .setOngoing(true);
         return builder.build();
     }

@@ -9,37 +9,31 @@ import android.util.Log;
 final class Debug {
     private static final String TAG = "SpotifyLibrary";
 
-    static void logLifecycle(String msg) {
+    static void logAudioFocus(String msg) {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, msg);
         }
     }
 
-    public static void logAudioFocus(String msg) {
-        if (BuildConfig.DEBUG) {
-            Log.v(TAG, msg);
-        }
-    }
-
-    public static void logMediaButton(String button) {
+    static void logMediaButton(String button) {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, "Received media button: " + button);
         }
     }
 
-    public static void logQueue(String msg) {
+    static void logQueue(String msg) {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, msg);
         }
     }
 
-    public static void logAudioResponsivenessVerbose(String msg) {
+    static void logAudioResponsivenessVerbose(String msg) {
         if (false) {
             Log.v(TAG, "Audio responsiveness: " + msg);
         }
     }
 
-    public static void logAudioResponsiveness(String msg) {
+    static void logAudioResponsiveness(String msg) {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, "Audio responsiveness: " + msg);
         }
@@ -53,6 +47,18 @@ final class Debug {
                     .setContentTitle(title)
                     .setContentText(contentText);
             notificationManager.notify(R.id.actionLogin, builder.build());
+        }
+    }
+
+    static void logForegroundNotification(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Foreground notifications: " + msg);
+        }
+    }
+
+    static void logLifecycle(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, msg);
         }
     }
 }
