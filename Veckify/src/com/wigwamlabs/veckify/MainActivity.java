@@ -244,6 +244,7 @@ public class MainActivity extends SpotifyPlayerActivity {
         //TODO am/pm
         mAlarmTime.setText(String.format("%d:%02d", mAlarm.getHour(), mAlarm.getMinute()));
 
+        mPlaylistName.setEnabled(mPlaylistContainer != null);
         final String name = mAlarm.getPlaylistName();
         if (name == null || name.length() == 0) {
             mPlaylistName.setText(R.string.noPlaylistSelected);
@@ -411,6 +412,7 @@ public class MainActivity extends SpotifyPlayerActivity {
 
         if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
             mPlaylistContainer = getSpotifySession().getPlaylistContainer();
+            updateUi();
         }
     }
 
