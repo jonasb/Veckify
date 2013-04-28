@@ -7,15 +7,15 @@ import android.os.Handler;
 import android.os.IBinder;
 
 public class SpotifyService extends android.app.Service {
-    static final String ACTION_NEXT = "next";
-    static final String ACTION_PAUSE = "pause";
     public static final String ACTION_PLAY_PLAYLIST = "play_playlist";
-    static final String ACTION_RESUME = "resume";
-    static final String ACTION_TOGGLE_PAUSE = "toggle_pause";
     public static final String EXTRA_LINK = "link";
     public static final String EXTRA_INTENT = "intent";
     public static final String EXTRA_VOLUME = "volume";
     public static final String EXTRA_SHUFFLE = "shuffle";
+    static final String ACTION_NEXT = "next";
+    static final String ACTION_PAUSE = "pause";
+    static final String ACTION_RESUME = "resume";
+    static final String ACTION_TOGGLE_PAUSE = "toggle_pause";
     private final IBinder mBinder = new LocalBinder();
     private final Handler mHandler = new Handler();
     private Session mSession;
