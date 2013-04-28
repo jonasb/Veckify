@@ -17,7 +17,6 @@ import com.wigwamlabs.veckify.MainActivity;
 import com.wigwamlabs.veckify.R;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class AlarmCollection {
     private static final String ALARM_ENABLED = "alarm_enabled";
@@ -35,8 +34,8 @@ public class AlarmCollection {
     private final Alarm mAlarm;
     private final NotificationManager mNotificationManager;
     private final PendingIntent mAlarmPendingIntent;
-    private final java.text.DateFormat mFormatDate;
-    private final java.text.DateFormat mFormatTime;
+    private final String mDateFormatYear;
+    private final String mDateFormatNoYear;
 
     public AlarmCollection(Context context) {
         mContext = context;
@@ -57,8 +56,20 @@ public class AlarmCollection {
 
         mAlarmPendingIntent = PendingIntent.getActivity(mContext, 0, new Intent(mContext, MainActivity.class), 0);
 
-        mFormatDate = DateFormat.getDateFormat(mContext);
-        mFormatTime = DateFormat.getTimeFormat(mContext);
+        // TODO am/pm
+        final char[] formatOrder = DateFormat.getDateFormatOrder(mContext);
+        mDateFormatYear = String.format("%s/%s/%s k:mm", formatOrder[0], formatOrder[1], formatOrder[2]);
+        final StringBuilder sb = new StringBuilder();
+        for (char c : formatOrder) {
+            if (c == DateFormat.YEAR) {
+                continue;
+            }
+            if (sb.length() > 0) {
+                sb.append('/');
+            }
+            sb.append(c);
+        }
+        mDateFormatNoYear = sb.toString() + " k:mm";
     }
 
     public Alarm getAlarm() {
@@ -120,10 +131,10 @@ public class AlarmCollection {
     }
 
     private Notification getNotification(Alarm alarm, Calendar calendar) {
-        final Date time = calendar.getTime();
+        final Calendar now = Calendar.getInstance();
+        final String format = (now.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)) ? mDateFormatNoYear : mDateFormatYear;
         final String description = String.format(mContext.getString(R.string.notification_alarm_description),
-                mFormatDate.format(time),
-                mFormatTime.format(time),
+                DateFormat.format(format, calendar),
                 alarm.getPlaylistName());
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
