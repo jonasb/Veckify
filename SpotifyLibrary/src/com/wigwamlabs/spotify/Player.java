@@ -4,11 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
 
+import com.wigwamlabs.spotify.tts.TtsProvider;
 import proguard.annotation.Keep;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Player extends NativeItem implements AudioManager.OnAudioFocusChangeListener {
     static {
@@ -33,6 +36,9 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     private int mTrackDurationSec = 0;
     private RemoteControlClient mRemoteControlClient;
     private boolean mPrefetchRequested;
+    private TextToSpeech mTts;
+    private boolean mTtsIsInitialized;
+    private TtsProvider mTtsProvider;
 
     public Player(Context context, int handle) {
         super(handle);
@@ -46,6 +52,19 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                 onUnresponsiveAudio();
             }
         };
+
+        mTts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    mTts.setLanguage(Locale.US);
+                    mTtsIsInitialized = true;
+                } else {
+                    mTts.shutdown();
+                    mTts = null;
+                }
+            }
+        });
     }
 
     private static native void nativeInitClass();
@@ -115,6 +134,16 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
                     }
                     mPrefetchRequested = true;
                 }
+                if (secondsDuration - secondsPlayed <= 2) {
+                    if (mTtsIsInitialized && mTtsProvider != null) {
+                        final String msg = mTtsProvider.getText();
+                        if (msg != null) {
+                            Debug.logTts(msg);
+                            mTts.speak(msg, TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
+                }
+
                 Debug.logAudioResponsivenessVerbose("Got audio, postpone check");
                 mHandler.removeCallbacks(mResondToUnresponsiveAudio);
                 mHandler.postDelayed(mResondToUnresponsiveAudio, DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS);
@@ -308,6 +337,10 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
 
         mHandler.removeCallbacks(mResondToUnresponsiveAudio);
         mHandler.postDelayed(mResondToUnresponsiveAudio, DURATION_BEFORE_AUDIO_UNRESPONSIVE_MS);
+    }
+
+    public void setTtsProvider(TtsProvider ttsProvider) {
+        mTtsProvider = ttsProvider;
     }
 
     public interface Callback {

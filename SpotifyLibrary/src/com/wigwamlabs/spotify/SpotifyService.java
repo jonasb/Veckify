@@ -76,7 +76,8 @@ public class SpotifyService extends android.app.Service {
                 final PendingIntent playIntent = intent.getParcelableExtra(EXTRA_INTENT);
                 final int volume = intent.getIntExtra(EXTRA_VOLUME, -1);
                 final boolean shuffle = intent.getBooleanExtra(EXTRA_SHUFFLE, false);
-                new PendingPlayPlaylistAction(this, getSession(), link, playIntent, volume, shuffle).start();
+                final boolean tellTime = true;
+                new PendingPlayPlaylistAction(this, getSession(), link, playIntent, volume, shuffle, tellTime).start();
             }
         }
 

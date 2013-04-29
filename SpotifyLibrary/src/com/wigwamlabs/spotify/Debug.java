@@ -61,4 +61,10 @@ final class Debug {
             Log.v(TAG, msg);
         }
     }
+
+    static void logTts(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "TTS: " + msg);
+        }
+    }
 }
