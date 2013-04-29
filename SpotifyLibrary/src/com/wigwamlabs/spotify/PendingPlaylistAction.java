@@ -1,18 +1,39 @@
 package com.wigwamlabs.spotify;
 
-public abstract class PendingPlaylistAction implements Session.Callback, Playlist.Callback {
-    private final Session mSession;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public abstract class PendingPlaylistAction implements Parcelable, Session.Callback, Playlist.Callback {
     private final String mLink;
     private final boolean mLoginIfNeeded;
+    private Session mSession;
     private Playlist mPlaylist;
 
-    public PendingPlaylistAction(Session session, String link, boolean loginIfNeeded) {
-        mSession = session;
+    public PendingPlaylistAction(String link, boolean loginIfNeeded) {
         mLink = link;
         mLoginIfNeeded = loginIfNeeded;
     }
 
-    public void start() {
+    PendingPlaylistAction(Parcel in) {
+        mLink = in.readString();
+        final boolean[] flags = {false};
+        in.readBooleanArray(flags);
+        mLoginIfNeeded = flags[0];
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mLink);
+        dest.writeBooleanArray(new boolean[]{mLoginIfNeeded});
+    }
+
+    public void start(Session session) {
+        mSession = session;
         switch (mSession.getConnectionState()) {
         case Session.CONNECTION_STATE_LOGGED_OUT:
         case Session.CONNECTION_STATE_UNDEFINED:

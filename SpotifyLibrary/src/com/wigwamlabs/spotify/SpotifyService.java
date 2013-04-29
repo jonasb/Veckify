@@ -8,10 +8,7 @@ import android.os.IBinder;
 
 public class SpotifyService extends android.app.Service {
     public static final String ACTION_PLAY_PLAYLIST = "play_playlist";
-    public static final String EXTRA_LINK = "link";
-    public static final String EXTRA_INTENT = "intent";
-    public static final String EXTRA_VOLUME = "volume";
-    public static final String EXTRA_SHUFFLE = "shuffle";
+    public static final String EXTRA_ACTION = "action";
     static final String ACTION_NEXT = "next";
     static final String ACTION_PAUSE = "pause";
     static final String ACTION_RESUME = "resume";
@@ -72,12 +69,8 @@ public class SpotifyService extends android.app.Service {
             } else if (ACTION_NEXT.equals(action)) {
                 mPlayer.next();
             } else if (ACTION_PLAY_PLAYLIST.equals(action)) {
-                final String link = intent.getStringExtra(EXTRA_LINK);
-                final PendingIntent playIntent = intent.getParcelableExtra(EXTRA_INTENT);
-                final int volume = intent.getIntExtra(EXTRA_VOLUME, -1);
-                final boolean shuffle = intent.getBooleanExtra(EXTRA_SHUFFLE, false);
-                final boolean tellTime = true;
-                new PendingPlayPlaylistAction(this, getSession(), link, playIntent, volume, shuffle, tellTime).start();
+                final PendingPlayPlaylistAction pendingAction = intent.getParcelableExtra(EXTRA_ACTION);
+                pendingAction.start(this, getSession());
             }
         }
 

@@ -394,7 +394,7 @@ public class MainActivity extends SpotifyPlayerActivity {
 
         final String link = mAlarm.getPlaylistLink();
         if (link != null) {
-            new PendingPlaylistAction(getSpotifySession(), link, false) {
+            new PendingPlaylistAction(link, false) {
                 @Override
                 protected void onPlaylistLoaded(Playlist playlist) {
                     if (mPlaylist == null) {
@@ -402,7 +402,7 @@ public class MainActivity extends SpotifyPlayerActivity {
                     }
                     playlist.destroy();
                 }
-            }.start();
+            }.start(getSpotifySession());
         }
     }
 

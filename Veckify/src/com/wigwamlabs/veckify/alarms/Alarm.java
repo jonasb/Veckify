@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.wigwamlabs.spotify.PendingPlayPlaylistAction;
 import com.wigwamlabs.spotify.SpotifyService;
 import com.wigwamlabs.veckify.Debug;
 import com.wigwamlabs.veckify.NowPlayingActivity;
@@ -193,10 +194,9 @@ public class Alarm {
         // tell service to start playing
         final Intent intent = new Intent(context, SpotifyService.class);
         intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
-        intent.putExtra(SpotifyService.EXTRA_LINK, mPlaylistLink);
-        intent.putExtra(SpotifyService.EXTRA_INTENT, PendingIntent.getActivity(context, 0, nowPlayingIntent, 0));
-        intent.putExtra(SpotifyService.EXTRA_VOLUME, mVolume);
-        intent.putExtra(SpotifyService.EXTRA_SHUFFLE, mShuffle);
+        final boolean tellTime = true;
+        final PendingPlayPlaylistAction pendingAction = new PendingPlayPlaylistAction(mPlaylistLink, PendingIntent.getActivity(context, 0, nowPlayingIntent, 0), mVolume, mShuffle, tellTime);
+        intent.putExtra(SpotifyService.EXTRA_ACTION, pendingAction);
         context.startService(intent);
 
         // launch now playing in alarm mode
