@@ -19,6 +19,7 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
     private View mPauseButton;
     private View mNextButton;
     private ProgressBar mTrackProgress;
+    private boolean mTrackProgressIsBeingManipulated;
 
     @Override
     protected void onResume() {
@@ -98,10 +99,12 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
+                    mTrackProgressIsBeingManipulated = true;
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    mTrackProgressIsBeingManipulated = false;
                     onSeekToPosition(seekBar.getProgress());
                 }
             });
@@ -175,7 +178,7 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
 
     @Override
     public void onTrackProgress(int secondsPlayed, int secondsDuration) {
-        if (mTrackProgress != null) {
+        if (mTrackProgress != null && !mTrackProgressIsBeingManipulated) {
             mTrackProgress.setMax(secondsDuration);
             mTrackProgress.setProgress(secondsPlayed);
         }
