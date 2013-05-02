@@ -38,7 +38,7 @@ public class SpotifyImageView extends android.widget.ImageView implements ImageP
             setImageBitmap(image);
             setVisibility(VISIBLE);
         } else {
-            mImageProvider.load(mImageLink, this);
+            mImageProvider.load(mImageLink, this, true);
             setVisibility(GONE);
         }
     }

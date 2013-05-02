@@ -54,13 +54,18 @@ public class ImageProvider extends NativeItem {
         return mImages.get(imageLink);
     }
 
-    public void load(String imageLink, Callback callback) {
-        //TODO argument to ignore previous requests of callback
+    public void load(String imageLink, Callback callback, boolean replace) {
         boolean alreadyRequested = false;
-        for (Pair<String, Callback> req : mLoadRequests) {
+        for (Iterator<Pair<String, Callback>> it = mLoadRequests.iterator(); it.hasNext(); ) {
+            final Pair<String, Callback> req = it.next();
             if (imageLink.equals(req.first)) {
                 alreadyRequested = true;
-                break;
+                if (!replace) {
+                    break;
+                }
+            }
+            if (replace && req.second == callback) {
+                it.remove();
             }
         }
         if (callback != null) {

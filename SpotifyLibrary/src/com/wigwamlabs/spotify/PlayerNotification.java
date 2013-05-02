@@ -86,7 +86,7 @@ class PlayerNotification extends ForegroundNotification implements Player.Callba
         } else {
             mTrackImage = mImageProvider.get(mTrackImageLink);
             if (mTrackImage == null) {
-                mImageProvider.load(mTrackImageLink, this);
+                mImageProvider.load(mTrackImageLink, this, true);
             }
         }
 

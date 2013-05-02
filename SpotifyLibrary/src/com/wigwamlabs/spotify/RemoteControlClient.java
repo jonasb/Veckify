@@ -39,7 +39,7 @@ class RemoteControlClient extends android.media.RemoteControlClient implements I
                 if (image != null) {
                     editor.putBitmap(MetadataEditor.BITMAP_KEY_ARTWORK, image);
                 } else {
-                    mImageProvider.load(mTrackImageLink, this);
+                    mImageProvider.load(mTrackImageLink, this, true);
                 }
             }
         }
