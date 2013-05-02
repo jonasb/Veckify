@@ -67,4 +67,14 @@ final class Debug {
             Log.v(TAG, "TTS: " + msg);
         }
     }
+
+    static void logImageProvider(String msg, Exception e) {
+        Log.w(TAG, "Image provider: " + msg, e);
+    }
+
+    static void logImageProvider(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Image provider: " + msg);
+        }
+    }
 }

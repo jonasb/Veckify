@@ -20,6 +20,7 @@ public:
     const char *getName() const;
     int getArtistCount() const;
     Artist *getArtist(int index) const;
+    sp_link *getImageLink(sp_image_size size);
     int getDurationMs() const;
     sp_track_availability getAvailability(Session *session) const;
 

@@ -22,6 +22,7 @@ public class Session extends NativeItem {
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private int mState;
     private Player mPlayer;
+    private ImageProvider mImageProvider;
     private int mSyncApproxTotalTracks = 0;
     private int mSyncLastTrackDownloaded;
     private boolean mLastSyncStatus;
@@ -51,6 +52,11 @@ public class Session extends NativeItem {
         if (mPlayer != null) {
             mPlayer.destroy();
             mPlayer = null;
+        }
+
+        if (mImageProvider != null) {
+            mImageProvider.destroy();
+            mImageProvider = null;
         }
     }
 
@@ -117,9 +123,16 @@ public class Session extends NativeItem {
     public Player getPlayer() {
         if (mPlayer == null) {
             final int handle = nativeGetPlayer();
-            mPlayer = new Player(mContext, handle);
+            mPlayer = new Player(mContext, handle, getImageProvider());
         }
         return mPlayer;
+    }
+
+    public ImageProvider getImageProvider() {
+        if (mImageProvider == null) {
+            mImageProvider = new ImageProvider(this);
+        }
+        return mImageProvider;
     }
 
     @Keep

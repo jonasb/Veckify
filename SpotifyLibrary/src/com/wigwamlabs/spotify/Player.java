@@ -28,6 +28,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     private final Handler mHandler = new Handler();
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private final Context mContext;
+    private final ImageProvider mImageProvider;
     private final AudioManager mAudioManager;
     private final Runnable mResondToUnresponsiveAudio;
     private boolean mHasAudioFocus;
@@ -40,11 +41,12 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
     private boolean mTtsIsInitialized;
     private TtsProvider mTtsProvider;
 
-    public Player(Context context, int handle) {
+    public Player(Context context, int handle, ImageProvider imageProvider) {
         super(handle);
         nativeInitInstance();
 
         mContext = context;
+        mImageProvider = imageProvider;
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         mResondToUnresponsiveAudio = new Runnable() {
             @Override
@@ -275,7 +277,7 @@ public class Player extends NativeItem implements AudioManager.OnAudioFocusChang
             mAudioManager.registerMediaButtonEventReceiver(receiver);
 
             if (mRemoteControlClient == null) {
-                mRemoteControlClient = RemoteControlClient.create(mContext, receiver);
+                mRemoteControlClient = RemoteControlClient.create(mContext, receiver, mImageProvider);
             }
             mAudioManager.registerRemoteControlClient(mRemoteControlClient);
         }

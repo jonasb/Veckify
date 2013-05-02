@@ -46,7 +46,7 @@ public class SpotifyService extends android.app.Service {
         final Intent nextIntent = new Intent(this, SpotifyService.class);
         nextIntent.setAction(ACTION_NEXT);
 
-        mPlayerNotification = new PlayerNotification(this, foregroundNotificationManager, mPlayer,
+        mPlayerNotification = new PlayerNotification(this, foregroundNotificationManager, mSession,
                 PendingIntent.getService(this, 0, pauseIntent, 0),
                 PendingIntent.getService(this, 0, resumeIntent, 0),
                 PendingIntent.getService(this, 0, nextIntent, 0)

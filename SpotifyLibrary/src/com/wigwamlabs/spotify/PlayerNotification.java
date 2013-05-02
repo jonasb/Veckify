@@ -3,23 +3,28 @@ package com.wigwamlabs.spotify;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 
-class PlayerNotification extends ForegroundNotification implements Player.Callback {
+class PlayerNotification extends ForegroundNotification implements Player.Callback, ImageProvider.Callback {
     private final Service mService;
     private final Player mPlayer;
+    private final ImageProvider mImageProvider;
     private final PendingIntent mPauseIntent;
     private final PendingIntent mResumeIntent;
     private final PendingIntent mNextIntent;
     private PendingIntent mIntent;
     private String mArtists;
     private String mTrackName;
+    private String mTrackImageLink;
+    private Bitmap mTrackImage;
     private int mState;
 
-    PlayerNotification(Service service, ForegroundNotificationManager manager, Player player, PendingIntent pauseIntent, PendingIntent resumeIntent, PendingIntent nextIntent) {
+    PlayerNotification(Service service, ForegroundNotificationManager manager, Session session, PendingIntent pauseIntent, PendingIntent resumeIntent, PendingIntent nextIntent) {
         super(manager);
         mService = service;
-        mPlayer = player;
+        mPlayer = session.getPlayer();
+        mImageProvider = session.getImageProvider();
         mPauseIntent = pauseIntent;
         mResumeIntent = resumeIntent;
         mNextIntent = nextIntent;
@@ -51,6 +56,10 @@ class PlayerNotification extends ForegroundNotification implements Player.Callba
                 .setContentText(mTrackName)
                 .setContentIntent(mIntent);
 
+        if (mTrackImage != null) {
+            builder.setLargeIcon(mTrackImage);
+        }
+
         switch (mState) {
         case Player.STATE_PLAYING:
             builder.addAction(R.drawable.ic_notification_action_pause, mService.getString(R.string.notification_action_pause), mPauseIntent);
@@ -71,6 +80,15 @@ class PlayerNotification extends ForegroundNotification implements Player.Callba
     public void onCurrentTrackUpdated(Track track) {
         mArtists = track.getArtistsString();
         mTrackName = track.getName();
+        mTrackImageLink = track.getImageLink(ImageProvider.SIZE_NORMAL);
+        if (mTrackImageLink == null) {
+            mTrackImage = null;
+        } else {
+            mTrackImage = mImageProvider.get(mTrackImageLink);
+            if (mTrackImage == null) {
+                mImageProvider.load(mTrackImageLink, this);
+            }
+        }
 
         onNotificationUpdated();
     }
@@ -94,5 +112,13 @@ class PlayerNotification extends ForegroundNotification implements Player.Callba
 
     @Override
     public void onTrackProgress(int secondsPlayed, int secondsDuration) {
+    }
+
+    @Override
+    public void onImageImageLoaded(String imageLink, Bitmap image) {
+        if (imageLink.equals(mTrackImageLink)) {
+            mTrackImage = image;
+            onNotificationUpdated();
+        }
     }
 }

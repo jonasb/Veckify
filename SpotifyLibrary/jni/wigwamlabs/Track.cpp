@@ -62,6 +62,30 @@ Artist *Track::getArtist(int index) const {
     return new Artist(artist);
 }
 
+sp_link *Track::getImageLink(sp_image_size size) {
+    sp_album *album = sp_track_album(mTrack);
+    // TODO deal with track and album not loaded
+    if (album) {
+        sp_link *link = sp_link_create_from_album_cover(album, size);
+        if (link) {
+            return link;
+        }
+    }
+    //TODO deal with artist not loaded
+    int artistCount = getArtistCount();
+    for (int i = 0; i < artistCount; i++) {
+        sp_artist *artist = sp_track_artist(mTrack, i);
+        if (!artist) {
+            continue;
+        }
+        sp_link *link = sp_link_create_from_artist_portrait(artist, size);
+        if (link) {
+            return link;
+        }
+    }
+    return NULL;
+}
+
 int Track::getDurationMs() const {
     return sp_track_duration(mTrack);
 }

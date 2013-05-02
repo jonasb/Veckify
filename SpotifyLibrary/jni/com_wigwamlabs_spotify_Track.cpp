@@ -2,7 +2,6 @@
 //#define LOG_NDEBUG 0
 #include "log.h"
 
-#include <jni.h>
 #include "utils.h"
 #include "ExceptionUtils.h"
 #include "wigwamlabs/Track.h"
@@ -87,6 +86,13 @@ JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Track, nativeGetArtist, jint index)
     Artist *artist = track->getArtist(index);
 
     return reinterpret_cast<jint>(artist);
+}
+
+JNI_METHOD_ARGS(jstring, com_wigwamlabs_spotify_Track, nativeGetImageLink, jint size) {
+    LOGV("nativeGetImageLink(%d)", size);
+    Track *track = getNativeTrack(env, self);
+    sp_link *link = track->getImageLink((sp_image_size)size);
+    return convertLinkToString(env, link);
 }
 
 JNI_METHOD_ARGS(jint, com_wigwamlabs_spotify_Track, nativeGetAvailability, jobject sessionHandle) {

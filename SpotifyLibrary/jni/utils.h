@@ -1,6 +1,9 @@
 #ifndef UTILS_H_INCLUDED
 #define UTILS_H_INCLUDED
 
+#include <jni.h>
+#include <libspotify/api.h>
+
 #define JNI_STATIC_METHOD(returnType, klassName, name) \
     extern "C" JNIEXPORT returnType JNICALL Java_ ## klassName ## _ ## name (JNIEnv *env, jclass klass)
 
@@ -21,5 +24,7 @@ namespace wigwamlabs {
 
 wigwamlabs::Session *getNativeSession(JNIEnv *env, jobject object);
 wigwamlabs::Track *getNativeTrack(JNIEnv *env, jobject object);
+
+jstring convertLinkToString(JNIEnv *env, sp_link *link);
 
 #endif // UTILS_H_INCLUDED

@@ -145,18 +145,9 @@ JNI_METHOD(jboolean, com_wigwamlabs_spotify_Playlist, nativeIsLoaded) {
 
 JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetLink) {
     LOGV("nativeGetLink()");
-
     Playlist *playlist = getNativePlaylist(env, self);
-
     sp_link *link = playlist->getLink();
-    if (!link) {
-        return 0;
-    }
-    char linkStr[256];
-    sp_link_as_string(link, linkStr, sizeof(linkStr));
-    sp_link_release(link);
-
-    return env->NewStringUTF(linkStr);
+    return convertLinkToString(env, link);
 }
 
 JNI_METHOD(jstring, com_wigwamlabs_spotify_Playlist, nativeGetName) {
