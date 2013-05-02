@@ -6,7 +6,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 @SuppressWarnings({"ConstantIfStatement", "SameParameterValue"})
-final class Debug {
+public final class Debug {
     private static final String TAG = "SpotifyLibrary";
 
     static void logAudioFocus(String msg) {
@@ -75,6 +75,12 @@ final class Debug {
     static void logImageProvider(String msg) {
         if (BuildConfig.DEBUG) {
             Log.v(TAG, "Image provider: " + msg);
+        }
+    }
+
+    public static void logBitmapCache(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "Bitmap cache: " + msg);
         }
     }
 }

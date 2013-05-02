@@ -5,11 +5,11 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.util.Pair;
 
+import com.wigwamlabs.spotify.util.BitmapCacheHashMap;
 import proguard.annotation.Keep;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
 public class ImageProvider extends NativeItem {
     static {
@@ -19,7 +19,7 @@ public class ImageProvider extends NativeItem {
     public static final int SIZE_NORMAL = 0; // 300x300
     public static final int SIZE_SMALL = 1; // 64x64
     public static final int SIZE_LARGE = 2;
-    private final LinkedHashMap<String, Bitmap> mImages = new LinkedHashMap<String, Bitmap>(); //TODO lru
+    private final BitmapCacheHashMap<String> mImages = new BitmapCacheHashMap<String>(20, 2 * 1024 * 1024);
     private final Handler mHandler = new Handler();
     private final ArrayList<Pair<String, Callback>> mLoadRequests = new ArrayList<Pair<String, Callback>>();
 
