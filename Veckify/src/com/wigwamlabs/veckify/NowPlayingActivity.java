@@ -9,8 +9,10 @@ import android.view.Window;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.wigwamlabs.spotify.ImageProvider;
 import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.Track;
+import com.wigwamlabs.spotify.ui.SpotifyImageView;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 
 import java.util.Calendar;
@@ -137,6 +139,7 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
 
         mCurrentTime = (TextView) findViewById(R.id.currentTime);
 
+        setTrackImage((SpotifyImageView) findViewById(R.id.trackImage), ImageProvider.SIZE_NORMAL);
         setTrackArtists((TextView) findViewById(R.id.trackArtists));
         setTrackName((TextView) findViewById(R.id.trackName));
         setTrackProgress((SeekBar) findViewById(R.id.seekBar));

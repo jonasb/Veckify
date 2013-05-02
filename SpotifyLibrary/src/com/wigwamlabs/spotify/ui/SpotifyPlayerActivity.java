@@ -13,6 +13,7 @@ import com.wigwamlabs.spotify.Track;
 
 public abstract class SpotifyPlayerActivity extends SpotifyActivity implements Player.Callback {
     private Player mPlayer;
+    private SpotifyImageView mTrackImage;
     private TextView mTrackArtists;
     private TextView mTrackName;
     private View mResumeButton;
@@ -20,6 +21,7 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
     private View mNextButton;
     private ProgressBar mTrackProgress;
     private boolean mTrackProgressIsBeingManipulated;
+    private int mTrackImageSize;
 
     @Override
     protected void onResume() {
@@ -47,6 +49,17 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
         }
 
         super.onDestroy();
+    }
+
+    protected void setTrackImage(SpotifyImageView image, int size) {
+        mTrackImageSize = size;
+        if (image != null) {
+            final Session session = getSpotifySession();
+            if (session != null) {
+                image.setImageProvider(session.getImageProvider());
+            }
+        }
+        mTrackImage = image;
     }
 
     protected void setTrackArtists(TextView trackArtists) {
@@ -119,6 +132,10 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
     protected void onSpotifySessionAttached(Session spotifySession) {
         mPlayer = spotifySession.getPlayer();
         mPlayer.addCallback(this, true);
+
+        if (mTrackImage != null) {
+            mTrackImage.setImageProvider(spotifySession.getImageProvider());
+        }
     }
 
     @Override
@@ -167,6 +184,9 @@ public abstract class SpotifyPlayerActivity extends SpotifyActivity implements P
     @Override
     public void onCurrentTrackUpdated(Track track) {
         if (track != null) {
+            if (mTrackImage != null) {
+                mTrackImage.setImageLink(track.getImageLink(mTrackImageSize));
+            }
             if (mTrackArtists != null) {
                 mTrackArtists.setText(track.getArtistsString());
             }
