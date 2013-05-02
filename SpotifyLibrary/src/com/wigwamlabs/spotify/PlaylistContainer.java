@@ -109,7 +109,7 @@ public class PlaylistContainer extends NativeItemCollection<NativeItem> {
                 final NativeItem item = getItem(i);
                 if (item != null && item instanceof Playlist) {
                     final Playlist playlist = (Playlist) item;
-                    if (playlist.getLink().equals(playlistLink)) {
+                    if (playlistLink.equals(playlist.getLink())) {
                         return i;
                     }
                 }
