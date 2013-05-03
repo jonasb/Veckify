@@ -1,5 +1,5 @@
 #define LOG_TAG "ImageProvider"
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 #include "log.h"
 
 #include "ImageProvider.h"
