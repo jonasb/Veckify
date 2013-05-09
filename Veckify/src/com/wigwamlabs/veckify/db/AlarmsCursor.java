@@ -74,6 +74,10 @@ public class AlarmsCursor extends SQLiteCursor {
         return getInt(time_index) % 100;
     }
 
+    public int repeatDays() {
+        return getInt(repeatdays_index);
+    }
+
     public long oneoffTimeMs() {
         return getLong(oneofftime_ms_index);
     }

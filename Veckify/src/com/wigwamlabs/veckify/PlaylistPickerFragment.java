@@ -3,6 +3,7 @@ package com.wigwamlabs.veckify;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -14,12 +15,14 @@ import com.wigwamlabs.veckify.db.AlarmEntry;
 @SuppressWarnings("WeakerAccess")
 public class PlaylistPickerFragment extends DialogFragment {
     private static final String ARG_ALARM_ID = "alarm id";
+    private static final String ARG_ALARM_ENTRY = "alarm entry";
     private static final String ARG_SELECTED_PLAYLIST = "selected playlist";
 
-    static PlaylistPickerFragment create(long alarmId, String selectedPlaylistLink) {
+    static PlaylistPickerFragment create(long alarmId, AlarmEntry entry, String selectedPlaylistLink) {
         final PlaylistPickerFragment fragment = new PlaylistPickerFragment();
         final Bundle bundle = new Bundle();
         bundle.putLong(ARG_ALARM_ID, alarmId);
+        bundle.putParcelable(ARG_ALARM_ENTRY, entry.getValues());
         bundle.putString(ARG_SELECTED_PLAYLIST, selectedPlaylistLink);
         fragment.setArguments(bundle);
         return fragment;
@@ -31,6 +34,7 @@ public class PlaylistPickerFragment extends DialogFragment {
         final PlaylistContainer playlistContainer = activity.getPlaylistContainer();
         final Bundle bundle = getArguments();
         final long alarmId = bundle.getLong(ARG_ALARM_ID);
+        final AlarmEntry entry = new AlarmEntry((ContentValues) bundle.getParcelable(ARG_ALARM_ENTRY));
         final String selectedPlaylist = bundle.getString(ARG_SELECTED_PLAYLIST);
         final int selectedPlaylistIndex = playlistContainer.findPlaylistIndex(selectedPlaylist);
 
@@ -39,15 +43,14 @@ public class PlaylistPickerFragment extends DialogFragment {
                 .setSingleChoiceItems(adapter, selectedPlaylistIndex, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        onPicked(activity, alarmId, (Playlist) adapter.getItem(which));
+                        onPicked(activity, alarmId, entry, (Playlist) adapter.getItem(which));
                         dialog.dismiss();
                     }
                 })
                 .create();
     }
 
-    private void onPicked(MainActivity activity, long alarmId, Playlist playlist) {
-        final AlarmEntry entry = new AlarmEntry();
+    private void onPicked(MainActivity activity, long alarmId, AlarmEntry entry, Playlist playlist) {
         if (playlist != null) {
 //            entry.setEnabled(true); //TODO is enablable?
             entry.setPlaylistLink(playlist.getLink());

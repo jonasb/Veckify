@@ -41,9 +41,9 @@ public class AlarmAdapter extends CursorAdapter {
     public interface Callback {
         void onAlarmEntryChanged(long alarmId, AlarmEntry entry);
 
-        void onPickTime(long alarmId, int hour, int minute);
+        void onPickTime(long alarmId, AlarmEntry entry);
 
-        void onPickPlaylist(long alarmId, String playlistLink);
+        void onPickPlaylist(long alarmId, AlarmEntry entry, String playlistLink);
     }
 
     private static class ViewHolder {
@@ -60,6 +60,7 @@ public class AlarmAdapter extends CursorAdapter {
         private Pair<Intent, Intent> mIntents;
         private boolean mShuffle;
         private boolean mUpdating;
+        private AlarmEntry mEntry;
 
         public ViewHolder(ViewGroup view, Callback callback) {
             mContext = view.getContext();
@@ -70,7 +71,7 @@ public class AlarmAdapter extends CursorAdapter {
             mTime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onPickTime(mAlarmId, mHour, mMinute);
+                    mCallback.onPickTime(mAlarmId, mEntry);
                 }
             });
 
@@ -79,7 +80,7 @@ public class AlarmAdapter extends CursorAdapter {
             mPlaylistName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onPickPlaylist(mAlarmId, mPlaylistLink);
+                    mCallback.onPickPlaylist(mAlarmId, mEntry, mPlaylistLink);
                 }
             });
 
@@ -89,9 +90,8 @@ public class AlarmAdapter extends CursorAdapter {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (!mUpdating) {
-                        final AlarmEntry entry = new AlarmEntry();
-                        entry.setEnabled(isChecked);
-                        mCallback.onAlarmEntryChanged(mAlarmId, entry);
+                        mEntry.setEnabled(isChecked);
+                        mCallback.onAlarmEntryChanged(mAlarmId, mEntry);
                     }
                 }
             });
@@ -101,9 +101,8 @@ public class AlarmAdapter extends CursorAdapter {
             mRepeatShuffleToggle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final AlarmEntry entry = new AlarmEntry();
-                    entry.setShuffle(!mShuffle);
-                    mCallback.onAlarmEntryChanged(mAlarmId, entry);
+                    mEntry.setShuffle(!mShuffle);
+                    mCallback.onAlarmEntryChanged(mAlarmId, mEntry);
                 }
             });
 
@@ -121,6 +120,12 @@ public class AlarmAdapter extends CursorAdapter {
             mUpdating = true;
 
             mAlarmId = alarm._id();
+            // create an entry with all values needed to update the entry
+            mEntry = new AlarmEntry();
+            mEntry.setEnabled(alarm.enabled());
+            mEntry.setTime(alarm.hour(), alarm.minute());
+            mEntry.setRepeatDays(alarm.repeatDays());
+
             mHour = alarm.hour();
             mMinute = alarm.minute();
             mPlaylistLink = alarm.playlistLink();

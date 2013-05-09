@@ -32,6 +32,51 @@ public class Alarm {
     private int mVolume;
     private boolean mShuffle;
 
+    public static Calendar getNextAlarmTime(int hour, int minute, int repeatDays, long nowMs) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(nowMs);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        final long timeToAlarmMs = cal.getTimeInMillis() - nowMs;
+
+        if (timeToAlarmMs < MINIMUM_TIME_TO_ALARM_MS) {
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        if (repeatDays != DAYS_NONE) {
+            for (int i = 0; i < 7; i++) {
+                final int day = cal.get(Calendar.DAY_OF_WEEK);
+                if (day == Calendar.MONDAY && (repeatDays & DAY_MONDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.TUESDAY && (repeatDays & DAY_TUESDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.WEDNESDAY && (repeatDays & DAY_WEDNESDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.THURSDAY && (repeatDays & DAY_THURSDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.FRIDAY && (repeatDays & DAY_FRIDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.SATURDAY && (repeatDays & DAY_SATURDAY) != 0) {
+                    break;
+                }
+                if (day == Calendar.SUNDAY && (repeatDays & DAY_SUNDAY) != 0) {
+                    break;
+                }
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+            }
+        }
+
+        return cal;
+    }
+
     public boolean isEnabled() {
         return mEnabled;
     }
@@ -142,48 +187,7 @@ public class Alarm {
     }
 
     public Calendar getNextAlarmTime(long nowMs) {
-        final Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(nowMs);
-        cal.set(Calendar.HOUR_OF_DAY, mHour);
-        cal.set(Calendar.MINUTE, mMinute);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        final long timeToAlarmMs = cal.getTimeInMillis() - nowMs;
-
-        if (timeToAlarmMs < MINIMUM_TIME_TO_ALARM_MS) {
-            cal.add(Calendar.DAY_OF_YEAR, 1);
-        }
-
-        if (mRepeatDays != DAYS_NONE) {
-            for (int i = 0; i < 7; i++) {
-                final int day = cal.get(Calendar.DAY_OF_WEEK);
-                if (day == Calendar.MONDAY && (mRepeatDays & DAY_MONDAY) != 0) {
-                    break;
-                }
-                if (day == Calendar.TUESDAY && (mRepeatDays & DAY_TUESDAY) != 0) {
-                    break;
-                }
-                if (day == Calendar.WEDNESDAY && (mRepeatDays & DAY_WEDNESDAY) != 0) {
-                    break;
-                }
-                if (day == Calendar.THURSDAY && (mRepeatDays & DAY_THURSDAY) != 0) {
-                    break;
-                }
-                if (day == Calendar.FRIDAY && (mRepeatDays & DAY_FRIDAY) != 0) {
-                    break;
-                }
-                if (day == Calendar.SATURDAY && (mRepeatDays & DAY_SATURDAY) != 0) {
-                    break;
-                }
-                if (day == Calendar.SUNDAY && (mRepeatDays & DAY_SUNDAY) != 0) {
-                    break;
-                }
-                cal.add(Calendar.DAY_OF_YEAR, 1);
-            }
-        }
-
-        return cal;
+        return getNextAlarmTime(mHour, mMinute, mRepeatDays, nowMs);
     }
 
     public void startAlarm(Context context) {

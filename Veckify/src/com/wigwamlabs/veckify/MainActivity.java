@@ -199,20 +199,20 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     }
 
     @Override
-    public void onPickTime(long alarmId, int hour, int minute) {
-        final TimePickerDialogFragment fragment = TimePickerDialogFragment.create(alarmId, hour, minute);
-        fragment.show(getFragmentManager(), "timepicker");
-    }
-
-    @Override
     public void onAlarmEntryChanged(long alarmId, AlarmEntry entry) {
         entry.update(getAlarmLoader(), alarmId);
 //TODO        mAlarmCollection.onAlarmUpdated(mAlarm, true|false);
     }
 
     @Override
-    public void onPickPlaylist(long alarmId, String playlistLink) {
-        final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(alarmId, playlistLink);
+    public void onPickTime(long alarmId, AlarmEntry entry) {
+        final TimePickerDialogFragment fragment = TimePickerDialogFragment.create(alarmId, entry);
+        fragment.show(getFragmentManager(), "timepicker");
+    }
+
+    @Override
+    public void onPickPlaylist(long alarmId, AlarmEntry entry, String playlistLink) {
+        final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(alarmId, entry, playlistLink);
         fragment.show(getFragmentManager(), "playlist-picker");
         //TODO will change playlist...
 
