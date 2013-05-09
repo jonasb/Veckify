@@ -27,12 +27,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class SQLiteCursorLoader extends AbstractCursorLoader {
   SQLiteOpenHelper db=null;
+  SQLiteDatabase.CursorFactory cursorFactory=null;
   String rawQuery=null;
   String[] args=null;
 
   /**
    * Creates a fully-specified SQLiteCursorLoader. See
-   * {@link SQLiteDatabase#rawQuery(SQLiteDatabase, String, String[])
+   * {@link SQLiteDatabase#rawQuery(String, String[])
    * SQLiteDatabase.rawQuery()} for documentation on the
    * meaning of the parameters. These will be passed as-is
    * to that call.
@@ -46,12 +47,28 @@ public class SQLiteCursorLoader extends AbstractCursorLoader {
   }
 
   /**
+   * Creates a fully-specified SQLiteCursorLoader. See
+   * {@link SQLiteDatabase#rawQuery(String, String[])
+   * SQLiteDatabase.rawQuery()} for documentation on the
+   * meaning of the parameters. These will be passed as-is
+   * to that call.
+   */
+  public SQLiteCursorLoader(Context context, SQLiteOpenHelper db, SQLiteDatabase.CursorFactory cursorFactory,
+                            String rawQuery, String[] args) {
+    super(context);
+    this.db=db;
+    this.cursorFactory=cursorFactory;
+    this.rawQuery=rawQuery;
+    this.args=args;
+  }
+
+  /**
    * Runs on a worker thread and performs the actual
    * database query to retrieve the Cursor.
    */
   @Override
   protected Cursor buildCursor() {
-    return(db.getReadableDatabase().rawQuery(rawQuery, args));
+    return(db.getReadableDatabase().rawQueryWithFactory(cursorFactory, rawQuery, args, null));
   }
 
   /**
