@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
-import com.wigwamlabs.veckify.alarms.Alarm;
+import com.wigwamlabs.veckify.db.AlarmEntry;
 
 @SuppressWarnings("WeakerAccess")
 public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
@@ -26,7 +26,6 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
         return fragment;
     }
 
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle bundle = getArguments();
@@ -41,6 +40,11 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         final Bundle bundle = getArguments();
         final long alarmId = bundle.getLong(ARG_ALARM_ID);
-        ((MainActivity) getActivity()).onAlarmTimeSet(alarmId, hourOfDay, minute);
+
+        final AlarmEntry entry = new AlarmEntry();
+//        entry.setEnabled(true); //TODO is enablable?
+        entry.setTime(hourOfDay, minute);
+
+        ((MainActivity) getActivity()).onAlarmEntryChanged(alarmId, entry);
     }
 }

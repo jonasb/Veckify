@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.wigwamlabs.veckify.db.AlarmEntry;
 import com.wigwamlabs.veckify.db.AlarmsCursor;
 
 public class AlarmAdapter extends CursorAdapter {
@@ -38,13 +39,11 @@ public class AlarmAdapter extends CursorAdapter {
     }
 
     public interface Callback {
-        void onAlarmEnabledChanged(long alarmId, boolean enabled);
+        void onAlarmEntryChanged(long alarmId, AlarmEntry entry);
 
         void onPickTime(long alarmId, int hour, int minute);
 
         void onPickPlaylist(long alarmId, String playlistLink);
-
-        void onShuffleChanged(long alarmId, boolean shuffle);
     }
 
     private static class ViewHolder {
@@ -90,7 +89,9 @@ public class AlarmAdapter extends CursorAdapter {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (!mUpdating) {
-                        mCallback.onAlarmEnabledChanged(mAlarmId, isChecked);
+                        final AlarmEntry entry = new AlarmEntry();
+                        entry.setEnabled(isChecked);
+                        mCallback.onAlarmEntryChanged(mAlarmId, entry);
                     }
                 }
             });
@@ -100,7 +101,9 @@ public class AlarmAdapter extends CursorAdapter {
             mRepeatShuffleToggle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onShuffleChanged(mAlarmId, !mShuffle);
+                    final AlarmEntry entry = new AlarmEntry();
+                    entry.setShuffle(!mShuffle);
+                    mCallback.onAlarmEntryChanged(mAlarmId, entry);
                 }
             });
 

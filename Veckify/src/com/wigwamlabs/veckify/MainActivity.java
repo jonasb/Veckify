@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.wigwamlabs.spotify.Player;
-import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
@@ -205,56 +204,25 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         fragment.show(getFragmentManager(), "timepicker");
     }
 
-    void onAlarmTimeSet(long alarmId, int hour, int minute) {
-        final AlarmEntry entry = new AlarmEntry();
-//        entry.setEnabled(true); //TODO is enablable?
-        entry.setTime(hour, minute);
-        entry.update(getAlarmLoader(), alarmId);
-//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, true);
-    }
-
     @Override
-    public void onAlarmEnabledChanged(long alarmId, boolean enabled) {
-        final AlarmEntry entry = new AlarmEntry();
-        entry.setEnabled(enabled);
+    public void onAlarmEntryChanged(long alarmId, AlarmEntry entry) {
         entry.update(getAlarmLoader(), alarmId);
-//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, true);
+//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, true|false);
     }
 
     @Override
     public void onPickPlaylist(long alarmId, String playlistLink) {
         final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(alarmId, playlistLink);
         fragment.show(getFragmentManager(), "playlist-picker");
-    }
+        //TODO will change playlist...
 
-    public void onPlaylistPicked(long alarmId, Playlist playlist) {
         // forget old playlist
 //TODO        if (mPlaylist != null) {
 //            mPlaylist.destroy();
 //            mPlaylist = null;
 //        }
-        //
-        final AlarmEntry entry = new AlarmEntry();
-        if (playlist != null) {
-//            entry.setEnabled(true); //TODO is enablable?
-            entry.setPlaylistLink(playlist.getLink());
-            entry.setPlaylistName(playlist.getName());
-//TODO            mPlaylist = playlist.clone();
-        } else {
-            entry.setPlaylistLink(null);
-            entry.setPlaylistName(null);
-        }
+//        if (playlist != null)
+//            mPlaylist = playlist.clone();
 
-        entry.update(getAlarmLoader(), alarmId);
-
-//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, false);
-    }
-
-    @Override
-    public void onShuffleChanged(long alarmId, boolean shuffle) {
-        final AlarmEntry entry = new AlarmEntry();
-        entry.setShuffle(shuffle);
-        entry.update(getAlarmLoader(), alarmId);
-        //TODO mAlarmCollection.onAlarmUpdated(mAlarm, false);
     }
 }

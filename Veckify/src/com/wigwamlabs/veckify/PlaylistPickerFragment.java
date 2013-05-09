@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
+import com.wigwamlabs.veckify.db.AlarmEntry;
 
 @SuppressWarnings("WeakerAccess")
 public class PlaylistPickerFragment extends DialogFragment {
@@ -38,11 +39,25 @@ public class PlaylistPickerFragment extends DialogFragment {
                 .setSingleChoiceItems(adapter, selectedPlaylistIndex, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        activity.onPlaylistPicked(alarmId, (Playlist) adapter.getItem(which));
+                        onPicked(activity, alarmId, (Playlist) adapter.getItem(which));
                         dialog.dismiss();
                     }
                 })
                 .create();
+    }
+
+    private void onPicked(MainActivity activity, long alarmId, Playlist playlist) {
+        final AlarmEntry entry = new AlarmEntry();
+        if (playlist != null) {
+//            entry.setEnabled(true); //TODO is enablable?
+            entry.setPlaylistLink(playlist.getLink());
+            entry.setPlaylistName(playlist.getName());
+        } else {
+            entry.setPlaylistLink(null);
+            entry.setPlaylistName(null);
+        }
+
+        activity.onAlarmEntryChanged(alarmId, entry);
     }
 
     @Override
