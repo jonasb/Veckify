@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataDatabaseAdapter extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "data";
+    private static final String DATABASE_NAME = "data.db";
     private static final int DATABASE_VERSION = 1;
 
     public DataDatabaseAdapter(Context context) {
@@ -18,6 +18,7 @@ public class DataDatabaseAdapter extends SQLiteOpenHelper {
             db.beginTransaction();
             // version 1
             AlarmTable.create(db);
+            AlarmEntry.createNew().insert(db);
             //
             db.setTransactionSuccessful();
         } finally {

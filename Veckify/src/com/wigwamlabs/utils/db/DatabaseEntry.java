@@ -1,14 +1,16 @@
 package com.wigwamlabs.utils.db;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
+import com.wigwamlabs.veckify.Debug;
 
 public class DatabaseEntry implements Parcelable {
-    private final String mTableName;
     protected final ContentValues mValues;
+    private final String mTableName;
 
     protected DatabaseEntry(String tableName) {
         mTableName = tableName;
@@ -40,5 +42,10 @@ public class DatabaseEntry implements Parcelable {
 
     public void insert(SQLiteCursorLoader loader) {
         loader.insert(mTableName, null, mValues);
+    }
+
+    public void insert(SQLiteDatabase db) {
+        Debug.logSql("INSERT INTO " + mTableName + " VALUES " + mValues);
+        db.insert(mTableName, null, mValues);
     }
 }
