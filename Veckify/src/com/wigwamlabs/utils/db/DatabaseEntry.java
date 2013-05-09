@@ -1,7 +1,6 @@
 package com.wigwamlabs.utils.db;
 
 import android.content.ContentValues;
-import android.os.Parcelable;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 

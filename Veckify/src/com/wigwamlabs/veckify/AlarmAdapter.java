@@ -49,14 +49,14 @@ class AlarmAdapter extends CursorAdapter {
     private static class ViewHolder {
         private final Context mContext;
         private final Callback mCallback;
-        private final TextView mTime;
+        private final TextView mTimeView;
         private final TextView mPlaylistName;
         private final Switch mEnabled;
         private final ImageButton mRepeatShuffleToggle;
+        private final View mRunNowButton;
         private long mAlarmId;
         private String mPlaylistLink;
-        private int mHour;
-        private int mMinute;
+        private Integer mTime;
         private Pair<Intent, Intent> mIntents;
         private boolean mShuffle;
         private boolean mUpdating;
@@ -67,8 +67,8 @@ class AlarmAdapter extends CursorAdapter {
             mCallback = callback;
 
             // time
-            mTime = (TextView) view.findViewById(R.id.time);
-            mTime.setOnClickListener(new View.OnClickListener() {
+            mTimeView = (TextView) view.findViewById(R.id.time);
+            mTimeView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mCallback.onPickTime(mAlarmId, mEntry);
@@ -107,7 +107,8 @@ class AlarmAdapter extends CursorAdapter {
             });
 
             // run now
-            view.findViewById(R.id.runNowButton).setOnClickListener(new View.OnClickListener() {
+            mRunNowButton = view.findViewById(R.id.runNowButton);
+            mRunNowButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mContext.startService(mIntents.first);
@@ -120,23 +121,31 @@ class AlarmAdapter extends CursorAdapter {
             mUpdating = true;
 
             mAlarmId = alarm._id();
+            mTime = alarm.time();
             // create an entry with all values needed to update the entry
             mEntry = new AlarmEntry();
             final boolean enabled = alarm.enabled();
             mEntry.setEnabled(enabled);
-            mEntry.setTime(alarm.hour(), alarm.minute());
+            mEntry.setTime(mTime);
             mEntry.setRepeatDays(alarm.repeatDays());
 
-            mHour = alarm.hour();
-            mMinute = alarm.minute();
             mPlaylistLink = alarm.playlistLink();
             mShuffle = alarm.shuffle();
             mIntents = alarm.createIntents(mContext);
+            final String playlist = alarm.playlistName();
+            final boolean hasPlaylist = playlist != null && playlist.length() > 0;
 
-            mTime.setText(String.format("%d:%02d", mHour, mMinute));
-            mPlaylistName.setText(alarm.playlistName());
+            if (mTime != null) {
+                //TODO am/pm
+                mTimeView.setText(String.format("%d:%02d", mTime.intValue() / 100, mTime.intValue() % 100));
+            } else {
+                mTimeView.setText("-:--");
+            }
+            mPlaylistName.setText(hasPlaylist ? playlist : mContext.getText(R.string.noPlaylistSelected));
             mEnabled.setChecked(enabled);
+            mEnabled.setEnabled(hasPlaylist && mTime != null);
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
+            mRunNowButton.setEnabled(hasPlaylist);
 
             mUpdating = false;
         }

@@ -35,6 +35,14 @@ public class AlarmEntry extends DatabaseEntry {
         mValues.put(AlarmTable.time, hour * 100 + minute);
     }
 
+    public Integer getTime() {
+        return mValues.getAsInteger(AlarmTable.time);
+    }
+
+    public void setTime(Integer time) {
+        mValues.put(AlarmTable.time, time);
+    }
+
     public int getHour() {
         return mValues.getAsInteger(AlarmTable.time).intValue() / 100;
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Veckify</string>
-    <string name="noPlaylistSelected">Select playlist</string>
+    <string name="noPlaylistSelected">Playlist</string>
     <string name="repeatDayMonday">MON</string>
     <string name="repeatDayTuesday">TUE</string>
     <string name="repeatDayWednesday">WED</string>

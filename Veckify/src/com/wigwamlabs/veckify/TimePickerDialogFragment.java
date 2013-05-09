@@ -31,15 +31,22 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
         final Bundle bundle = getArguments();
         mEntry = new AlarmEntry((ContentValues) bundle.getParcelable(ARG_ALARM_ENTRY));
 
+        int hour = 9;
+        int minute = 0;
+        if (mEntry.getTime() != null) {
+            hour = mEntry.getHour();
+            minute = mEntry.getMinute();
+        }
+
         final Activity activity = getActivity();
-        return new TimePickerDialog(activity, this, mEntry.getHour(), mEntry.getMinute(), DateFormat.is24HourFormat(activity));
+        return new TimePickerDialog(activity, this, hour, minute, DateFormat.is24HourFormat(activity));
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // this method is called twice sometimes by TimePickerDialog,
         // so check that the value has changed to prevent unnecessary db writes
-        if (hourOfDay != mEntry.getHour() || minute != mEntry.getMinute()) {
+        if (mEntry.getTime() == null || hourOfDay != mEntry.getHour() || minute != mEntry.getMinute()) {
             mEntry.setTime(hourOfDay, minute);
             //        entry.setEnabled(true); //TODO is enablable?
 

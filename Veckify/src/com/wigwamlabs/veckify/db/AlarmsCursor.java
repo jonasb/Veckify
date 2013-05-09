@@ -88,6 +88,13 @@ public class AlarmsCursor extends SQLiteCursor {
         return enabled;
     }
 
+    public Integer time() {
+        if (isNull(time_index)) {
+            return null;
+        }
+        return getInt(time_index);
+    }
+
     public int hour() {
         return getInt(time_index) / 100;
     }
