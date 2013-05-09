@@ -12,7 +12,7 @@ public class BitmapCacheHashMap<Key> extends LinkedHashMap<Key, Bitmap> {
     private static final int TINY_BITMAP_SIZE = 64 * 64 * 4;
     private final int mLimitBytes;
     private final int mLimitSize;
-    int mSizeBytes;
+    private int mSizeBytes;
 
     public BitmapCacheHashMap(int limitSize, int limitBytes) {
         super(100, 0.75f, true);
