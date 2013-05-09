@@ -28,4 +28,10 @@ public final class Debug {
             Log.v(TAG, event);
         }
     }
+
+    public static void logSql(String sql) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "SQL: " + sql);
+        }
+    }
 }

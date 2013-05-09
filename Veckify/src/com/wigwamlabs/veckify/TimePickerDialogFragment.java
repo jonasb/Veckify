@@ -1,5 +1,6 @@
 package com.wigwamlabs.veckify;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -11,16 +12,35 @@ import com.wigwamlabs.veckify.alarms.Alarm;
 
 @SuppressWarnings("WeakerAccess")
 public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+    private static final String ARG_ALARM_ID = "alarmid";
+    private static final String ARG_HOUR = "hour";
+    private static final String ARG_MINUTE = "minute";
+
+    static TimePickerDialogFragment create(long alarmId, int hour, int minute) {
+        final TimePickerDialogFragment fragment = new TimePickerDialogFragment();
+        final Bundle bundle = new Bundle();
+        bundle.putLong(ARG_ALARM_ID, alarmId);
+        bundle.putInt(ARG_HOUR, hour);
+        bundle.putInt(ARG_MINUTE, minute);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Alarm alarm = activity.getAlarm();
+        final Bundle bundle = getArguments();
+        final int hour = bundle.getInt(ARG_HOUR);
+        final int minute = bundle.getInt(ARG_MINUTE);
 
-        return new TimePickerDialog(getActivity(), this, alarm.getHour(), alarm.getMinute(), DateFormat.is24HourFormat(activity));
+        final Activity activity = getActivity();
+        return new TimePickerDialog(activity, this, hour, minute, DateFormat.is24HourFormat(activity));
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        ((MainActivity) getActivity()).onAlarmTimeSet(hourOfDay, minute);
+        final Bundle bundle = getArguments();
+        final long alarmId = bundle.getLong(ARG_ALARM_ID);
+        ((MainActivity) getActivity()).onAlarmTimeSet(alarmId, hourOfDay, minute);
     }
 }

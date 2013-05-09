@@ -1,135 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/alarmTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/taptoedit"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="42sp" />
-
-    <Switch
-        android:id="@+id/alarmEnabled"
-        android:layout_alignTop="@id/alarmTime"
-        android:layout_alignBottom="@id/alarmTime"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/playlistName"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_below="@id/alarmTime"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="68dp"
-        android:background="@drawable/taptoedit"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:singleLine="true" />
-
-    <ImageButton
-        android:id="@+id/volume"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignTop="@id/playlistName"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="120dp"
-        android:src="@drawable/ic_button_volume_inverse" />
-
-    <ImageButton
-        android:id="@+id/repeatShuffleToggle"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="68dp"
-        android:layout_alignTop="@id/playlistName"
-        android:src="@drawable/ic_button_shuffle_inverse" />
-
-    <ImageButton
-        android:id="@+id/runNowButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        android:layout_alignTop="@id/playlistName"
-        android:src="@drawable/ic_button_resume_inverse" />
-
-    <Button
-        android:id="@+id/downloadPlaylistButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/playlistName"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/download_playlist_button" />
-
-    <CheckBox
-        android:id="@+id/repeatCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/downloadPlaylistButton"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="8dp"
-        android:text="Repeat" />
-
-    <LinearLayout
-        android:id="@+id/repeatToggles"
+    <ListView
+        android:id="@+id/alarmList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/repeatCheckBox">
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayMonday"
-            android:textOn="@string/repeatDayMonday"
-            android:textOff="@string/repeatDayMonday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayTuesday"
-            android:textOn="@string/repeatDayTuesday"
-            android:textOff="@string/repeatDayTuesday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayWednesday"
-            android:textOn="@string/repeatDayWednesday"
-            android:textOff="@string/repeatDayWednesday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayThursday"
-            android:textOn="@string/repeatDayThursday"
-            android:textOff="@string/repeatDayThursday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayFriday"
-            android:textOn="@string/repeatDayFriday"
-            android:textOff="@string/repeatDayFriday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDaySaturday"
-            android:textOn="@string/repeatDaySaturday"
-            android:textOff="@string/repeatDaySaturday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDaySunday"
-            android:textOn="@string/repeatDaySunday"
-            android:textOff="@string/repeatDaySunday" />
-
-    </LinearLayout>
+        android:layout_height="0px"
+        android:layout_weight="1.0" />
 
     <RelativeLayout
         android:id="@+id/nowPlaying"
@@ -186,5 +65,5 @@
             android:layout_toLeftOf="@id/nextButton"
             android:src="@drawable/ic_button_resume" />
     </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>
 

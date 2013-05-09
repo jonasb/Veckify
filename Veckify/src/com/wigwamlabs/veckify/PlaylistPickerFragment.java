@@ -12,11 +12,13 @@ import com.wigwamlabs.spotify.ui.PlaylistContainerAdapter;
 
 @SuppressWarnings("WeakerAccess")
 public class PlaylistPickerFragment extends DialogFragment {
+    private static final String ARG_ALARM_ID = "alarm id";
     private static final String ARG_SELECTED_PLAYLIST = "selected playlist";
 
-    static PlaylistPickerFragment create(String selectedPlaylistLink) {
+    static PlaylistPickerFragment create(long alarmId, String selectedPlaylistLink) {
         final PlaylistPickerFragment fragment = new PlaylistPickerFragment();
         final Bundle bundle = new Bundle();
+        bundle.putLong(ARG_ALARM_ID, alarmId);
         bundle.putString(ARG_SELECTED_PLAYLIST, selectedPlaylistLink);
         fragment.setArguments(bundle);
         return fragment;
@@ -27,6 +29,7 @@ public class PlaylistPickerFragment extends DialogFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final PlaylistContainer playlistContainer = activity.getPlaylistContainer();
         final Bundle bundle = getArguments();
+        final long alarmId = bundle.getLong(ARG_ALARM_ID);
         final String selectedPlaylist = bundle.getString(ARG_SELECTED_PLAYLIST);
         final int selectedPlaylistIndex = playlistContainer.findPlaylistIndex(selectedPlaylist);
 
@@ -35,7 +38,7 @@ public class PlaylistPickerFragment extends DialogFragment {
                 .setSingleChoiceItems(adapter, selectedPlaylistIndex, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        activity.onPlaylistPicked((Playlist) adapter.getItem(which));
+                        activity.onPlaylistPicked(alarmId, (Playlist) adapter.getItem(which));
                         dialog.dismiss();
                     }
                 })

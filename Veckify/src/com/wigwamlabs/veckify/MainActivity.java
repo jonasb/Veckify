@@ -1,54 +1,35 @@
 package com.wigwamlabs.veckify;
 
+import android.app.LoaderManager;
 import android.content.Intent;
-import android.database.ContentObserver;
-import android.media.AudioManager;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-import com.wigwamlabs.spotify.PendingPlaylistAction;
+import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
-import com.wigwamlabs.veckify.alarms.Alarm;
-import com.wigwamlabs.veckify.alarms.AlarmCollection;
+import com.wigwamlabs.veckify.db.AlarmEntry;
+import com.wigwamlabs.veckify.db.AlarmsCursor;
+import com.wigwamlabs.veckify.db.DataDatabaseAdapter;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class MainActivity extends SpotifyPlayerActivity {
-    private static final int[] REPEAT_DAY_IDS = new int[]{R.id.repeatDayMonday, R.id.repeatDayTuesday, R.id.repeatDayWednesday, R.id.repeatDayThursday, R.id.repeatDayFriday, R.id.repeatDaySaturday, R.id.repeatDaySunday};
-    private final Handler mHandler = new Handler();
-    private AlarmCollection mAlarmCollection;
-    private Alarm mAlarm;
+public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback {
     private PlaylistContainer mPlaylistContainer;
-    private Playlist mPlaylist;
-    private TextView mAlarmTime;
-    private TextView mPlaylistName;
-    private Switch mAlarmEnabled;
-    private ImageButton mRepeatShuffleToggle;
-    private View mRunNowButton;
+    private DataDatabaseAdapter mDb;
     private View mNowPlaying;
-    private ContentObserver mContentObserver;
-    private CheckBox mRepeatCheckBox;
-    private ToggleButton[] mRepeatDayToggles;
-    private View mRepeatToggles;
-    private boolean mUiIsUpdating;
-    private View mDownloadPlaylistButton;
+    private AlarmAdapter mAlarmAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,34 +52,13 @@ public class MainActivity extends SpotifyPlayerActivity {
         Debug.logLifecycle("MainActivity.onResume()");
         super.onResume();
 
-        mAlarmCollection = new AlarmCollection(this);
-        mAlarm = mAlarmCollection.getAlarm();
-
-        if (mAlarm.getVolume() < 0) {
-            mAlarm.setVolume(getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-            mAlarmCollection.onAlarmUpdated(mAlarm, false);
-        }
-
-        updateUi();
-
-        // detect volume changes
-        mContentObserver = new ContentObserver(mHandler) {
-            @Override
-            public void onChange(boolean selfChange) {
-                super.onChange(selfChange);
-                onVolumeChanged(getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC));
-            }
-        };
-        getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, mContentObserver);
+//TODO        updateUi();
     }
 
     @Override
     protected void onPause() {
         Debug.logLifecycle("MainActivity.onPause()");
         super.onPause();
-
-        getContentResolver().unregisterContentObserver(mContentObserver);
-        mContentObserver = null;
     }
 
     @Override
@@ -106,9 +66,14 @@ public class MainActivity extends SpotifyPlayerActivity {
         Debug.logLifecycle("MainActivity.onDestroy()");
         super.onDestroy();
 
-        if (mPlaylist != null) {
-            mPlaylist.destroy();
-            mPlaylist = null;
+//TODO        if (mPlaylist != null) {
+//            mPlaylist.destroy();
+//            mPlaylist = null;
+//        }
+
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
         }
 
         if (mPlaylistContainer != null) {
@@ -136,91 +101,14 @@ public class MainActivity extends SpotifyPlayerActivity {
     private void initUi() {
         setContentView(R.layout.activity_main);
 
-        // set up time picker
-        mAlarmTime = (TextView) findViewById(R.id.alarmTime);
-        mAlarmTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onEditTime();
-            }
-        });
-        // set up enable switch
-        mAlarmEnabled = (Switch) findViewById(R.id.alarmEnabled);
-        mAlarmEnabled.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!mUiIsUpdating) {
-                    onAlarmEnabledChanged(isChecked);
-                }
-            }
-        });
-        // set up playlist picker
-        mPlaylistName = (TextView) findViewById(R.id.playlistName);
-        mPlaylistName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onPickPlaylist();
-            }
-        });
-        // volume
-        final View volume = findViewById(R.id.volume);
-        volume.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editVolume();
-            }
-        });
-        // repeat/shuffle
-        mRepeatShuffleToggle = (ImageButton) findViewById(R.id.repeatShuffleToggle);
-        mRepeatShuffleToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onRepeatShuffleClicked();
-            }
-        });
-        //
-        mRunNowButton = findViewById(R.id.runNowButton);
-        mRunNowButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                runAlarmNow();
-            }
-        });
-        // offline
-        mDownloadPlaylistButton = findViewById(R.id.downloadPlaylistButton);
-        mDownloadPlaylistButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onDownloadPlaylist();
-            }
-        });
-        // repeats
-        mRepeatCheckBox = (CheckBox) findViewById(R.id.repeatCheckBox);
-        mRepeatCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!mUiIsUpdating) {
-                    onRepeatChanged(isChecked);
-                }
-            }
-        });
-        mRepeatToggles = findViewById(R.id.repeatToggles);
-        final OnCheckedChangeListener changeListener = new
+        // alarms
+        mDb = new DataDatabaseAdapter(this);
+        getLoaderManager().initLoader(R.id.loaderAlarms, null, this);
 
-                OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (!mUiIsUpdating) {
-                            onRepeatDayChanged(buttonView.getId(), isChecked);
-                        }
-                    }
-                };
-        mRepeatDayToggles = new ToggleButton[REPEAT_DAY_IDS.length];
-        for (int i = 0; i < REPEAT_DAY_IDS.length; i++) {
-            mRepeatDayToggles[i] = (ToggleButton) findViewById(REPEAT_DAY_IDS[i]);
-            mRepeatDayToggles[i].setOnCheckedChangeListener(changeListener);
-        }
-        //TODO ensure toggles follow locale's first weekday: Calendar.getFirstDayOfWeek()
+        mAlarmAdapter = new AlarmAdapter(this, this);
+        final ListView alarmList = (ListView) findViewById(R.id.alarmList);
+        alarmList.setAdapter(mAlarmAdapter);
+
         // now playing
         mNowPlaying = findViewById(R.id.nowPlaying);
         mNowPlaying.setOnClickListener(new View.OnClickListener() {
@@ -237,161 +125,12 @@ public class MainActivity extends SpotifyPlayerActivity {
         setNextButton(findViewById(R.id.nextButton));
     }
 
-    private void updateUi() {
-        mUiIsUpdating = true;
-        //TODO disable switch if not playable
-        mAlarmEnabled.setChecked(mAlarm.isEnabled());
-        //TODO am/pm
-        mAlarmTime.setText(String.format("%d:%02d", mAlarm.getHour(), mAlarm.getMinute()));
-
-        mPlaylistName.setEnabled(mPlaylistContainer != null);
-        final String name = mAlarm.getPlaylistName();
-        if (name == null || name.length() == 0) {
-            mPlaylistName.setText(R.string.noPlaylistSelected);
-            mRunNowButton.setEnabled(false);
-        } else {
-            mPlaylistName.setText(name);
-            mRunNowButton.setEnabled(true);
-        }
-
-        final Session session = getSpotifySession();
-        mDownloadPlaylistButton.setVisibility(mPlaylist == null || mPlaylist.getOfflineStatus(session) != Playlist.OFFLINE_STATUS_NO ? GONE : VISIBLE);
-
-        mRepeatShuffleToggle.setImageResource(mAlarm.isShuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
-
-        final int repeatDays = mAlarm.getRepeatDays();
-        mRepeatCheckBox.setChecked(repeatDays != Alarm.DAYS_NONE);
-        mRepeatToggles.setVisibility(repeatDays != Alarm.DAYS_NONE ? VISIBLE : GONE);
-        int day = 1;
-        for (final ToggleButton toggle : mRepeatDayToggles) {
-            toggle.setChecked((repeatDays & day) != 0);
-            day <<= 1;
-        }
-        mUiIsUpdating = false;
-    }
-
-    private void onEditTime() {
-        final TimePickerDialogFragment fragment = new TimePickerDialogFragment();
-        fragment.show(getFragmentManager(), "timepicker");
-    }
-
-    Alarm getAlarm() {
-        return mAlarm;
-    }
-
-    public void onAlarmTimeSet(int hour, int minute) {
-        mAlarm.setEnabled(true);
-        mAlarm.setTime(hour, minute);
-        mAlarmCollection.onAlarmUpdated(mAlarm, true);
-        updateUi();
-    }
-
-    private void onAlarmEnabledChanged(boolean enabled) {
-        mAlarm.setEnabled(enabled);
-        mAlarmCollection.onAlarmUpdated(mAlarm, true);
-    }
-
-    private void onPickPlaylist() {
-        final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(mAlarm.getPlaylistLink());
-        fragment.show(getFragmentManager(), "playlist-picker");
-    }
-
-    public void onPlaylistPicked(Playlist playlist) {
-        // forget old playlist
-        if (mPlaylist != null) {
-            mPlaylist.destroy();
-            mPlaylist = null;
-        }
-        //
-        if (playlist != null) {
-            mAlarm.setEnabled(true);
-            mAlarm.setPlaylistLink(playlist.getLink());
-            mAlarm.setPlaylistName(playlist.getName());
-            mPlaylist = playlist.clone();
-        } else {
-            mAlarm.setPlaylistLink(null);
-            mAlarm.setPlaylistName(null);
-        }
-        mAlarmCollection.onAlarmUpdated(mAlarm, false);
-        updateUi();
-    }
-
-    private void editVolume() {
-        final AudioManager audioManager = getAudioManager();
-        final int volume = mAlarm.getVolume();
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
-    }
-
-    private void onVolumeChanged(int volume) {
-        if (volume != mAlarm.getVolume()) {
-            mAlarm.setVolume(volume);
-            mAlarmCollection.onAlarmUpdated(mAlarm, false);
-            updateUi();
-        }
-    }
-
-    private void onDownloadPlaylist() {
-        if (mPlaylist == null) {
-            return;
-        }
-        mPlaylist.setOfflineMode(getSpotifySession(), true);
-        updateUi();
-    }
-
-    private void onRepeatShuffleClicked() {
-        mAlarm.setShuffle(!mAlarm.isShuffle());
-        mAlarmCollection.onAlarmUpdated(mAlarm, false);
-        updateUi();
-    }
-
-    private void runAlarmNow() {
-        mAlarm.startAlarm(this);
-    }
-
-    private void onRepeatChanged(boolean checked) {
-        mAlarm.setRepeatDays(checked ? Alarm.DAYS_ALL : Alarm.DAYS_NONE);
-        mAlarmCollection.onAlarmUpdated(mAlarm, true);
-        updateUi();
-    }
-
-    private void onRepeatDayChanged(int id, boolean checked) {
-        final int day;
-        switch (id) {
-        case R.id.repeatDayMonday:
-            day = Alarm.DAY_MONDAY;
-            break;
-        case R.id.repeatDayTuesday:
-            day = Alarm.DAY_TUESDAY;
-            break;
-        case R.id.repeatDayWednesday:
-            day = Alarm.DAY_WEDNESDAY;
-            break;
-        case R.id.repeatDayThursday:
-            day = Alarm.DAY_THURSDAY;
-            break;
-        case R.id.repeatDayFriday:
-            day = Alarm.DAY_FRIDAY;
-            break;
-        case R.id.repeatDaySaturday:
-            day = Alarm.DAY_SATURDAY;
-            break;
-        case R.id.repeatDaySunday:
-            day = Alarm.DAY_SUNDAY;
-            break;
-        default:
-            return;
-        }
-        mAlarm.setRepeatDay(day, checked);
-        mAlarmCollection.onAlarmUpdated(mAlarm, true);
-        updateUi();
-    }
-
     @Override
     protected void onSpotifySessionAttached(Session spotifySession) {
         super.onSpotifySessionAttached(spotifySession);
         setAutoLogin(true);
 
+        /* TODO
         final String link = mAlarm.getPlaylistLink();
         if (link != null) {
             new PendingPlaylistAction(link, false) {
@@ -404,6 +143,7 @@ public class MainActivity extends SpotifyPlayerActivity {
                 }
             }.start(getSpotifySession());
         }
+        */
     }
 
     @Override
@@ -412,7 +152,7 @@ public class MainActivity extends SpotifyPlayerActivity {
 
         if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
             mPlaylistContainer = getSpotifySession().getPlaylistContainer();
-            updateUi();
+//TODO            updateUi();
         }
     }
 
@@ -432,6 +172,89 @@ public class MainActivity extends SpotifyPlayerActivity {
     public void onOfflineTracksToSyncChanged(boolean syncing, int remainingTracks, int approxTotalTracks) {
         super.onOfflineTracksToSyncChanged(syncing, remainingTracks, approxTotalTracks);
 
-        updateUi();
+//TODO        updateUi();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+        case R.id.loaderAlarms:
+            return AlarmsCursor.getAllAlarms(this, mDb);
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAlarmAdapter.changeCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAlarmAdapter.changeCursor(null);
+    }
+
+    private SQLiteCursorLoader getAlarmLoader() {
+        final Loader<Cursor> loader = getLoaderManager().getLoader(R.id.loaderAlarms);
+        return (SQLiteCursorLoader) loader;
+    }
+
+    @Override
+    public void onPickTime(long alarmId, int hour, int minute) {
+        final TimePickerDialogFragment fragment = TimePickerDialogFragment.create(alarmId, hour, minute);
+        fragment.show(getFragmentManager(), "timepicker");
+    }
+
+    void onAlarmTimeSet(long alarmId, int hour, int minute) {
+        final AlarmEntry entry = new AlarmEntry();
+//        entry.setEnabled(true); //TODO is enablable?
+        entry.setTime(hour, minute);
+        entry.update(getAlarmLoader(), alarmId);
+//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, true);
+    }
+
+    @Override
+    public void onAlarmEnabledChanged(long alarmId, boolean enabled) {
+        final AlarmEntry entry = new AlarmEntry();
+        entry.setEnabled(enabled);
+        entry.update(getAlarmLoader(), alarmId);
+//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, true);
+    }
+
+    @Override
+    public void onPickPlaylist(long alarmId, String playlistLink) {
+        final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(alarmId, playlistLink);
+        fragment.show(getFragmentManager(), "playlist-picker");
+    }
+
+    public void onPlaylistPicked(long alarmId, Playlist playlist) {
+        // forget old playlist
+//TODO        if (mPlaylist != null) {
+//            mPlaylist.destroy();
+//            mPlaylist = null;
+//        }
+        //
+        final AlarmEntry entry = new AlarmEntry();
+        if (playlist != null) {
+//            entry.setEnabled(true); //TODO is enablable?
+            entry.setPlaylistLink(playlist.getLink());
+            entry.setPlaylistName(playlist.getName());
+//TODO            mPlaylist = playlist.clone();
+        } else {
+            entry.setPlaylistLink(null);
+            entry.setPlaylistName(null);
+        }
+
+        entry.update(getAlarmLoader(), alarmId);
+
+//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, false);
+    }
+
+    @Override
+    public void onShuffleChanged(long alarmId, boolean shuffle) {
+        final AlarmEntry entry = new AlarmEntry();
+        entry.setShuffle(shuffle);
+        entry.update(getAlarmLoader(), alarmId);
+        //TODO mAlarmCollection.onAlarmUpdated(mAlarm, false);
     }
 }
