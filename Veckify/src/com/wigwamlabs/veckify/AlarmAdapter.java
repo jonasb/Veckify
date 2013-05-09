@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.wigwamlabs.veckify.db.AlarmEntry;
 import com.wigwamlabs.veckify.db.AlarmsCursor;
 
-public class AlarmAdapter extends CursorAdapter {
+class AlarmAdapter extends CursorAdapter {
     private final Callback mCallback;
 
     public AlarmAdapter(Context context, Callback callback) {
@@ -122,7 +122,8 @@ public class AlarmAdapter extends CursorAdapter {
             mAlarmId = alarm._id();
             // create an entry with all values needed to update the entry
             mEntry = new AlarmEntry();
-            mEntry.setEnabled(alarm.enabled());
+            final boolean enabled = alarm.enabled();
+            mEntry.setEnabled(enabled);
             mEntry.setTime(alarm.hour(), alarm.minute());
             mEntry.setRepeatDays(alarm.repeatDays());
 
@@ -134,7 +135,7 @@ public class AlarmAdapter extends CursorAdapter {
 
             mTime.setText(String.format("%d:%02d", mHour, mMinute));
             mPlaylistName.setText(alarm.playlistName());
-            mEnabled.setChecked(alarm.enabled());
+            mEnabled.setChecked(enabled);
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
 
             mUpdating = false;

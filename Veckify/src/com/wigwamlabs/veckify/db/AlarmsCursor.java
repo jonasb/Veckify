@@ -14,6 +14,8 @@ import android.util.Pair;
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.wigwamlabs.spotify.PendingPlayPlaylistAction;
 import com.wigwamlabs.spotify.SpotifyService;
+import com.wigwamlabs.veckify.AlarmUtils;
+import com.wigwamlabs.veckify.Debug;
 import com.wigwamlabs.veckify.NowPlayingActivity;
 
 public class AlarmsCursor extends SQLiteCursor {
@@ -48,14 +50,25 @@ public class AlarmsCursor extends SQLiteCursor {
     private static final int playlistlink_index = 6;
     private static final int volume_index = 7;
     private static final int shuffle_index = 8;
+    private static final String QUERY_SELECT_ALL = SQLiteQueryBuilder.buildQueryString(false, AlarmTable.n, COLUMNS, null, null, null, null, null);
 
     public AlarmsCursor(SQLiteCursorDriver masterQuery, String editTable, SQLiteQuery query) {
         super(masterQuery, editTable, query);
     }
 
-    public static SQLiteCursorLoader getAllAlarms(Context context, DataDatabaseAdapter db) {
-        final String query = SQLiteQueryBuilder.buildQueryString(false, AlarmTable.n, COLUMNS, null, null, null, null, null);
-        return new SQLiteCursorLoader(context, db, FACTORY, query, null);
+    public static SQLiteCursorLoader getAllAlarmsLoader(Context context, DataDatabaseAdapter db) {
+        return new SQLiteCursorLoader(context, db, FACTORY, QUERY_SELECT_ALL, null);
+    }
+
+    public static AlarmsCursor getAllAlarmsCursor(DataDatabaseAdapter db) {
+        Debug.logSql(QUERY_SELECT_ALL);
+        return (AlarmsCursor) db.getReadableDatabase().rawQueryWithFactory(FACTORY, QUERY_SELECT_ALL, null, null);
+    }
+
+    public static AlarmsCursor getAlarmCursor(DataDatabaseAdapter db, long alarmId) {
+        final String query = SQLiteQueryBuilder.buildQueryString(false, AlarmTable.n, COLUMNS, AlarmTable._id + " = " + alarmId, null, null, null, "1");
+        Debug.logSql(query);
+        return (AlarmsCursor) db.getReadableDatabase().rawQueryWithFactory(FACTORY, query, null, null);
     }
 
     public long _id() {
@@ -63,7 +76,16 @@ public class AlarmsCursor extends SQLiteCursor {
     }
 
     public boolean enabled() {
-        return getInt(enabled_index) > 0;
+        final boolean enabled = getInt(enabled_index) > 0;
+        if (enabled && repeatDays() == AlarmUtils.DAYS_NONE) { // one-off
+            final long oneoffTime = oneoffTimeMs();
+            if (oneoffTime > 0 && oneoffTime < System.currentTimeMillis()) {
+                Debug.logAlarmScheduling("Alarm " + _id() + " out of synch (one-off event which has expired)");
+                // db out of sync, should be fixed soon
+                return false;
+            }
+        }
+        return enabled;
     }
 
     public int hour() {

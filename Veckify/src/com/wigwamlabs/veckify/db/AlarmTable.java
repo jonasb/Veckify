@@ -4,7 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.wigwamlabs.utils.db.QueryBuilder;
 
-public final class AlarmTable {
+final class AlarmTable {
     static final String n = "Alarms";
     static final String _id = "_id";
     static final String enabled = "enabled";

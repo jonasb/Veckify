@@ -14,7 +14,7 @@ public class DatabaseEntry {
         mValues = new ContentValues();
     }
 
-    public DatabaseEntry(String tableName, ContentValues values) {
+    protected DatabaseEntry(String tableName, ContentValues values) {
         mTableName = tableName;
         mValues = values;
     }
@@ -23,7 +23,7 @@ public class DatabaseEntry {
         return mValues;
     }
 
-    public void update(SQLiteCursorLoader loader, long id) {
+    protected void update(SQLiteCursorLoader loader, long id) {
         loader.update(mTableName, mValues, "_id=" + id, null);
     }
 

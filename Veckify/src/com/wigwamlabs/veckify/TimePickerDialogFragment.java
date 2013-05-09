@@ -37,12 +37,15 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        final Bundle bundle = getArguments();
-        final long alarmId = bundle.getLong(ARG_ALARM_ID);
+        // this method is called twice sometimes by TimePickerDialog,
+        // so check that the value has changed to prevent unnecessary db writes
+        if (hourOfDay != mEntry.getHour() || minute != mEntry.getMinute()) {
+            mEntry.setTime(hourOfDay, minute);
+            //        entry.setEnabled(true); //TODO is enablable?
 
-        //        entry.setEnabled(true); //TODO is enablable?
-        mEntry.setTime(hourOfDay, minute);
-
-        ((MainActivity) getActivity()).onAlarmEntryChanged(alarmId, mEntry);
+            final Bundle bundle = getArguments();
+            final long alarmId = bundle.getLong(ARG_ALARM_ID);
+            ((MainActivity) getActivity()).onAlarmEntryChanged(alarmId, mEntry);
+        }
     }
 }

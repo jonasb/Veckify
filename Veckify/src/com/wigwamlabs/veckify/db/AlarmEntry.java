@@ -4,7 +4,10 @@ import android.content.ContentValues;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.wigwamlabs.utils.db.DatabaseEntry;
-import com.wigwamlabs.veckify.alarms.Alarm;
+import com.wigwamlabs.veckify.AlarmUtils;
+import com.wigwamlabs.veckify.Debug;
+
+import java.util.Calendar;
 
 public class AlarmEntry extends DatabaseEntry {
     public AlarmEntry() {
@@ -67,22 +70,27 @@ public class AlarmEntry extends DatabaseEntry {
         if (enabled == null) {
             throw new RuntimeException("Didn't set value 'enabled'");
         }
-        if (!enabled.booleanValue()) {
-            return;
-        }
-
         final Integer repeatDays = mValues.getAsInteger(AlarmTable.repeatdays);
+        final Integer time = mValues.getAsInteger(AlarmTable.time);
+        if (time == null) {
+            throw new RuntimeException("Didn't set value 'time'");
+        }
         if (repeatDays == null) {
             throw new RuntimeException("Didn't set value 'repeatdays'");
         }
-        if (repeatDays.intValue() == Alarm.DAYS_NONE) {
-            final Integer time = mValues.getAsInteger(AlarmTable.time);
-            if (time == null) {
-                throw new RuntimeException("Didn't set value 'time'");
-            }
+
+        if (repeatDays.intValue() == AlarmUtils.DAYS_NONE) {
             final int hour = time.intValue() / 100;
             final int minute = time.intValue() % 100;
-            setOneoffTimeMs(Alarm.getNextAlarmTime(hour, minute, repeatDays.intValue(), nowMs).getTimeInMillis());
+            final Calendar nextAlarmTime = AlarmUtils.getNextAlarmTime(enabled.booleanValue(), hour, minute, repeatDays.intValue(), 0, nowMs);
+            setOneoffTimeMs(nextAlarmTime == null ? 0 : nextAlarmTime.getTimeInMillis());
         }
+    }
+
+    public void updateExpiredOneoffAlarms(DataDatabaseAdapter db) {
+        final String where = String.format("%s = %d AND %s < %d", AlarmTable.repeatdays, AlarmUtils.DAYS_NONE, AlarmTable.oneofftime_ms, System.currentTimeMillis());
+        final int updated = db.getWritableDatabase().update(AlarmTable.n, mValues, where, null);
+
+        Debug.logSql("UPDATE " + AlarmTable.n + " VALUES " + mValues + " WHERE " + where + " => affected " + updated + " rows");
     }
 }

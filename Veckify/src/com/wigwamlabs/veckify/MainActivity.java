@@ -19,21 +19,22 @@ import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 import com.wigwamlabs.veckify.db.AlarmEntry;
 import com.wigwamlabs.veckify.db.AlarmsCursor;
-import com.wigwamlabs.veckify.db.DataDatabaseAdapter;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback {
     private PlaylistContainer mPlaylistContainer;
-    private DataDatabaseAdapter mDb;
     private View mNowPlaying;
     private AlarmAdapter mAlarmAdapter;
+    private AlarmUtils mAlarmUtils;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Debug.logLifecycle("MainActivity.onCreate()");
         super.onCreate(savedInstanceState);
+
+        mAlarmUtils = new AlarmUtils(this);
 
         initUi();
 
@@ -70,11 +71,6 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 //            mPlaylist = null;
 //        }
 
-        if (mDb != null) {
-            mDb.close();
-            mDb = null;
-        }
-
         if (mPlaylistContainer != null) {
             mPlaylistContainer.destroy();
             mPlaylistContainer = null;
@@ -101,7 +97,6 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         setContentView(R.layout.activity_main);
 
         // alarms
-        mDb = new DataDatabaseAdapter(this);
         getLoaderManager().initLoader(R.id.loaderAlarms, null, this);
 
         mAlarmAdapter = new AlarmAdapter(this, this);
@@ -178,13 +173,14 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
         case R.id.loaderAlarms:
-            return AlarmsCursor.getAllAlarms(this, mDb);
+            return AlarmsCursor.getAllAlarmsLoader(this, ((Application) getApplication()).getDb());
         }
         return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAlarmUtils.reschedule(this, (AlarmsCursor) data);
         mAlarmAdapter.changeCursor(data);
     }
 
@@ -201,7 +197,6 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     @Override
     public void onAlarmEntryChanged(long alarmId, AlarmEntry entry) {
         entry.update(getAlarmLoader(), alarmId);
-//TODO        mAlarmCollection.onAlarmUpdated(mAlarm, true|false);
     }
 
     @Override
