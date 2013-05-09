@@ -212,7 +212,12 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     }
 
     @Override
-    public void onAlarmEntryChanged(long alarmId, AlarmEntry entry) {
+    public void onAlarmEntryChanged(long alarmId, AlarmEntry entry, boolean enableIfPossible) {
+        if (enableIfPossible) {
+            if (entry.hasPlaylist() && entry.getTime() != null) {
+                entry.setEnabled(true);
+            }
+        }
         entry.update(getAlarmLoader(), alarmId);
     }
 

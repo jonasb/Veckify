@@ -1,6 +1,7 @@
 package com.wigwamlabs.veckify.db;
 
-import android.content.ContentValues;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.wigwamlabs.utils.db.DatabaseEntry;
@@ -10,12 +11,27 @@ import com.wigwamlabs.veckify.Debug;
 import java.util.Calendar;
 
 public class AlarmEntry extends DatabaseEntry {
+    public static final Parcelable.Creator CREATOR =
+            new Parcelable.Creator() {
+                @Override
+                public AlarmEntry createFromParcel(Parcel in) {
+                    return new AlarmEntry(in);
+                }
+
+                @Override
+                public AlarmEntry[] newArray(int size) {
+                    return new AlarmEntry[size];
+                }
+            };
+    private boolean mHasPlaylist;
+
     public AlarmEntry() {
         super(AlarmTable.n);
     }
 
-    public AlarmEntry(ContentValues values) {
-        super(AlarmTable.n, values);
+    public AlarmEntry(Parcel in) {
+        super(AlarmTable.n, in);
+        mHasPlaylist = in.readInt() > 0;
     }
 
     public static AlarmEntry createNew() {
@@ -25,6 +41,12 @@ public class AlarmEntry extends DatabaseEntry {
         entry.setVolume(100);
         entry.setShuffle(true);
         return entry;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(mHasPlaylist ? 1 : 0);
     }
 
     public void setEnabled(boolean enabled) {
@@ -57,6 +79,15 @@ public class AlarmEntry extends DatabaseEntry {
 
     public void setOneoffTimeMs(long oneoffTimeMs) {
         mValues.put(AlarmTable.oneofftime_ms, oneoffTimeMs);
+    }
+
+    public void setHasPlaylist(boolean hasPlaylist) {
+        // don't store it in the values... it's enough to know that we have a playlist
+        mHasPlaylist = hasPlaylist;
+    }
+
+    public boolean hasPlaylist() {
+        return mHasPlaylist || mValues.getAsString(AlarmTable.playlistlink) != null;
     }
 
     public void setPlaylistName(String playlistName) {

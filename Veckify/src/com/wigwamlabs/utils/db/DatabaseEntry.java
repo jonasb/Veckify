@@ -1,10 +1,12 @@
 package com.wigwamlabs.utils.db;
 
 import android.content.ContentValues;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
-public class DatabaseEntry {
+public class DatabaseEntry implements Parcelable {
     private final String mTableName;
     protected final ContentValues mValues;
 
@@ -13,9 +15,19 @@ public class DatabaseEntry {
         mValues = new ContentValues();
     }
 
-    protected DatabaseEntry(String tableName, ContentValues values) {
+    protected DatabaseEntry(String tableName, Parcel in) {
         mTableName = tableName;
-        mValues = values;
+        mValues = in.readParcelable(DatabaseEntry.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(mValues, 0);
     }
 
     public ContentValues getValues() {

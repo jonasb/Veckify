@@ -22,7 +22,7 @@ public class PlaylistPickerFragment extends DialogFragment {
         final PlaylistPickerFragment fragment = new PlaylistPickerFragment();
         final Bundle bundle = new Bundle();
         bundle.putLong(ARG_ALARM_ID, alarmId);
-        bundle.putParcelable(ARG_ALARM_ENTRY, entry.getValues());
+        bundle.putParcelable(ARG_ALARM_ENTRY, entry);
         bundle.putString(ARG_SELECTED_PLAYLIST, selectedPlaylistLink);
         fragment.setArguments(bundle);
         return fragment;
@@ -34,7 +34,7 @@ public class PlaylistPickerFragment extends DialogFragment {
         final PlaylistContainer playlistContainer = activity.getPlaylistContainer();
         final Bundle bundle = getArguments();
         final long alarmId = bundle.getLong(ARG_ALARM_ID);
-        final AlarmEntry entry = new AlarmEntry((ContentValues) bundle.getParcelable(ARG_ALARM_ENTRY));
+        final AlarmEntry entry = bundle.getParcelable(ARG_ALARM_ENTRY);
         final String selectedPlaylist = bundle.getString(ARG_SELECTED_PLAYLIST);
         final int selectedPlaylistIndex = playlistContainer.findPlaylistIndex(selectedPlaylist);
 
@@ -52,7 +52,6 @@ public class PlaylistPickerFragment extends DialogFragment {
 
     private void onPicked(MainActivity activity, long alarmId, AlarmEntry entry, Playlist playlist) {
         if (playlist != null) {
-//            entry.setEnabled(true); //TODO is enablable?
             entry.setPlaylistLink(playlist.getLink());
             entry.setPlaylistName(playlist.getName());
         } else {
@@ -60,7 +59,7 @@ public class PlaylistPickerFragment extends DialogFragment {
             entry.setPlaylistName(null);
         }
 
-        activity.onAlarmEntryChanged(alarmId, entry);
+        activity.onAlarmEntryChanged(alarmId, entry, true);
     }
 
     @Override

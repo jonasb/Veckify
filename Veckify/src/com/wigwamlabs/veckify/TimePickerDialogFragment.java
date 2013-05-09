@@ -21,7 +21,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
         final TimePickerDialogFragment fragment = new TimePickerDialogFragment();
         final Bundle bundle = new Bundle();
         bundle.putLong(ARG_ALARM_ID, alarmId);
-        bundle.putParcelable(ARG_ALARM_ENTRY, entry.getValues());
+        bundle.putParcelable(ARG_ALARM_ENTRY, entry);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -29,7 +29,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle bundle = getArguments();
-        mEntry = new AlarmEntry((ContentValues) bundle.getParcelable(ARG_ALARM_ENTRY));
+        mEntry =  bundle.getParcelable(ARG_ALARM_ENTRY);
 
         int hour = 9;
         int minute = 0;
@@ -48,11 +48,10 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
         // so check that the value has changed to prevent unnecessary db writes
         if (mEntry.getTime() == null || hourOfDay != mEntry.getHour() || minute != mEntry.getMinute()) {
             mEntry.setTime(hourOfDay, minute);
-            //        entry.setEnabled(true); //TODO is enablable?
 
             final Bundle bundle = getArguments();
             final long alarmId = bundle.getLong(ARG_ALARM_ID);
-            ((MainActivity) getActivity()).onAlarmEntryChanged(alarmId, mEntry);
+            ((MainActivity) getActivity()).onAlarmEntryChanged(alarmId, mEntry, true);
         }
     }
 }

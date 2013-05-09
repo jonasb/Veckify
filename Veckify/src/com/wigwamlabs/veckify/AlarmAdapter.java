@@ -39,7 +39,7 @@ class AlarmAdapter extends CursorAdapter {
     }
 
     public interface Callback {
-        void onAlarmEntryChanged(long alarmId, AlarmEntry entry);
+        void onAlarmEntryChanged(long alarmId, AlarmEntry entry, boolean enableIfPossible);
 
         void onPickTime(long alarmId, AlarmEntry entry);
 
@@ -91,7 +91,7 @@ class AlarmAdapter extends CursorAdapter {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (!mUpdating) {
                         mEntry.setEnabled(isChecked);
-                        mCallback.onAlarmEntryChanged(mAlarmId, mEntry);
+                        mCallback.onAlarmEntryChanged(mAlarmId, mEntry, false);
                     }
                 }
             });
@@ -102,7 +102,7 @@ class AlarmAdapter extends CursorAdapter {
                 @Override
                 public void onClick(View v) {
                     mEntry.setShuffle(!mShuffle);
-                    mCallback.onAlarmEntryChanged(mAlarmId, mEntry);
+                    mCallback.onAlarmEntryChanged(mAlarmId, mEntry, true);
                 }
             });
 
@@ -122,18 +122,19 @@ class AlarmAdapter extends CursorAdapter {
 
             mAlarmId = alarm._id();
             mTime = alarm.time();
+            mPlaylistLink = alarm.playlistLink();
+            mShuffle = alarm.shuffle();
+            mIntents = alarm.createIntents(mContext);
+            final String playlist = alarm.playlistName();
+            final boolean hasPlaylist = playlist != null && playlist.length() > 0;
+
             // create an entry with all values needed to update the entry
             mEntry = new AlarmEntry();
             final boolean enabled = alarm.enabled();
             mEntry.setEnabled(enabled);
             mEntry.setTime(mTime);
             mEntry.setRepeatDays(alarm.repeatDays());
-
-            mPlaylistLink = alarm.playlistLink();
-            mShuffle = alarm.shuffle();
-            mIntents = alarm.createIntents(mContext);
-            final String playlist = alarm.playlistName();
-            final boolean hasPlaylist = playlist != null && playlist.length() > 0;
+            mEntry.setHasPlaylist(hasPlaylist);
 
             if (mTime != null) {
                 //TODO am/pm
