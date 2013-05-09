@@ -118,16 +118,16 @@ public class AlarmEntry extends DatabaseEntry {
         if (enabled == null) {
             throw new RuntimeException("Didn't set value 'enabled'");
         }
-        final Integer repeatDays = mValues.getAsInteger(AlarmTable.repeatdays);
         final Integer time = mValues.getAsInteger(AlarmTable.time);
-        if (time == null) {
+        if (!mValues.containsKey(AlarmTable.time)) {
             throw new RuntimeException("Didn't set value 'time'");
         }
+        final Integer repeatDays = mValues.getAsInteger(AlarmTable.repeatdays);
         if (repeatDays == null) {
             throw new RuntimeException("Didn't set value 'repeatdays'");
         }
 
-        if (repeatDays.intValue() == AlarmUtils.DAYS_NONE) {
+        if (time != null && repeatDays.intValue() == AlarmUtils.DAYS_NONE) {
             final int hour = time.intValue() / 100;
             final int minute = time.intValue() % 100;
             final Calendar nextAlarmTime = AlarmUtils.getNextAlarmTime(enabled.booleanValue(), hour, minute, repeatDays.intValue(), 0, nowMs);
