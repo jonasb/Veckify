@@ -18,6 +18,15 @@ public class AlarmEntry extends DatabaseEntry {
         super(AlarmTable.n, values);
     }
 
+    public static AlarmEntry createNew() {
+        final AlarmEntry entry = new AlarmEntry();
+        entry.setEnabled(false);
+        entry.setRepeatDays(AlarmUtils.DAYS_NONE);
+        entry.setVolume(100);
+        entry.setShuffle(true);
+        return entry;
+    }
+
     public void setEnabled(boolean enabled) {
         mValues.put(AlarmTable.enabled, enabled);
     }

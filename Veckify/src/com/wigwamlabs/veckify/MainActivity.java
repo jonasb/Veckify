@@ -25,9 +25,11 @@ import static android.view.View.VISIBLE;
 
 public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback {
     private PlaylistContainer mPlaylistContainer;
-    private View mNowPlaying;
-    private AlarmAdapter mAlarmAdapter;
     private AlarmUtils mAlarmUtils;
+    private ListView mAlarmList;
+    private AlarmAdapter mAlarmAdapter;
+    private View mNowPlaying;
+    private Integer mScrollToPositionOnLoad;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,9 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case R.id.addAlarm:
+            onAddAlarm();
+            return true;
         case R.id.offlineSync:
             startActivity(new Intent(this, OfflinePlaylistsActivity.class));
             return true;
@@ -100,8 +105,8 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         getLoaderManager().initLoader(R.id.loaderAlarms, null, this);
 
         mAlarmAdapter = new AlarmAdapter(this, this);
-        final ListView alarmList = (ListView) findViewById(R.id.alarmList);
-        alarmList.setAdapter(mAlarmAdapter);
+        mAlarmList = (ListView) findViewById(R.id.alarmList);
+        mAlarmList.setAdapter(mAlarmAdapter);
 
         // now playing
         mNowPlaying = findViewById(R.id.nowPlaying);
@@ -182,6 +187,11 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mAlarmUtils.reschedule(this, (AlarmsCursor) data);
         mAlarmAdapter.changeCursor(data);
+
+        if (mScrollToPositionOnLoad != null) {
+            mAlarmList.smoothScrollToPosition(mScrollToPositionOnLoad.intValue());
+            mScrollToPositionOnLoad = null;
+        }
     }
 
     @Override
@@ -192,6 +202,13 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     private SQLiteCursorLoader getAlarmLoader() {
         final Loader<Cursor> loader = getLoaderManager().getLoader(R.id.loaderAlarms);
         return (SQLiteCursorLoader) loader;
+    }
+
+    private void onAddAlarm() {
+        final AlarmEntry entry = AlarmEntry.createNew();
+        entry.insert(getAlarmLoader());
+
+        mScrollToPositionOnLoad = mAlarmAdapter.getCount();
     }
 
     @Override
