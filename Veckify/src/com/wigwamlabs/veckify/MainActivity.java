@@ -105,6 +105,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         getLoaderManager().initLoader(R.id.loaderAlarms, null, this);
 
         mAlarmAdapter = new AlarmAdapter(this, this);
+        mAlarmAdapter.setEnablePlaylistPickers(mPlaylistContainer != null);
         mAlarmList = (ListView) findViewById(R.id.alarmList);
         mAlarmList.setAdapter(mAlarmAdapter);
 
@@ -151,7 +152,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 
         if (state != Session.CONNECTION_STATE_LOGGED_OUT && mPlaylistContainer == null) {
             mPlaylistContainer = getSpotifySession().getPlaylistContainer();
-//TODO            updateUi();
+            mAlarmAdapter.setEnablePlaylistPickers(true);
         }
     }
 

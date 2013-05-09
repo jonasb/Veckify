@@ -18,6 +18,7 @@ import com.wigwamlabs.veckify.db.AlarmsCursor;
 
 class AlarmAdapter extends CursorAdapter {
     private final Callback mCallback;
+    private boolean mEnablePlaylistPickers;
 
     public AlarmAdapter(Context context, Callback callback) {
         super(context, null, 0);
@@ -35,7 +36,14 @@ class AlarmAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         final AlarmsCursor alarm = (AlarmsCursor) cursor;
         final ViewHolder vh = (ViewHolder) view.getTag();
-        vh.update(alarm);
+        vh.update(alarm, mEnablePlaylistPickers);
+    }
+
+    public void setEnablePlaylistPickers(boolean enable) {
+        if (enable != mEnablePlaylistPickers) {
+            mEnablePlaylistPickers = enable;
+            notifyDataSetChanged();
+        }
     }
 
     public interface Callback {
@@ -117,7 +125,7 @@ class AlarmAdapter extends CursorAdapter {
             });
         }
 
-        public void update(AlarmsCursor alarm) {
+        public void update(AlarmsCursor alarm, boolean enablePlaylistPicker) {
             mUpdating = true;
 
             mAlarmId = alarm._id();
@@ -143,6 +151,7 @@ class AlarmAdapter extends CursorAdapter {
                 mTimeView.setText("-:--");
             }
             mPlaylistName.setText(hasPlaylist ? playlist : mContext.getText(R.string.noPlaylistSelected));
+            mPlaylistName.setEnabled(enablePlaylistPicker);
             mEnabled.setChecked(enabled);
             mEnabled.setEnabled(hasPlaylist && mTime != null);
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
