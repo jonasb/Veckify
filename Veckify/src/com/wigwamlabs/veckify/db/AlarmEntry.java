@@ -36,6 +36,7 @@ public class AlarmEntry extends DatabaseEntry {
 
     public static AlarmEntry createNew() {
         final AlarmEntry entry = new AlarmEntry();
+        entry.setDeleted(false);
         entry.setEnabled(false);
         entry.setRepeatDays(AlarmUtils.DAYS_NONE);
         entry.setVolume(100);
@@ -47,6 +48,10 @@ public class AlarmEntry extends DatabaseEntry {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeInt(mHasPlaylist ? 1 : 0);
+    }
+
+    public void setDeleted(boolean deleted) {
+        mValues.put(AlarmTable.deleted, deleted);
     }
 
     public void setEnabled(boolean enabled) {

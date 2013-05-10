@@ -40,6 +40,18 @@ public class DatabaseEntry implements Parcelable {
         loader.update(mTableName, mValues, "_id=" + id, null);
     }
 
+    public void update(SQLiteCursorLoader loader, long[] ids) {
+        final StringBuilder sb = new StringBuilder();
+        for (long id : ids) {
+            if (sb.length() > 0) {
+                sb.append(" OR ");
+            }
+            sb.append("_id=");
+            sb.append(id);
+        }
+        loader.update(mTableName, mValues, sb.toString(), null);
+    }
+
     public void insert(SQLiteCursorLoader loader) {
         loader.insert(mTableName, null, mValues);
     }

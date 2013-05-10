@@ -16,8 +16,11 @@ import android.widget.TextView;
 import com.wigwamlabs.veckify.db.AlarmEntry;
 import com.wigwamlabs.veckify.db.AlarmsCursor;
 
+import java.util.ArrayList;
+
 class AlarmAdapter extends CursorAdapter {
     private final Callback mCallback;
+    private final ArrayList<Long> mDeletedItems = new ArrayList<Long>();
     private boolean mEnablePlaylistPickers;
 
     public AlarmAdapter(Context context, Callback callback) {
@@ -35,8 +38,28 @@ class AlarmAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         final AlarmsCursor alarm = (AlarmsCursor) cursor;
-        final ViewHolder vh = (ViewHolder) view.getTag();
-        vh.update(alarm, mEnablePlaylistPickers);
+        int targetHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+        if (isItemDeleted(alarm)) {
+            targetHeight = 1;
+        } else {
+            final ViewHolder vh = (ViewHolder) view.getTag();
+            vh.update(alarm, mEnablePlaylistPickers);
+        }
+        final ViewGroup.LayoutParams lp = view.getLayoutParams();
+        if (lp.height != targetHeight) {
+            lp.height = targetHeight;
+            view.setLayoutParams(lp);
+        }
+    }
+
+    private boolean isItemDeleted(AlarmsCursor alarm) {
+        final long id = alarm._id();
+        for (long deleted : mDeletedItems) {
+            if (id == deleted) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setEnablePlaylistPickers(boolean enable) {
@@ -44,6 +67,15 @@ class AlarmAdapter extends CursorAdapter {
             mEnablePlaylistPickers = enable;
             notifyDataSetChanged();
         }
+    }
+
+    public void setItemsDeleted(long[] ids) {
+        // we should eventually clear out the deleted items array,
+        // but we don't expect too many deleted items so for consistency it's safer to keep it around
+        for (long id : ids) {
+            mDeletedItems.add(id);
+        }
+        notifyDataSetChanged();
     }
 
     public interface Callback {

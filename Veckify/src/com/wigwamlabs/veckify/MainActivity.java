@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
+import com.google.android.apps.dashclock.ui.SwipeDismissListViewTouchListener;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
@@ -108,6 +109,25 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         mAlarmAdapter.setEnablePlaylistPickers(mPlaylistContainer != null);
         mAlarmList = (ListView) findViewById(R.id.alarmList);
         mAlarmList.setAdapter(mAlarmAdapter);
+
+        final SwipeDismissListViewTouchListener touchListener = new SwipeDismissListViewTouchListener(mAlarmList,
+                new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                    @Override
+                    public boolean canDismiss(int position) {
+                        return true;
+                    }
+
+                    @Override
+                    public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                        final long[] ids = new long[reverseSortedPositions.length];
+                        for (int i = 0; i < ids.length; i++) {
+                            ids[i] = mAlarmAdapter.getItemId(reverseSortedPositions[i]);
+                        }
+                        onDeleteAlarms(ids);
+                    }
+                });
+        mAlarmList.setOnTouchListener(touchListener);
+        mAlarmList.setOnScrollListener(touchListener.makeScrollListener());
 
         // now playing
         mNowPlaying = findViewById(R.id.nowPlaying);
@@ -210,6 +230,13 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         entry.insert(getAlarmLoader());
 
         mScrollToPositionOnLoad = mAlarmAdapter.getCount();
+    }
+
+    private void onDeleteAlarms(long[] ids) {
+        final AlarmEntry entry = new AlarmEntry();
+        entry.setDeleted(true);
+        entry.update(getAlarmLoader(), ids);
+        mAlarmAdapter.setItemsDeleted(ids);
     }
 
     @Override

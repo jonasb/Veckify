@@ -7,6 +7,7 @@ import com.wigwamlabs.utils.db.QueryBuilder;
 final class AlarmTable {
     static final String n = "Alarms";
     static final String _id = "_id";
+    static final String deleted = "deleted";
     static final String enabled = "enabled";
     static final String time = "time";
     static final String repeatdays = "repeatdays";
@@ -20,6 +21,7 @@ final class AlarmTable {
         // version 1
         QueryBuilder.create(n)
                 .pk(_id)
+                .integer(deleted)
                 .integer(enabled)
                 .integer(time, null)
                 .integer(repeatdays)

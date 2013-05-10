@@ -50,7 +50,7 @@ public class AlarmsCursor extends SQLiteCursor {
     private static final int playlistlink_index = 6;
     private static final int volume_index = 7;
     private static final int shuffle_index = 8;
-    private static final String QUERY_SELECT_ALL = SQLiteQueryBuilder.buildQueryString(false, AlarmTable.n, COLUMNS, null, null, null, null, null);
+    private static final String QUERY_SELECT_ALL = SQLiteQueryBuilder.buildQueryString(false, AlarmTable.n, COLUMNS, AlarmTable.deleted + "=0", null, null, null, null);
 
     public AlarmsCursor(SQLiteCursorDriver masterQuery, String editTable, SQLiteQuery query) {
         super(masterQuery, editTable, query);
