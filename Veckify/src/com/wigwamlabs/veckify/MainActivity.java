@@ -10,13 +10,11 @@ import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.example.android.undobar.UndoBarController;
-import com.google.android.apps.dashclock.ui.SwipeDismissListViewTouchListener;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
@@ -30,7 +28,7 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback, UndoBarController.UndoListener {
     private PlaylistContainer mPlaylistContainer;
     private AlarmUtils mAlarmUtils;
-    private ListView mAlarmList;
+    private SwipeDismissListView mAlarmList;
     private AlarmAdapter mAlarmAdapter;
     private View mNowPlaying;
     private Integer mScrollToPositionOnLoad;
@@ -112,27 +110,23 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 
         mAlarmAdapter = new AlarmAdapter(this, this);
         mAlarmAdapter.setEnablePlaylistPickers(mPlaylistContainer != null);
-        mAlarmList = (ListView) findViewById(R.id.alarmList);
+        mAlarmList = (SwipeDismissListView) findViewById(R.id.alarmList);
         mAlarmList.setAdapter(mAlarmAdapter);
+        mAlarmList.setCallback(new SwipeDismissListView.Callback() {
+            @Override
+            public boolean canDismiss(int position) {
+                return true;
+            }
 
-        final SwipeDismissListViewTouchListener touchListener = new SwipeDismissListViewTouchListener(mAlarmList,
-                new SwipeDismissListViewTouchListener.DismissCallbacks() {
-                    @Override
-                    public boolean canDismiss(int position) {
-                        return true;
-                    }
-
-                    @Override
-                    public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-                        final long[] ids = new long[reverseSortedPositions.length];
-                        for (int i = 0; i < ids.length; i++) {
-                            ids[i] = mAlarmAdapter.getItemId(reverseSortedPositions[i]);
-                        }
-                        onDeleteAlarms(ids);
-                    }
-                });
-        mAlarmList.setOnTouchListener(touchListener);
-        mAlarmList.setOnScrollListener(touchListener.makeScrollListener());
+            @Override
+            public void onDismiss(SwipeDismissListView swipeDismissListView, int[] reverseSortedPositions) {
+                final long[] ids = new long[reverseSortedPositions.length];
+                for (int i = 0; i < ids.length; i++) {
+                    ids[i] = mAlarmAdapter.getItemId(reverseSortedPositions[i]);
+                }
+                onDeleteAlarms(ids);
+            }
+        });
 
         // undo
         mUndoBarController = new UndoBarController(findViewById(R.id.undobar), this);
