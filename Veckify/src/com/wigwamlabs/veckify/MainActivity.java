@@ -360,12 +360,8 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         public void add(long[] newIds) {
             final long[] oldIds = ids;
             ids = new long[oldIds.length + newIds.length];
-            for (int i = 0; i < oldIds.length; i++) {
-                ids[i] = oldIds[i];
-            }
-            for (int i = 0; i < newIds.length; i++) {
-                ids[oldIds.length + i] = newIds[i];
-            }
+            System.arraycopy(oldIds, 0, ids, 0, oldIds.length);
+            System.arraycopy(newIds, 0, ids, oldIds.length + 0, newIds.length);
         }
     }
 }
