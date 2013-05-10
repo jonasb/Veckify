@@ -107,6 +107,10 @@ public class UndoBarController {
         }
     }
 
+    public Parcelable getUndoToken() {
+        return mUndoToken;
+    }
+
     public void onSaveInstanceState(Bundle outState) {
         outState.putCharSequence("undo_message", mUndoMessage);
         outState.putParcelable("undo_token", mUndoToken);

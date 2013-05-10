@@ -259,7 +259,13 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         entry.update(getAlarmLoader(), ids);
         mAlarmAdapter.setItemsDeleted(ids);
 
-        mUndoBarController.showUndoBar(false, getString(R.string.alarm_deleted, ids.length), new UndoAction(ids));
+        UndoAction undoAction = (UndoAction) mUndoBarController.getUndoToken();
+        if (undoAction == null) {
+            undoAction = new UndoAction(ids);
+        } else {
+            undoAction.add(ids);
+        }
+        mUndoBarController.showUndoBar(false, getString(R.string.alarm_deleted, undoAction.ids.length), undoAction);
     }
 
     @Override
@@ -323,7 +329,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
                         return new UndoAction[size];
                     }
                 };
-        final long[] ids;
+        long[] ids;
 
         public UndoAction(long[] ids) {
             this.ids = ids;
@@ -343,6 +349,17 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(ids.length);
             dest.writeLongArray(ids);
+        }
+
+        public void add(long[] newIds) {
+            final long[] oldIds = ids;
+            ids = new long[oldIds.length + newIds.length];
+            for (int i = 0; i < oldIds.length; i++) {
+                ids[i] = oldIds[i];
+            }
+            for (int i = 0; i < newIds.length; i++) {
+                ids[oldIds.length + i] = newIds[i];
+            }
         }
     }
 }
