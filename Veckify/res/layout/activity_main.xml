@@ -8,7 +8,9 @@
         android:id="@+id/alarmList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/nowPlaying" />
+        android:layout_above="@+id/nowPlaying"
+        android:divider="@null"
+        android:dividerHeight="0dp" />
 
     <LinearLayout
         android:id="@+id/undobar"
