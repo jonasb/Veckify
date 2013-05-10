@@ -29,10 +29,10 @@ public class PendingPlayPlaylistAction extends PendingPlaylistAction {
     private SpotifyService mService;
     private Player mPlayer;
 
-    public PendingPlayPlaylistAction(String link, PendingIntent playIntent, int volume, boolean shuffle, boolean tellTime) {
+    public PendingPlayPlaylistAction(String link, PendingIntent playIntent, Integer volume, boolean shuffle, boolean tellTime) {
         super(link, true);
         mPlayIntent = playIntent;
-        mVolume = volume;
+        mVolume = (volume == null ? -1 : volume.intValue());
         mShuffle = shuffle;
         mTellTime = tellTime;
     }
@@ -71,7 +71,8 @@ public class PendingPlayPlaylistAction extends PendingPlaylistAction {
     protected void onPlaylistLoaded(Playlist playlist) {
         if (mVolume >= 0) {
             final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mVolume, 0);
+            final int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume * mVolume / 100, 0);
         }
 
         mService.setPlayIntent(mPlayIntent);

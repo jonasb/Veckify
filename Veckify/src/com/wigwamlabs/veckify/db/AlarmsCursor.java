@@ -119,7 +119,10 @@ public class AlarmsCursor extends SQLiteCursor {
         return getString(playlistlink_index);
     }
 
-    public int volume() {
+    public Integer volume() {
+        if (isNull(volume_index)) {
+            return null;
+        }
         return getInt(volume_index);
     }
 

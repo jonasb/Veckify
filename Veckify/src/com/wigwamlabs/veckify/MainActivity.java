@@ -291,13 +291,13 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     @Override
     public void onPickTime(long alarmId, AlarmEntry entry) {
         final TimePickerDialogFragment fragment = TimePickerDialogFragment.create(alarmId, entry);
-        fragment.show(getFragmentManager(), "timepicker");
+        fragment.show(getFragmentManager(), "time-picker");
     }
 
     @Override
     public void onPickRepeatDays(long alarmId, AlarmEntry entry) {
         final RepeatDaysPickerFragment fragment = RepeatDaysPickerFragment.create(alarmId, entry);
-        fragment.show(getFragmentManager(), "playlist-picker");
+        fragment.show(getFragmentManager(), "repeatdays-picker");
     }
 
     @Override
@@ -314,6 +314,12 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 //        if (playlist != null)
 //            mPlaylist = playlist.clone();
 
+    }
+
+    @Override
+    public void onPickVolume(long alarmId, AlarmEntry entry) {
+        final VolumePickerFragment fragment = VolumePickerFragment.create(alarmId, entry);
+        fragment.show(getFragmentManager(), "volume-picker");
     }
 
     private static class UndoAction implements Parcelable {

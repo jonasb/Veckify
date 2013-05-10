@@ -78,12 +78,12 @@ public class AlarmEntry extends DatabaseEntry {
         return mValues.getAsInteger(AlarmTable.time).intValue() % 100;
     }
 
-    public void setRepeatDays(int repeatDays) {
-        mValues.put(AlarmTable.repeatdays, repeatDays);
-    }
-
     public int getRepeatDays() {
         return mValues.getAsInteger(AlarmTable.repeatdays).intValue();
+    }
+
+    public void setRepeatDays(int repeatDays) {
+        mValues.put(AlarmTable.repeatdays, repeatDays);
     }
 
     public void setOneoffTimeMs(long oneoffTimeMs) {
@@ -107,7 +107,11 @@ public class AlarmEntry extends DatabaseEntry {
         mValues.put(AlarmTable.playlistlink, playlistLink);
     }
 
-    public void setVolume(int volume) {
+    public Integer getVolume() {
+        return mValues.getAsInteger(AlarmTable.volume);
+    }
+
+    public void setVolume(Integer volume) {
         mValues.put(AlarmTable.volume, volume);
     }
 

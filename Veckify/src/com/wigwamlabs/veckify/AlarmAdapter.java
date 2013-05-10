@@ -93,6 +93,8 @@ class AlarmAdapter extends CursorAdapter {
         void onPickPlaylist(long alarmId, AlarmEntry entry, String playlistLink);
 
         void onPickRepeatDays(long alarmId, AlarmEntry entry);
+
+        void onPickVolume(long alarmId, AlarmEntry entry);
     }
 
     private static class ViewHolder {
@@ -103,12 +105,14 @@ class AlarmAdapter extends CursorAdapter {
         private final Switch mEnabled;
         private final TextView mRepeatSchedule;
         private final ImageButton mRepeatShuffleToggle;
+        private final ImageButton mVolumeButton;
         private final View mRunNowButton;
         private long mAlarmId;
         private String mPlaylistLink;
         private Integer mTime;
         private Pair<Intent, Intent> mIntents;
         private boolean mShuffle;
+        private Integer mVolume;
         private boolean mUpdating;
         private AlarmEntry mEntry;
 
@@ -165,6 +169,16 @@ class AlarmAdapter extends CursorAdapter {
                 }
             });
 
+            // volume
+            mVolumeButton = (ImageButton) view.findViewById(R.id.volume);
+            mVolumeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mEntry.setVolume(mVolume);
+                    mCallback.onPickVolume(mAlarmId, mEntry);
+                }
+            });
+
             // run now
             mRunNowButton = view.findViewById(R.id.runNowButton);
             mRunNowButton.setOnClickListener(new View.OnClickListener() {
@@ -183,6 +197,7 @@ class AlarmAdapter extends CursorAdapter {
             mTime = alarm.time();
             mPlaylistLink = alarm.playlistLink();
             mShuffle = alarm.shuffle();
+            mVolume = alarm.volume();
             final int repeatDays = alarm.repeatDays();
             mIntents = alarm.createIntents(mContext);
             final String playlist = alarm.playlistName();
