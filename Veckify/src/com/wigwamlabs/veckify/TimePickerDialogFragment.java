@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
-import android.content.ContentValues;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
@@ -29,7 +28,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle bundle = getArguments();
-        mEntry =  bundle.getParcelable(ARG_ALARM_ENTRY);
+        mEntry = bundle.getParcelable(ARG_ALARM_ENTRY);
 
         int hour = 9;
         int minute = 0;

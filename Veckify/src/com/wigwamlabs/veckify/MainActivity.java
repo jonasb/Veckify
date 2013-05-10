@@ -295,6 +295,12 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     }
 
     @Override
+    public void onPickRepeatDays(long alarmId, AlarmEntry entry) {
+        final RepeatDaysPickerFragment fragment = RepeatDaysPickerFragment.create(alarmId, entry);
+        fragment.show(getFragmentManager(), "playlist-picker");
+    }
+
+    @Override
     public void onPickPlaylist(long alarmId, AlarmEntry entry, String playlistLink) {
         final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(alarmId, entry, playlistLink);
         fragment.show(getFragmentManager(), "playlist-picker");

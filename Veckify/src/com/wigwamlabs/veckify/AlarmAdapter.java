@@ -91,6 +91,8 @@ class AlarmAdapter extends CursorAdapter {
         void onPickTime(long alarmId, AlarmEntry entry);
 
         void onPickPlaylist(long alarmId, AlarmEntry entry, String playlistLink);
+
+        void onPickRepeatDays(long alarmId, AlarmEntry entry);
     }
 
     private static class ViewHolder {
@@ -99,6 +101,7 @@ class AlarmAdapter extends CursorAdapter {
         private final TextView mTimeView;
         private final TextView mPlaylistName;
         private final Switch mEnabled;
+        private final TextView mRepeatSchedule;
         private final ImageButton mRepeatShuffleToggle;
         private final View mRunNowButton;
         private long mAlarmId;
@@ -143,6 +146,15 @@ class AlarmAdapter extends CursorAdapter {
                 }
             });
 
+            // repeat schedule
+            mRepeatSchedule = (TextView) view.findViewById(R.id.repeatSchedule);
+            mRepeatSchedule.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onPickRepeatDays(mAlarmId, mEntry);
+                }
+            });
+
             // repeat/shuffle
             mRepeatShuffleToggle = (ImageButton) view.findViewById(R.id.repeatShuffleToggle);
             mRepeatShuffleToggle.setOnClickListener(new View.OnClickListener() {
@@ -171,6 +183,7 @@ class AlarmAdapter extends CursorAdapter {
             mTime = alarm.time();
             mPlaylistLink = alarm.playlistLink();
             mShuffle = alarm.shuffle();
+            final int repeatDays = alarm.repeatDays();
             mIntents = alarm.createIntents(mContext);
             final String playlist = alarm.playlistName();
             final boolean hasPlaylist = playlist != null && playlist.length() > 0;
@@ -180,7 +193,7 @@ class AlarmAdapter extends CursorAdapter {
             final boolean enabled = alarm.enabled();
             mEntry.setEnabled(enabled);
             mEntry.setTime(mTime);
-            mEntry.setRepeatDays(alarm.repeatDays());
+            mEntry.setRepeatDays(repeatDays);
             mEntry.setHasPlaylist(hasPlaylist);
 
             if (mTime != null) {
@@ -193,6 +206,7 @@ class AlarmAdapter extends CursorAdapter {
             mPlaylistName.setEnabled(enablePlaylistPicker);
             mEnabled.setChecked(enabled);
             mEnabled.setEnabled(hasPlaylist && mTime != null);
+            mRepeatSchedule.setText(AlarmUtils.repeatDaysText(mContext, repeatDays));
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
             mRunNowButton.setEnabled(hasPlaylist);
 

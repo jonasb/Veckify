@@ -111,6 +111,29 @@ public final class AlarmUtils {
         return cal;
     }
 
+    public static String repeatDaysText(Context context, int repeatDays) {
+        if (repeatDays == DAYS_NONE) {
+            return context.getString(R.string.repeatdays_none);
+        } else if (repeatDays == DAYS_ALL) {
+            return context.getString(R.string.repeatdays_all);
+        }
+
+        //TODO ensure follow locale's first weekday: Calendar.getFirstDayOfWeek()
+        final String[] dayNames = context.getResources().getStringArray(R.array.repeatdays_shortday);
+        final StringBuilder sb = new StringBuilder();
+        int day = 1;
+        for (final String dayName : dayNames) {
+            if ((repeatDays & day) != 0) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(dayName);
+            }
+            day <<= 1;
+        }
+        return context.getString(R.string.repeatdays_daysformat, sb.toString());
+    }
+
     public void reschedule(Context context, AlarmsCursor alarm) {
         final long nowMs = System.currentTimeMillis();
 

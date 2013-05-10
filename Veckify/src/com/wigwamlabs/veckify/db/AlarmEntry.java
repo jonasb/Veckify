@@ -82,6 +82,10 @@ public class AlarmEntry extends DatabaseEntry {
         mValues.put(AlarmTable.repeatdays, repeatDays);
     }
 
+    public int getRepeatDays() {
+        return mValues.getAsInteger(AlarmTable.repeatdays).intValue();
+    }
+
     public void setOneoffTimeMs(long oneoffTimeMs) {
         mValues.put(AlarmTable.oneofftime_ms, oneoffTimeMs);
     }

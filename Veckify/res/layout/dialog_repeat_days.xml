@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/repeatSchedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:gravity="center" />
+
+    <CheckBox
+        android:id="@+id/repeatCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="8dp"
+        android:text="@string/repeat_checkbox" />
+
+    <LinearLayout
+        android:id="@+id/repeatToggles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayMonday"
+            android:textOn="@string/repeatDayMonday"
+            android:textOff="@string/repeatDayMonday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayTuesday"
+            android:textOn="@string/repeatDayTuesday"
+            android:textOff="@string/repeatDayTuesday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayWednesday"
+            android:textOn="@string/repeatDayWednesday"
+            android:textOff="@string/repeatDayWednesday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayThursday"
+            android:textOn="@string/repeatDayThursday"
+            android:textOff="@string/repeatDayThursday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDayFriday"
+            android:textOn="@string/repeatDayFriday"
+            android:textOff="@string/repeatDayFriday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDaySaturday"
+            android:textOn="@string/repeatDaySaturday"
+            android:textOff="@string/repeatDaySaturday" />
+
+        <ToggleButton
+            style="@style/repeatDayToggle"
+            android:id="@+id/repeatDaySunday"
+            android:textOn="@string/repeatDaySunday"
+            android:textOff="@string/repeatDaySunday" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -3,7 +3,6 @@ package com.wigwamlabs.veckify;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 

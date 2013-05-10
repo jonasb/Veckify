@@ -12,7 +12,7 @@
         android:background="@drawable/taptoedit"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="42sp"
-        android:text="--:--" />
+        android:text="-:--" />
 
     <Switch
         android:id="@+id/enabled"
@@ -23,6 +23,19 @@
         android:layout_marginTop="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/repeatSchedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/time"
+        android:layout_toLeftOf="@id/enabled"
+        android:layout_alignTop="@id/time"
+        android:layout_alignBottom="@id/time"
+        android:background="@drawable/taptoedit"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:text="Once" />
 
     <TextView
         android:id="@+id/playlistName"
