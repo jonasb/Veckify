@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -7,18 +7,27 @@
     <ListView
         android:id="@+id/alarmList"
         android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1.0" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/nowPlaying" />
 
-    <LinearLayout android:id="@+id/undobar" style="@style/UndoBar">
-        <TextView android:id="@id/undobar_message" style="@style/UndoBarMessage" />
-        <Button android:id="@id/undobar_button" style="@style/UndoBarButton" />
+    <LinearLayout
+        android:id="@+id/undobar"
+        style="@style/UndoBar">
+
+        <TextView
+            android:id="@id/undobar_message"
+            style="@style/UndoBarMessage" />
+
+        <Button
+            android:id="@id/undobar_button"
+            style="@style/UndoBarButton" />
     </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/nowPlaying"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
@@ -69,5 +78,5 @@
             android:layout_toLeftOf="@id/nextButton"
             android:src="@drawable/ic_button_resume" />
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
 

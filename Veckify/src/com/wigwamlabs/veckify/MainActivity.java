@@ -34,6 +34,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     private AlarmAdapter mAlarmAdapter;
     private View mNowPlaying;
     private Integer mScrollToPositionOnLoad;
+    private Long mScrollToIdOnLoad;
     private UndoBarController mUndoBarController;
 
     @Override
@@ -213,12 +214,25 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAlarmUtils.reschedule(this, (AlarmsCursor) data);
-        mAlarmAdapter.changeCursor(data);
+        final AlarmsCursor alarm = (AlarmsCursor) data;
+        mAlarmUtils.reschedule(this, alarm);
+        mAlarmAdapter.changeCursor(alarm);
 
         if (mScrollToPositionOnLoad != null) {
             mAlarmList.smoothScrollToPosition(mScrollToPositionOnLoad.intValue());
             mScrollToPositionOnLoad = null;
+        }
+        if (mScrollToIdOnLoad != null) {
+            final long id = mScrollToIdOnLoad.longValue();
+            int pos = 0;
+            for (boolean hasItem = alarm.moveToFirst(); hasItem; hasItem = alarm.moveToNext()) {
+                if (id == alarm._id()) {
+                    mAlarmList.smoothScrollToPosition(pos);
+                    break;
+                }
+                pos++;
+            }
+            mScrollToIdOnLoad = null;
         }
     }
 
@@ -250,11 +264,18 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 
     @Override
     public void onUndo(Parcelable token) {
+        if (token == null) {
+            return;
+        }
         final UndoAction action = (UndoAction) token;
+        final long[] ids = action.ids;
+
         final AlarmEntry entry = new AlarmEntry();
         entry.setDeleted(false);
-        entry.update(getAlarmLoader(), action.ids);
-        mAlarmAdapter.setItemsUndeleted(action.ids);
+        entry.update(getAlarmLoader(), ids);
+
+        mAlarmAdapter.setItemsUndeleted(ids);
+        mScrollToIdOnLoad = ids[0];
     }
 
     @Override
