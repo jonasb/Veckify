@@ -10,11 +10,15 @@
         android:layout_height="0px"
         android:layout_weight="1.0" />
 
+    <LinearLayout android:id="@+id/undobar" style="@style/UndoBar">
+        <TextView android:id="@id/undobar_message" style="@style/UndoBarMessage" />
+        <Button android:id="@id/undobar_button" style="@style/UndoBarButton" />
+    </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/nowPlaying"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"

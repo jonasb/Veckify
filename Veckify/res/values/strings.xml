@@ -15,4 +15,5 @@
     <string name="notification_alarm_description">%1$s — %2$s</string>
     <string name="menu_offline_playlists">Offline playlists</string>
     <string name="menu_add_alarm">Add alarm</string>
+    <string name="alarm_deleted">%1$d deleted</string>
 </resources>

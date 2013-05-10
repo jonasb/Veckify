@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
+import com.example.android.undobar.UndoBarController;
 import com.google.android.apps.dashclock.ui.SwipeDismissListViewTouchListener;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.PlaylistContainer;
@@ -24,13 +27,14 @@ import com.wigwamlabs.veckify.db.AlarmsCursor;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback {
+public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback, UndoBarController.UndoListener {
     private PlaylistContainer mPlaylistContainer;
     private AlarmUtils mAlarmUtils;
     private ListView mAlarmList;
     private AlarmAdapter mAlarmAdapter;
     private View mNowPlaying;
     private Integer mScrollToPositionOnLoad;
+    private UndoBarController mUndoBarController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +51,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         Debug.logLifecycle("MainActivity.onRestoreInstanceState()");
-        // prevent default restoration since we get the new state in onResume()
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -128,6 +132,9 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
                 });
         mAlarmList.setOnTouchListener(touchListener);
         mAlarmList.setOnScrollListener(touchListener.makeScrollListener());
+
+        // undo
+        mUndoBarController = new UndoBarController(findViewById(R.id.undobar), this);
 
         // now playing
         mNowPlaying = findViewById(R.id.nowPlaying);
@@ -237,6 +244,17 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         entry.setDeleted(true);
         entry.update(getAlarmLoader(), ids);
         mAlarmAdapter.setItemsDeleted(ids);
+
+        mUndoBarController.showUndoBar(false, getString(R.string.alarm_deleted, ids.length), new UndoAction(ids));
+    }
+
+    @Override
+    public void onUndo(Parcelable token) {
+        final UndoAction action = (UndoAction) token;
+        final AlarmEntry entry = new AlarmEntry();
+        entry.setDeleted(false);
+        entry.update(getAlarmLoader(), action.ids);
+        mAlarmAdapter.setItemsUndeleted(action.ids);
     }
 
     @Override
@@ -269,5 +287,41 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 //        if (playlist != null)
 //            mPlaylist = playlist.clone();
 
+    }
+
+    private static class UndoAction implements Parcelable {
+        public static final Parcelable.Creator CREATOR =
+                new Parcelable.Creator() {
+                    @Override
+                    public UndoAction createFromParcel(Parcel in) {
+                        return new UndoAction(in);
+                    }
+
+                    @Override
+                    public UndoAction[] newArray(int size) {
+                        return new UndoAction[size];
+                    }
+                };
+        final long[] ids;
+
+        public UndoAction(long[] ids) {
+            this.ids = ids;
+        }
+
+        public UndoAction(Parcel in) {
+            ids = new long[in.readInt()];
+            in.readLongArray(ids);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(ids.length);
+            dest.writeLongArray(ids);
+        }
     }
 }

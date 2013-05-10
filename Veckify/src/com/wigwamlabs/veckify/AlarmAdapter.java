@@ -78,6 +78,13 @@ class AlarmAdapter extends CursorAdapter {
         notifyDataSetChanged();
     }
 
+    public void setItemsUndeleted(long[] ids) {
+        for (Long id : ids) {
+            mDeletedItems.remove(id);
+        }
+        notifyDataSetChanged();
+    }
+
     public interface Callback {
         void onAlarmEntryChanged(long alarmId, AlarmEntry entry, boolean enableIfPossible);
 
