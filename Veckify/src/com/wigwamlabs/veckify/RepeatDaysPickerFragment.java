@@ -92,6 +92,10 @@ public class RepeatDaysPickerFragment extends DialogFragment implements Compound
         super.onDismiss(dialog);
 
         final MainActivity activity = (MainActivity) getActivity();
+        if (activity == null) {
+            // happens if fragment is destroyed, e.g. at screen rotation
+            return;
+        }
 
         final int repeatDays = getCurrentRepeatDays();
 
@@ -99,6 +103,7 @@ public class RepeatDaysPickerFragment extends DialogFragment implements Compound
         final long alarmId = bundle.getLong(ARG_ALARM_ID);
         final AlarmEntry entry = bundle.getParcelable(ARG_ALARM_ENTRY);
         entry.setRepeatDays(repeatDays);
+
         activity.onAlarmEntryChanged(alarmId, entry, true);
     }
 
