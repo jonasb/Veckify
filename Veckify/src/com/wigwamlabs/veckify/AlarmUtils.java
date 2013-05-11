@@ -24,7 +24,7 @@ public final class AlarmUtils {
     public static final int DAY_SUNDAY = 0x40;
     public static final int DAYS_NONE = 0x00;
     public static final int DAYS_ALL = DAY_MONDAY | DAY_TUESDAY | DAY_WEDNESDAY | DAY_THURSDAY | DAY_FRIDAY | DAY_SATURDAY | DAY_SUNDAY;
-    private static final long MINIMUM_TIME_TO_ALARM_MS = 60 * 1000;
+    private static final long MINIMUM_TIME_TO_ALARM_MS = 0;
     private final Context mContext;
     private final AlarmManager mAlarmManager;
     private final NotificationManager mNotificationManager;

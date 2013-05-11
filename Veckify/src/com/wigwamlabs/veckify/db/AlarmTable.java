@@ -20,7 +20,7 @@ final class AlarmTable {
 
     public static void create(SQLiteDatabase db) {
         // version 1
-        QueryBuilder.create(n)
+        final QueryBuilder.CreateQueryBuilder builder = QueryBuilder.create(n)
                 .pk(_id)
                 .integer(deleted)
                 .integer(enabled)
@@ -30,8 +30,9 @@ final class AlarmTable {
                 .text(playlistname, null)
                 .text(playlistlink, null)
                 .integer(volume, null)
-                .integer(shuffle)
+                .integer(shuffle);
         // version 2
+        builder
                 .integer(telltime, null)
                 .execute(db);
     }
