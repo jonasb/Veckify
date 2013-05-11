@@ -108,6 +108,7 @@ class AlarmAdapter extends CursorAdapter {
         private final ImageButton mVolumeButton;
         private final ImageButton mTellTimeToggle;
         private final View mRunNowButton;
+        private final TextView mTimeToAlarm;
         private long mAlarmId;
         private String mPlaylistLink;
         private Integer mTime;
@@ -121,6 +122,9 @@ class AlarmAdapter extends CursorAdapter {
         public ViewHolder(ViewGroup view, Callback callback) {
             mContext = view.getContext();
             mCallback = callback;
+
+            // time to alarm
+            mTimeToAlarm = (TextView) view.findViewById(R.id.timeToAlarm);
 
             // time
             mTimeView = (TextView) view.findViewById(R.id.time);
@@ -226,9 +230,16 @@ class AlarmAdapter extends CursorAdapter {
 
             if (mTime != null) {
                 //TODO am/pm
-                mTimeView.setText(String.format("%d:%02d", mTime.intValue() / 100, mTime.intValue() % 100));
+                final int hour = mTime.intValue() / 100;
+                final int minute = mTime.intValue() % 100;
+                mTimeView.setText(String.format("%d:%02d", hour, minute));
+
+                final String timeToNextAlarm = AlarmUtils.getTimeToNextAlarmText(mContext, alarm.enabled(), hour, minute, repeatDays, alarm.oneoffTimeMs(), System.currentTimeMillis());
+                mTimeToAlarm.setText(timeToNextAlarm);
+                mTimeToAlarm.setVisibility(timeToNextAlarm == null ? View.GONE : View.VISIBLE);
             } else {
                 mTimeView.setText("-:--");
+                mTimeToAlarm.setVisibility(View.GONE);
             }
             mPlaylistName.setText(hasPlaylist ? playlist : mContext.getText(R.string.noPlaylistSelected));
             mPlaylistName.setEnabled(enablePlaylistPicker);

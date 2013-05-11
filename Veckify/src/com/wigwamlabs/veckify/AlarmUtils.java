@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateFormat;
 
@@ -132,6 +133,44 @@ public final class AlarmUtils {
             day <<= 1;
         }
         return context.getString(R.string.repeatdays_daysformat, sb.toString());
+    }
+
+    static String getTimeToNextAlarmText(Context context, boolean enabled, int hour, int minute, int repeatDays, long oneOffTimeMs, long nowMs) {
+        final Resources res = context.getResources();
+        final Calendar nextAlarmTime = getNextAlarmTime(enabled, hour, minute, repeatDays, oneOffTimeMs, nowMs);
+        if (nextAlarmTime == null) {
+            return null;
+        }
+        int timeToNextAlarmMins = (int) ((nextAlarmTime.getTimeInMillis() - nowMs) / (1000 * 60));
+        if (timeToNextAlarmMins == 0) {
+            return res.getString(R.string.alarmscheduled_soon);
+        }
+
+        final int timeToNextAlarmDays = timeToNextAlarmMins / (60 * 24);
+        timeToNextAlarmMins -= timeToNextAlarmDays * 60 * 24;
+        final int timeToNextAlarmHours = timeToNextAlarmMins / 60;
+        timeToNextAlarmMins -= timeToNextAlarmHours * 60;
+
+        final StringBuilder sb = new StringBuilder();
+        if (timeToNextAlarmDays > 0) {
+            sb.append(res.getQuantityString(R.plurals.alarmscheduled_days, timeToNextAlarmDays, timeToNextAlarmDays));
+        }
+        if (timeToNextAlarmHours > 0) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(res.getQuantityString(R.plurals.alarmscheduled_hours, timeToNextAlarmHours, timeToNextAlarmHours));
+        }
+        if (timeToNextAlarmMins > 0) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(res.getQuantityString(R.plurals.alarmscheduled_mins, timeToNextAlarmMins, timeToNextAlarmMins));
+        }
+        sb.append(' ');
+        sb.append(context.getString(R.string.alarmscheduled_suffix));
+
+        return sb.toString();
     }
 
     public void reschedule(Context context, AlarmsCursor alarm) {

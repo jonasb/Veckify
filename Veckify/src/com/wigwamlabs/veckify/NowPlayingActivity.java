@@ -26,15 +26,15 @@ import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
 import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
-public class NowPlayingActivity extends SpotifyPlayerActivity {
+public class NowPlayingActivity extends SpotifyPlayerActivity implements TimeUpdater.Callback {
     public static final String ACTION_ALARM = "alarm";
     private final Handler mHandler = new Handler();
     private Track mTrack;
     private boolean mAlarmLaunchedWithKeyguard;
     private boolean mAlarmIsDismissed;
     private Runnable mCheckKeyguardActivation;
-    private Runnable mUpdateCurrentTimeRunnable;
     private TextView mCurrentTime;
+    private TimeUpdater mTimeUpdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,8 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
         handleIntent(getIntent());
 
         initUi();
+
+        mTimeUpdater = new TimeUpdater(mHandler, this);
 
         bindSpotifyService();
     }
@@ -92,14 +94,7 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
             mHandler.postDelayed(mCheckKeyguardActivation, 5000);
         }
 
-        mUpdateCurrentTimeRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final long timeToNextMinuteMs = updateCurrentTime();
-                mHandler.postDelayed(this, timeToNextMinuteMs);
-            }
-        };
-        mHandler.postDelayed(mUpdateCurrentTimeRunnable, updateCurrentTime());
+        mTimeUpdater.start();
     }
 
     @Override
@@ -117,10 +112,7 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
             mCheckKeyguardActivation = null;
         }
 
-        if (mUpdateCurrentTimeRunnable != null) {
-            mHandler.removeCallbacks(mUpdateCurrentTimeRunnable);
-            mUpdateCurrentTimeRunnable = null;
-        }
+        mTimeUpdater.stop();
     }
 
     @Override
@@ -148,21 +140,10 @@ public class NowPlayingActivity extends SpotifyPlayerActivity {
         setNextButton(findViewById(R.id.nextButton));
     }
 
-    private long updateCurrentTime() {
-        final Calendar cal = Calendar.getInstance();
-
-        // calculate current time and time to next minute
-        final int secs = cal.get(Calendar.SECOND);
-        int secsToNextMinute = 60 - secs;
-        if (secsToNextMinute < 2) { // allow for some slack in scheduling
-            cal.add(Calendar.MINUTE, 1);
-            secsToNextMinute += 60;
-        }
-
+    @Override
+    public void onTimeUpdated(Calendar cal) {
         final String time = String.format("%d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         mCurrentTime.setText(time);
-
-        return secsToNextMinute * 1000;
     }
 
     private boolean isKeyguardActive() {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.Menu;
@@ -22,10 +23,13 @@ import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 import com.wigwamlabs.veckify.db.AlarmEntry;
 import com.wigwamlabs.veckify.db.AlarmsCursor;
 
+import java.util.Calendar;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback, UndoBarController.UndoListener {
+public class MainActivity extends SpotifyPlayerActivity implements LoaderManager.LoaderCallbacks<Cursor>, AlarmAdapter.Callback, UndoBarController.UndoListener, TimeUpdater.Callback {
+    private final Handler mHandler = new Handler();
     private PlaylistContainer mPlaylistContainer;
     private AlarmUtils mAlarmUtils;
     private SwipeDismissListView mAlarmList;
@@ -34,6 +38,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     private Integer mScrollToPositionOnLoad;
     private Long mScrollToIdOnLoad;
     private UndoBarController mUndoBarController;
+    private TimeUpdater mTimeUpdater;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,8 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         mAlarmUtils = new AlarmUtils(this);
 
         initUi();
+
+        mTimeUpdater = new TimeUpdater(mHandler, this);
 
         bindSpotifyService();
     }
@@ -58,6 +65,8 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         Debug.logLifecycle("MainActivity.onResume()");
         super.onResume();
 
+        mTimeUpdater.start();
+
 //TODO        updateUi();
     }
 
@@ -65,6 +74,8 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     protected void onPause() {
         Debug.logLifecycle("MainActivity.onPause()");
         super.onPause();
+
+        mTimeUpdater.stop();
     }
 
     @Override
@@ -238,6 +249,12 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     private SQLiteCursorLoader getAlarmLoader() {
         final Loader<Cursor> loader = getLoaderManager().getLoader(R.id.loaderAlarms);
         return (SQLiteCursorLoader) loader;
+    }
+
+    @Override
+    public void onTimeUpdated(Calendar cal) {
+        // time to alarm is updated
+        mAlarmAdapter.notifyDataSetChanged();
     }
 
     private void onAddAlarm() {
