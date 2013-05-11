@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataDatabaseAdapter extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "data.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public DataDatabaseAdapter(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,6 +30,9 @@ public class DataDatabaseAdapter extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         try {
             db.beginTransaction();
+            // version 2
+            AlarmTable.upgrade(db, oldVersion, newVersion);
+            //
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();

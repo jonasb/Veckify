@@ -106,6 +106,7 @@ class AlarmAdapter extends CursorAdapter {
         private final TextView mRepeatSchedule;
         private final ImageButton mRepeatShuffleToggle;
         private final ImageButton mVolumeButton;
+        private final ImageButton mTellTimeToggle;
         private final View mRunNowButton;
         private long mAlarmId;
         private String mPlaylistLink;
@@ -115,6 +116,7 @@ class AlarmAdapter extends CursorAdapter {
         private Integer mVolume;
         private boolean mUpdating;
         private AlarmEntry mEntry;
+        private boolean mTellTime;
 
         public ViewHolder(ViewGroup view, Callback callback) {
             mContext = view.getContext();
@@ -179,6 +181,16 @@ class AlarmAdapter extends CursorAdapter {
                 }
             });
 
+            // tell time
+            mTellTimeToggle = (ImageButton) view.findViewById(R.id.telltimeToggle);
+            mTellTimeToggle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mEntry.setTellTime(!mTellTime);
+                    mCallback.onAlarmEntryChanged(mAlarmId, mEntry, true);
+                }
+            });
+
             // run now
             mRunNowButton = view.findViewById(R.id.runNowButton);
             mRunNowButton.setOnClickListener(new View.OnClickListener() {
@@ -197,6 +209,7 @@ class AlarmAdapter extends CursorAdapter {
             mTime = alarm.time();
             mPlaylistLink = alarm.playlistLink();
             mShuffle = alarm.shuffle();
+            mTellTime = alarm.tellTime();
             mVolume = alarm.volume();
             final int repeatDays = alarm.repeatDays();
             mIntents = alarm.createIntents(mContext);
@@ -223,6 +236,7 @@ class AlarmAdapter extends CursorAdapter {
             mEnabled.setEnabled(hasPlaylist && mTime != null);
             mRepeatSchedule.setText(AlarmUtils.repeatDaysText(mContext, repeatDays));
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
+            mTellTimeToggle.setImageResource(alarm.tellTime() ? R.drawable.ic_button_telltime_inverse : R.drawable.ic_button_telltime);
             mRunNowButton.setEnabled(hasPlaylist);
 
             mUpdating = false;

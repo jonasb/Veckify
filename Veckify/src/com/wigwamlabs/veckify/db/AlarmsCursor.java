@@ -40,6 +40,7 @@ public class AlarmsCursor extends SQLiteCursor {
             AlarmTable.playlistlink,
             AlarmTable.volume,
             AlarmTable.shuffle,
+            AlarmTable.telltime,
     };
     private static final int _id_index = 0;
     private static final int enabled_index = 1;
@@ -50,6 +51,7 @@ public class AlarmsCursor extends SQLiteCursor {
     private static final int playlistlink_index = 6;
     private static final int volume_index = 7;
     private static final int shuffle_index = 8;
+    private static final int telltime_index = 9;
     private static final String QUERY_SELECT_ALL = SQLiteQueryBuilder.buildQueryString(false, AlarmTable.n, COLUMNS, AlarmTable.deleted + "=0", null, null, null, null);
 
     public AlarmsCursor(SQLiteCursorDriver masterQuery, String editTable, SQLiteQuery query) {
@@ -130,6 +132,10 @@ public class AlarmsCursor extends SQLiteCursor {
         return getInt(shuffle_index) > 0;
     }
 
+    public boolean tellTime() {
+        return getInt(telltime_index) > 0;
+    }
+
     public Pair<Intent, Intent> createIntents(Context context) {
         // setup intent to launch now playing
         final Intent nowPlayingIntent = new Intent(context, NowPlayingActivity.class);
@@ -140,8 +146,7 @@ public class AlarmsCursor extends SQLiteCursor {
         // tell service to start playing
         final Intent intent = new Intent(context, SpotifyService.class);
         intent.setAction(SpotifyService.ACTION_PLAY_PLAYLIST);
-        final boolean tellTime = true; //TODO make editable
-        final PendingPlayPlaylistAction pendingAction = new PendingPlayPlaylistAction(playlistLink(), PendingIntent.getActivity(context, 0, nowPlayingIntent, 0), volume(), shuffle(), tellTime);
+        final PendingPlayPlaylistAction pendingAction = new PendingPlayPlaylistAction(playlistLink(), PendingIntent.getActivity(context, 0, nowPlayingIntent, 0), volume(), shuffle(), tellTime());
         intent.putExtra(SpotifyService.EXTRA_ACTION, pendingAction);
 
         return Pair.create(intent, nowPlayingIntent);

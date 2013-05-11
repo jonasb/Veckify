@@ -70,12 +70,24 @@
         android:src="@drawable/ic_button_shuffle_inverse" />
 
     <ImageButton
-        android:id="@+id/runNowButton"
+        android:id="@+id/telltimeToggle"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         android:layout_below="@id/playlistName"
-        android:src="@drawable/ic_button_resume_inverse" />
+        android:src="@drawable/ic_button_telltime_inverse" />
+
+    <TextView
+        android:id="@+id/runNowButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@id/volume"
+        android:background="@drawable/taptoedit"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Run now" />
 
 </RelativeLayout>

@@ -16,6 +16,7 @@ final class AlarmTable {
     static final String playlistlink = "playlistlink";
     static final String volume = "volume";
     static final String shuffle = "shuffle";
+    static final String telltime = "telltime";
 
     public static void create(SQLiteDatabase db) {
         // version 1
@@ -30,6 +31,18 @@ final class AlarmTable {
                 .text(playlistlink, null)
                 .integer(volume, null)
                 .integer(shuffle)
+        // version 2
+                .integer(telltime, null)
                 .execute(db);
+    }
+
+    public static void upgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        switch (oldVersion) {
+        case 1:
+            QueryBuilder.alterAddColumn(n, telltime)
+                    .integer(null)
+                    .execute(db);
+            //fall-through
+        }
     }
 }

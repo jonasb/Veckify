@@ -41,6 +41,7 @@ public class AlarmEntry extends DatabaseEntry {
         entry.setRepeatDays(AlarmUtils.DAYS_NONE);
         entry.setVolume(100);
         entry.setShuffle(true);
+        entry.setTellTime(true);
         return entry;
     }
 
@@ -117,6 +118,10 @@ public class AlarmEntry extends DatabaseEntry {
 
     public void setShuffle(boolean shuffle) {
         mValues.put(AlarmTable.shuffle, shuffle);
+    }
+
+    public void setTellTime(boolean tellTime) {
+        mValues.put(AlarmTable.telltime, tellTime);
     }
 
     @Override
