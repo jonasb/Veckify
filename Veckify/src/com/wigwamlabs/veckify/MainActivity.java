@@ -55,9 +55,17 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Debug.logLifecycle("MainActivity.onSaveInstanceState()");
+        super.onSaveInstanceState(outState);
+        mUndoBarController.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         Debug.logLifecycle("MainActivity.onRestoreInstanceState()");
         super.onRestoreInstanceState(savedInstanceState);
+        mUndoBarController.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
