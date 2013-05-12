@@ -2,27 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingTop="16dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="16dp">
 
     <TextView
         android:id="@+id/timeToAlarm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:gravity="right"
-        android:textAllCaps="true" />
+        android:textAllCaps="true"
+        android:textStyle="italic" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_background">
 
         <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
             android:background="@drawable/taptoedit"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="42sp"
             android:text="-:--" />
 
@@ -47,21 +52,20 @@
             android:background="@drawable/taptoedit"
             android:gravity="center"
             android:textAllCaps="true"
-            android:text="Once" />
+            android:textStyle="italic"
+            android:text="@string/repeatdays_none" />
 
         <TextView
             android:id="@+id/playlistName"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_below="@id/time"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:background="@drawable/taptoedit"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical"
+            android:textSize="28sp"
             android:singleLine="true"
-            android:text="Playlist" />
+            android:text="@string/noPlaylistSelected" />
 
         <ImageButton
             android:id="@+id/volume"
@@ -94,13 +98,13 @@
             android:id="@+id/runNowButton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_below="@id/volume"
             android:background="@drawable/taptoedit"
             android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Run now" />
+            android:textSize="22sp"
+            android:textAllCaps="true"
+            android:textStyle="italic"
+            android:text="@string/run_now_button" />
 
     </RelativeLayout>
 </LinearLayout>

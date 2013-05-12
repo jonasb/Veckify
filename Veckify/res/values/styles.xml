@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="repeatDayToggle">
         <item name="android:layout_width">0px</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:singleLine">true</item>
     </style>
+
+    <style name="darkTheme" parent="android:Theme.Holo">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
 </resources>

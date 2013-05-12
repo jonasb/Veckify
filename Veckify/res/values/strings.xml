@@ -43,4 +43,5 @@
         <item quantity="one">%d min</item>
         <item quantity="other">%d mins</item>
     </plurals>
+    <string name="run_now_button">Run now</string>
 </resources>
