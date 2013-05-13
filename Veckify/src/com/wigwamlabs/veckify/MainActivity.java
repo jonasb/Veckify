@@ -16,9 +16,11 @@ import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.example.android.undobar.UndoBarController;
+import com.wigwamlabs.spotify.ImageProvider;
 import com.wigwamlabs.spotify.Player;
 import com.wigwamlabs.spotify.PlaylistContainer;
 import com.wigwamlabs.spotify.Session;
+import com.wigwamlabs.spotify.ui.SpotifyImageView;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
 import com.wigwamlabs.veckify.db.AlarmEntry;
 import com.wigwamlabs.veckify.db.AlarmsCursor;
@@ -158,6 +160,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
                 startActivity(new Intent(MainActivity.this, NowPlayingActivity.class));
             }
         });
+        setTrackImage((SpotifyImageView) findViewById(R.id.trackImage), ImageProvider.SIZE_NORMAL);
         setTrackArtists((TextView) findViewById(R.id.trackArtists));
         setTrackName((TextView) findViewById(R.id.trackName));
         setTrackProgress((ProgressBar) findViewById(R.id.trackProgress));

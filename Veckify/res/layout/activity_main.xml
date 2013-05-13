@@ -28,57 +28,72 @@
     <RelativeLayout
         android:id="@+id/nowPlaying"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:paddingTop="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:background="#ccc">
+        android:background="#161616">
+
+        <com.wigwamlabs.spotify.ui.SpotifyImageView
+            android:id="@+id/trackImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
 
         <TextView
             android:id="@+id/trackArtists"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMediumInverse" />
+            android:layout_height="30dp"
+            android:layout_toRightOf="@id/trackImage"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="128dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center_vertical"
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/trackName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="22dp"
             android:layout_below="@id/trackArtists"
-            android:layout_marginBottom="6dp"
-            android:textAppearance="?android:attr/textAppearanceInverse" />
+            android:layout_marginBottom="4dp"
+            android:layout_alignLeft="@id/trackArtists"
+            android:layout_alignRight="@id/trackArtists"
+            android:textAppearance="?android:attr/textAppearance"
+            android:gravity="center_vertical"
+            android:singleLine="true" />
+
+        <ImageButton
+            android:id="@+id/nextButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/icon_background"
+            android:src="@drawable/ic_button_next_inverse" />
+
+        <ImageButton
+            android:id="@+id/pauseButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignTop="@id/nextButton"
+            android:layout_toLeftOf="@id/nextButton"
+            android:background="@drawable/icon_background"
+            android:src="@drawable/ic_button_pause_inverse" />
+
+        <ImageButton
+            android:id="@+id/resumeButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignTop="@id/nextButton"
+            android:layout_toLeftOf="@id/nextButton"
+            android:background="@drawable/icon_background"
+            android:src="@drawable/ic_button_resume_inverse" />
 
         <ProgressBar
             style="@android:style/Widget.Holo.ProgressBar.Horizontal"
             android:id="@+id/trackProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/trackName" />
-
-        <ImageButton
-            android:id="@+id/nextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_button_next" />
-
-        <ImageButton
-            android:id="@+id/pauseButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/nextButton"
-            android:layout_toLeftOf="@id/nextButton"
-            android:src="@drawable/ic_button_pause" />
-
-        <ImageButton
-            android:id="@+id/resumeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/nextButton"
-            android:layout_toLeftOf="@id/nextButton"
-            android:src="@drawable/ic_button_resume" />
+            android:layout_marginTop="-7dp" />
     </RelativeLayout>
 </RelativeLayout>
 
