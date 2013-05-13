@@ -3,6 +3,7 @@ package com.wigwamlabs.veckify;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -242,6 +243,7 @@ class AlarmAdapter extends CursorAdapter {
                 mTimeToAlarm.setVisibility(View.GONE);
             }
             mPlaylistName.setText(hasPlaylist ? playlist : mContext.getText(R.string.noPlaylistSelected));
+            mPlaylistName.setTypeface(Typeface.DEFAULT, hasPlaylist ? 0 : Typeface.ITALIC);
             mPlaylistName.setEnabled(enablePlaylistPicker);
             mEnabled.setChecked(enabled);
             mEnabled.setEnabled(hasPlaylist && mTime != null);

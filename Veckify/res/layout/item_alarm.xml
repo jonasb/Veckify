@@ -4,9 +4,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingLeft="8dp"
-    android:paddingTop="16dp"
+    android:paddingTop="12dp"
     android:paddingRight="8dp"
-    android:paddingBottom="16dp">
+    android:paddingBottom="12dp">
 
     <TextView
         android:id="@+id/timeToAlarm"
@@ -15,6 +15,7 @@
         android:layout_marginBottom="4dp"
         android:gravity="right"
         android:textAllCaps="true"
+        android:fontFamily="sans-serif-condensed"
         android:textStyle="italic" />
 
     <RelativeLayout
@@ -28,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:background="@drawable/taptoedit"
-            android:textSize="42sp"
+            android:textSize="38sp"
             android:text="-:--" />
 
         <Switch
@@ -52,6 +53,7 @@
             android:background="@drawable/taptoedit"
             android:gravity="center"
             android:textAllCaps="true"
+            android:fontFamily="sans-serif-condensed"
             android:textStyle="italic"
             android:text="@string/repeatdays_none" />
 
@@ -62,6 +64,7 @@
             android:layout_below="@id/time"
             android:background="@drawable/taptoedit"
             android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:gravity="left|center_vertical"
             android:textSize="28sp"
             android:singleLine="true"
@@ -74,6 +77,7 @@
             android:layout_below="@id/playlistName"
             android:layout_alignParentRight="true"
             android:layout_marginRight="120dp"
+            android:background="@drawable/icon_background"
             android:src="@drawable/ic_button_volume_inverse" />
 
         <ImageButton
@@ -83,6 +87,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="68dp"
             android:layout_below="@id/playlistName"
+            android:background="@drawable/icon_background"
             android:src="@drawable/ic_button_shuffle_inverse" />
 
         <ImageButton
@@ -92,6 +97,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="16dp"
             android:layout_below="@id/playlistName"
+            android:background="@drawable/icon_background"
             android:src="@drawable/ic_button_telltime_inverse" />
 
         <TextView
@@ -101,8 +107,9 @@
             android:layout_below="@id/volume"
             android:background="@drawable/taptoedit"
             android:gravity="center"
-            android:textSize="22sp"
+            android:textSize="18sp"
             android:textAllCaps="true"
+            android:fontFamily="sans-serif-condensed"
             android:textStyle="italic"
             android:text="@string/run_now_button" />
 
