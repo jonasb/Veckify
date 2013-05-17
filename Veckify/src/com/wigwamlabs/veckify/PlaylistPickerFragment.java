@@ -38,7 +38,7 @@ public class PlaylistPickerFragment extends DialogFragment {
         final int selectedPlaylistIndex = playlistContainer.findPlaylistIndex(selectedPlaylist);
 
         final PlaylistContainerAdapter adapter = new PlaylistContainerAdapter(activity, playlistContainer);
-        return new AlertDialog.Builder(activity)
+        final AlertDialog alertDialog = new AlertDialog.Builder(activity)
                 .setSingleChoiceItems(adapter, selectedPlaylistIndex, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -47,6 +47,8 @@ public class PlaylistPickerFragment extends DialogFragment {
                     }
                 })
                 .create();
+        alertDialog.getListView().setSelector(R.drawable.taptoedit);
+        return alertDialog;
     }
 
     private void onPicked(MainActivity activity, long alarmId, AlarmEntry entry, Playlist playlist) {
