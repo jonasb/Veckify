@@ -38,6 +38,12 @@
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_actionbar</item>
         <item name="android:backgroundSplit">@drawable/ab_background_textured_actionbar</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Actionbar</item>
+        <item name="android:titleTextStyle">@style/ActionBar.Title.TextStyle</item>
+    </style>
+
+    <style name="ActionBar.Title.TextStyle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">26sp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
     <style name="ActionBar.Transparent.Actionbar" parent="@android:style/Widget.Holo.ActionBar">
