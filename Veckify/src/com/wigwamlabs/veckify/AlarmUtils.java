@@ -135,6 +135,21 @@ public final class AlarmUtils {
         return sb.toString();
     }
 
+    public static int getVolumeDrawable(Integer volume) {
+        if (volume == null) {
+            return R.drawable.ic_button_volume_1_inverse;
+        }
+        switch (3 * volume.intValue() / 100) {
+        case 0:
+            return R.drawable.ic_button_volume_1_inverse;
+        case 1:
+            return R.drawable.ic_button_volume_2_inverse;
+        default:
+        case 2:
+            return R.drawable.ic_button_volume_3_inverse;
+        }
+    }
+
     static String getTimeToNextAlarmText(Context context, boolean enabled, int hour, int minute, int repeatDays, long oneOffTimeMs, long nowMs) {
         final Resources res = context.getResources();
         final Calendar nextAlarmTime = getNextAlarmTime(enabled, hour, minute, repeatDays, oneOffTimeMs, nowMs);

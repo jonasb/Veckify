@@ -79,7 +79,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="112dp"
             android:background="@drawable/icon_background"
-            android:src="@drawable/ic_button_volume_inverse" />
+            android:src="@drawable/ic_button_volume_3_inverse" />
 
         <ImageButton
             android:id="@+id/repeatShuffleToggle"

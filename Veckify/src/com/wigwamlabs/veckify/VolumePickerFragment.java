@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import com.wigwamlabs.veckify.db.AlarmEntry;
@@ -36,6 +37,22 @@ public class VolumePickerFragment extends DialogFragment {
 
         final View view = LayoutInflater.from(activity).inflate(R.layout.dialog_volume, null, false);
         mSeekbar = (SeekBar) view.findViewById(R.id.seekbar);
+        final ImageView icon = (ImageView) view.findViewById(R.id.icon);
+
+        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                icon.setImageResource(AlarmUtils.getVolumeDrawable(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
         final Integer volume = entry.getVolume();
         if (volume != null) {

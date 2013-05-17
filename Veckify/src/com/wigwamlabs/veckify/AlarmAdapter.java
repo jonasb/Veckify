@@ -245,6 +245,7 @@ class AlarmAdapter extends CursorAdapter {
             mEnabledToggle.setEnabled(hasPlaylist && mTime != null);
             mRepeatSchedule.setText(AlarmUtils.repeatDaysText(mContext, repeatDays));
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
+            mVolumeButton.setImageResource(AlarmUtils.getVolumeDrawable(alarm.volume()));
             mTellTimeToggle.setImageResource(alarm.tellTime() ? R.drawable.ic_button_telltime_inverse : R.drawable.ic_button_telltime);
             mRunNowButton.setEnabled(hasPlaylist);
 
