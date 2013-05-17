@@ -13,6 +13,7 @@
         android:textAllCaps="true"
         android:fontFamily="sans-serif-condensed"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="italic"
         android:gravity="center" />
 
     <CheckBox
