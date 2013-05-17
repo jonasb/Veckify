@@ -132,7 +132,7 @@ public final class AlarmUtils {
             }
             day <<= 1;
         }
-        return context.getString(R.string.repeatdays_daysformat, sb.toString());
+        return sb.toString();
     }
 
     static String getTimeToNextAlarmText(Context context, boolean enabled, int hour, int minute, int repeatDays, long oneOffTimeMs, long nowMs) {

@@ -19,7 +19,6 @@
     <string name="repeat_checkbox">Repeat</string>
     <string name="repeatdays_none">Once</string>
     <string name="repeatdays_all">Every day</string>
-    <string name="repeatdays_daysformat">Every %1$s</string>
     <string-array name="repeatdays_shortday">
         <item>Mon</item>
         <item>Tue</item>
