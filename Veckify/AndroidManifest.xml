@@ -19,7 +19,7 @@
             android:name="MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:theme="@style/darkTheme">
+            android:theme="@style/DarkTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -31,13 +31,13 @@
             android:launchMode="singleInstance"
             android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
+            android:theme="@style/LightTheme" />
         <activity
             android:name="OfflinePlaylistsActivity"
             android:label="@string/activity_offline_playlists"
             android:parentActivityName="MainActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/darkTheme" />
+            android:theme="@style/DarkTheme" />
 
         <receiver
             android:name="com.wigwamlabs.veckify.BroadcastReceiver"

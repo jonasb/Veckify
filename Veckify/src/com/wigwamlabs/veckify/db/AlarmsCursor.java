@@ -142,6 +142,7 @@ public class AlarmsCursor extends SQLiteCursor {
         nowPlayingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // launch now playing in alarm mode
         nowPlayingIntent.setAction(NowPlayingActivity.ACTION_ALARM);
+        nowPlayingIntent.putExtra(NowPlayingActivity.EXTRA_ALARM_NAME, playlistName());
 
         // tell service to start playing
         final Intent intent = new Intent(context, SpotifyService.class);

@@ -28,6 +28,7 @@ import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
 public class NowPlayingActivity extends SpotifyPlayerActivity implements TimeUpdater.Callback {
     public static final String ACTION_ALARM = "alarm";
+    public static final String EXTRA_ALARM_NAME = "name";
     private final Handler mHandler = new Handler();
     private Track mTrack;
     private boolean mAlarmLaunchedWithKeyguard;
@@ -63,6 +64,8 @@ public class NowPlayingActivity extends SpotifyPlayerActivity implements TimeUpd
             Debug.logAlarmScheduling("New alarm, turn screen on etc.");
             mAlarmIsDismissed = false;
             mAlarmLaunchedWithKeyguard = isKeyguardActive();
+            final String name = intent.getStringExtra(EXTRA_ALARM_NAME);
+            getActionBar().setTitle(name);
         } else {
             mAlarmIsDismissed = true;
         }
