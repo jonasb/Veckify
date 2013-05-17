@@ -8,6 +8,12 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ProgressBar" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal</item>
+        <item name="android:minHeight">2dip</item>
+        <item name="android:maxHeight">2dip</item>
+    </style>
+
     <style name="darkTheme" parent="android:Theme.Holo">
         <item name="android:windowBackground">@android:color/black</item>
     </style>

@@ -89,11 +89,10 @@
             android:src="@drawable/ic_button_resume_inverse" />
 
         <ProgressBar
-            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            style="@style/ProgressBar"
             android:id="@+id/trackProgress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-7dp" />
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 </RelativeLayout>
 
