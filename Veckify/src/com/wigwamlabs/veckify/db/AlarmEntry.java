@@ -55,6 +55,10 @@ public class AlarmEntry extends DatabaseEntry {
         mValues.put(AlarmTable.deleted, deleted);
     }
 
+    public boolean isEnabled() {
+        return mValues.getAsBoolean(AlarmTable.enabled).booleanValue();
+    }
+
     public void setEnabled(boolean enabled) {
         mValues.put(AlarmTable.enabled, enabled);
     }

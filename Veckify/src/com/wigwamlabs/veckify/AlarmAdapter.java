@@ -8,10 +8,8 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.wigwamlabs.veckify.db.AlarmEntry;
@@ -103,7 +101,7 @@ class AlarmAdapter extends CursorAdapter {
         private final Callback mCallback;
         private final TextView mTimeView;
         private final TextView mPlaylistName;
-        private final Switch mEnabled;
+        private final ImageButton mEnabledToggle;
         private final TextView mRepeatSchedule;
         private final ImageButton mRepeatShuffleToggle;
         private final ImageButton mVolumeButton;
@@ -146,14 +144,12 @@ class AlarmAdapter extends CursorAdapter {
             });
 
             // enabled
-            mEnabled = (Switch) view.findViewById(R.id.enabled);
-            mEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            mEnabledToggle = (ImageButton) view.findViewById(R.id.enabled);
+            mEnabledToggle.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (!mUpdating) {
-                        mEntry.setEnabled(isChecked);
-                        mCallback.onAlarmEntryChanged(mAlarmId, mEntry, false);
-                    }
+                public void onClick(View v) {
+                    mEntry.setEnabled(!mEntry.isEnabled());
+                    mCallback.onAlarmEntryChanged(mAlarmId, mEntry, false);
                 }
             });
 
@@ -245,8 +241,8 @@ class AlarmAdapter extends CursorAdapter {
             mPlaylistName.setText(hasPlaylist ? playlist : mContext.getText(R.string.noPlaylistSelected));
             mPlaylistName.setTypeface(Typeface.DEFAULT, hasPlaylist ? 0 : Typeface.ITALIC);
             mPlaylistName.setEnabled(enablePlaylistPicker);
-            mEnabled.setChecked(enabled);
-            mEnabled.setEnabled(hasPlaylist && mTime != null);
+            mEnabledToggle.setImageResource(enabled ? R.drawable.ic_button_alarm_enabled : R.drawable.ic_button_alarm_disabled);
+            mEnabledToggle.setEnabled(hasPlaylist && mTime != null);
             mRepeatSchedule.setText(AlarmUtils.repeatDaysText(mContext, repeatDays));
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
             mTellTimeToggle.setImageResource(alarm.tellTime() ? R.drawable.ic_button_telltime_inverse : R.drawable.ic_button_telltime);

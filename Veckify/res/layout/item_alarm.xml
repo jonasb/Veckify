@@ -32,15 +32,16 @@
             android:textSize="38sp"
             android:text="-:--" />
 
-        <Switch
+        <ImageButton
             android:id="@+id/enabled"
             android:layout_alignTop="@id/time"
             android:layout_alignBottom="@id/time"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_marginRight="8dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/taptoedit"
+            />
 
         <TextView
             android:id="@+id/repeatSchedule"
@@ -76,7 +77,7 @@
             android:layout_height="48dp"
             android:layout_below="@id/playlistName"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="120dp"
+            android:layout_marginRight="112dp"
             android:background="@drawable/icon_background"
             android:src="@drawable/ic_button_volume_inverse" />
 
@@ -85,7 +86,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="68dp"
+            android:layout_marginRight="60dp"
             android:layout_below="@id/playlistName"
             android:background="@drawable/icon_background"
             android:src="@drawable/ic_button_shuffle_inverse" />
@@ -95,7 +96,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="8dp"
             android:layout_below="@id/playlistName"
             android:background="@drawable/icon_background"
             android:src="@drawable/ic_button_telltime_inverse" />
