@@ -36,7 +36,7 @@
             android:label="@string/activity_offline_playlists"
             android:parentActivityName="MainActivity"
             android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Holo" />
+            android:theme="@style/darkTheme" />
 
         <receiver
             android:name="com.wigwamlabs.veckify.BroadcastReceiver"
