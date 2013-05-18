@@ -13,12 +13,14 @@ import static com.wigwamlabs.veckify.AlarmUtils.DAYS_NONE;
 
 public class DayPicker extends View {
     private final Paint mTextPaint = new Paint();
-    private final String[] mDayNames;
+    private final Paint mPressedPaint = new Paint();
     private final Paint mIndicatorPaint = new Paint();
+    private final String[] mDayNames;
     private int mDays = DAYS_NONE;
-    private int mDownAtDay;
+    private int mPressedDay = DAYS_NONE;
     private OnDaysChangedListener mListener;
     private int mIndicatorHeight;
+    private boolean mPressEnables;
 
     public DayPicker(Context context) {
         this(context, null, 0);
@@ -45,20 +47,34 @@ public class DayPicker extends View {
         mIndicatorPaint.setColor(res.getColor(R.color.accent_primary));
         mIndicatorPaint.setStyle(Paint.Style.FILL);
         mIndicatorHeight = res.getDimensionPixelSize(R.dimen.daypicker_indicatorheight);
+
+        mPressedPaint.setColor(res.getColor(R.color.accent_secondary));
+        mPressedPaint.setStyle(Paint.Style.FILL);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-            mDownAtDay = mapEventToDay(event);
-            return true;
-        case MotionEvent.ACTION_UP: {
+        case MotionEvent.ACTION_DOWN: {
             final int day = mapEventToDay(event);
-            if (day == mDownAtDay) {
-                toggleDay(day, true);
+            mPressedDay = day;
+            mPressEnables = !isDaySet(day);
+            setDay(day, mPressEnables, true);
+            return true;
+        }
+        case MotionEvent.ACTION_MOVE: {
+            final int day = mapEventToDay(event);
+            if (day != mPressedDay) {
+                mPressedDay = day;
+                setDay(day, mPressEnables, true);
+                invalidate();
             }
-            mDownAtDay = DAYS_NONE;
+            return true;
+        }
+        case MotionEvent.ACTION_CANCEL:
+        case MotionEvent.ACTION_UP: {
+            mPressedDay = DAYS_NONE;
+            invalidate();
             return true;
         }
         }
@@ -96,8 +112,15 @@ public class DayPicker extends View {
 
         for (int i = 0; i < mDayNames.length; i++) {
             final int day = (1 << i);
+            float backgroundHeight = height;
+            final float left = i * dayWidth;
+            final float right = (i + 1) * dayWidth;
             if ((mDays & day) != 0) {
-                canvas.drawRect(i * dayWidth, height - mIndicatorHeight, (i + 1) * dayWidth, height, mIndicatorPaint);
+                canvas.drawRect(left, height - mIndicatorHeight, right, height, mIndicatorPaint);
+                backgroundHeight -= mIndicatorHeight;
+            }
+            if ((mPressedDay & day) != 0) {
+                canvas.drawRect(left, 0, right, backgroundHeight, mPressedPaint);
             }
         }
 
@@ -107,14 +130,18 @@ public class DayPicker extends View {
         }
     }
 
-    private void toggleDay(int day, boolean fromUser) {
+    private void setDay(int day, boolean checked, boolean fromUser) {
         final int days;
-        if ((mDays & day) != 0) {
-            days = mDays & ~day;
-        } else {
+        if (checked) {
             days = mDays | day;
+        } else {
+            days = mDays & ~day;
         }
         setDays(days, fromUser);
+    }
+
+    private boolean isDaySet(int day) {
+        return (mDays & day) != 0;
     }
 
     private void setDays(int days, boolean fromUser) {
