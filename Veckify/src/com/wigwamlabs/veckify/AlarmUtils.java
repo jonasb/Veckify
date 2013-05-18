@@ -197,7 +197,7 @@ public final class AlarmUtils {
         String nextPlaylistLink = null;
 
         for (boolean hasItem = alarm.moveToFirst(); hasItem; hasItem = alarm.moveToNext()) {
-            final Calendar alarmTime = AlarmUtils.getNextAlarmTime(alarm.enabled(), alarm.hour(), alarm.minute(), alarm.repeatDays(), alarm.oneoffTimeMs(), nowMs);
+            final Calendar alarmTime = getNextAlarmTime(alarm.enabled(), alarm.hour(), alarm.minute(), alarm.repeatDays(), alarm.oneoffTimeMs(), nowMs);
             if (alarmTime != null) {
                 if (nextTime == null || alarmTime.before(nextTime)) {
                     nextTime = alarmTime;

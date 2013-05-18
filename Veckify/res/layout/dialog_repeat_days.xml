@@ -26,53 +26,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/repeat_checkbox" />
 
-    <LinearLayout
-        android:id="@+id/repeatToggles"
+    <com.wigwamlabs.veckify.DayPicker
+        android:id="@+id/dayPicker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayMonday"
-            android:textOn="@string/repeatDayMonday"
-            android:textOff="@string/repeatDayMonday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayTuesday"
-            android:textOn="@string/repeatDayTuesday"
-            android:textOff="@string/repeatDayTuesday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayWednesday"
-            android:textOn="@string/repeatDayWednesday"
-            android:textOff="@string/repeatDayWednesday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayThursday"
-            android:textOn="@string/repeatDayThursday"
-            android:textOff="@string/repeatDayThursday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDayFriday"
-            android:textOn="@string/repeatDayFriday"
-            android:textOff="@string/repeatDayFriday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDaySaturday"
-            android:textOn="@string/repeatDaySaturday"
-            android:textOff="@string/repeatDaySaturday" />
-
-        <ToggleButton
-            style="@style/repeatDayToggle"
-            android:id="@+id/repeatDaySunday"
-            android:textOn="@string/repeatDaySunday"
-            android:textOff="@string/repeatDaySunday" />
-
-    </LinearLayout>
+        android:layout_height="48dp"/>
 
 </LinearLayout>

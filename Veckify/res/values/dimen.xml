@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="daypicker_indicatorheight" type="dimen">4dp</item>
+    <item name="daypicker_textsize" type="dimen">16sp</item>
+</resources>

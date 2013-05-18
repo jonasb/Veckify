@@ -10,19 +10,16 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.wigwamlabs.veckify.db.AlarmEntry;
 
-public class RepeatDaysPickerFragment extends DialogFragment implements CompoundButton.OnCheckedChangeListener {
-    private static final int[] REPEAT_DAY_IDS = new int[]{R.id.repeatDayMonday, R.id.repeatDayTuesday, R.id.repeatDayWednesday, R.id.repeatDayThursday, R.id.repeatDayFriday, R.id.repeatDaySaturday, R.id.repeatDaySunday};
+public class RepeatDaysPickerFragment extends DialogFragment {
     private static final String ARG_ALARM_ID = "alarmid";
     private static final String ARG_ALARM_ENTRY = "alarmentry";
-    private final ToggleButton[] mRepeatDayToggles = new ToggleButton[REPEAT_DAY_IDS.length];
     private CheckBox mRepeatCheckbox;
     private TextView mRepeatSchedule;
     private boolean mUpdateUi;
-    private View mRepeatToggles;
+    private DayPicker mDayPicker;
 
     public static RepeatDaysPickerFragment create(long alarmId, AlarmEntry entry) {
         final RepeatDaysPickerFragment fragment = new RepeatDaysPickerFragment();
@@ -55,11 +52,15 @@ public class RepeatDaysPickerFragment extends DialogFragment implements Compound
             }
         });
 
-        //TODO ensure toggles follow locale's first weekday: Calendar.getFirstDayOfWeek()
-        mRepeatToggles = view.findViewById(R.id.repeatToggles);
-        for (int i = 0; i < REPEAT_DAY_IDS.length; i++) {
-            mRepeatDayToggles[i] = (ToggleButton) view.findViewById(REPEAT_DAY_IDS[i]);
-        }
+        mDayPicker = (DayPicker) view.findViewById(R.id.dayPicker);
+        mDayPicker.setDaysChangedListener(new DayPicker.OnDaysChangedListener() {
+            @Override
+            public void onDaysChanged(DayPicker dayPicker, int days, boolean fromUser) {
+                if (fromUser) {
+                    updateUi(days);
+                }
+            }
+        });
 
         updateUi(repeatDays);
 
@@ -75,14 +76,8 @@ public class RepeatDaysPickerFragment extends DialogFragment implements Compound
 
         mRepeatCheckbox.setChecked(repeatDays != AlarmUtils.DAYS_NONE);
 
-        mRepeatToggles.setVisibility(repeatDays == AlarmUtils.DAYS_NONE ? View.GONE : View.VISIBLE);
-
-        int day = 1;
-        for (final ToggleButton toggle : mRepeatDayToggles) {
-            toggle.setChecked((repeatDays & day) != 0);
-            toggle.setOnCheckedChangeListener(this);
-            day <<= 1;
-        }
+        mDayPicker.setVisibility(repeatDays == AlarmUtils.DAYS_NONE ? View.GONE : View.VISIBLE);
+        mDayPicker.setDays(repeatDays);
 
         mUpdateUi = false;
     }
@@ -97,7 +92,7 @@ public class RepeatDaysPickerFragment extends DialogFragment implements Compound
             return;
         }
 
-        final int repeatDays = getCurrentRepeatDays();
+        final int repeatDays = mDayPicker.getDays();
 
         final Bundle bundle = getArguments();
         final long alarmId = bundle.getLong(ARG_ALARM_ID);
@@ -105,27 +100,5 @@ public class RepeatDaysPickerFragment extends DialogFragment implements Compound
         entry.setRepeatDays(repeatDays);
 
         activity.onAlarmEntryChanged(alarmId, entry, true);
-    }
-
-    private int getCurrentRepeatDays() {
-        int repeatDays = 0;
-        int day = 1;
-        for (final ToggleButton toggle : mRepeatDayToggles) {
-            if (toggle.isChecked()) {
-                repeatDays |= day;
-            }
-            day <<= 1;
-        }
-        return repeatDays;
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (mUpdateUi) {
-            return;
-        }
-
-        final int repeatDays = getCurrentRepeatDays();
-        updateUi(repeatDays);
     }
 }
