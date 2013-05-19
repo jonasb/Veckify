@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ActionBar/ActionBar.iml" filepath="$PROJECT_DIR$/ActionBar/ActionBar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BetterTimePicker/BetterTimePicker.iml" filepath="$PROJECT_DIR$/BetterTimePicker/BetterTimePicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/SpotifyApp/SpotifyApp.iml" filepath="$PROJECT_DIR$/SpotifyApp/SpotifyApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/test/SpotifyAppTest.iml" filepath="$PROJECT_DIR$/test/SpotifyAppTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/SpotifyLibrary/SpotifyLibrary.iml" filepath="$PROJECT_DIR$/SpotifyLibrary/SpotifyLibrary.iml" />
