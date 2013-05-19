@@ -66,6 +66,7 @@ public class ZeroTopPaddingTextView extends TextView {
     }
 
     public void updatePadding() {
+        /* TODO not valid when using normal typeface
         float paddingRatio = NORMAL_FONT_PADDING_RATIO;
         float bottomPaddingRatio = NORMAL_FONT_BOTTOM_PADDING_RATIO;
         if (getPaint().getTypeface() != null && getPaint().getTypeface().equals(Typeface.DEFAULT_BOLD)) {
@@ -86,6 +87,7 @@ public class ZeroTopPaddingTextView extends TextView {
         // height in px
         setPadding(0, (int) (-paddingRatio * getTextSize()), mPaddingRight,
                 (int) (-bottomPaddingRatio * getTextSize()));
+        */
     }
 
     public void updatePaddingForBoldDate() {
