@@ -16,7 +16,6 @@ import com.wigwamlabs.veckify.db.AlarmEntry;
 public class TimePickerDialogFragment extends DialogFragment {
     private static final String ARG_ALARM_ID = "alarmid";
     private static final String ARG_ALARM_ENTRY = "alarmentry";
-    private AlarmEntry mEntry;
     private TimePicker mTimePicker;
 
     static TimePickerDialogFragment create(long alarmId, AlarmEntry entry) {
@@ -30,9 +29,6 @@ public class TimePickerDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Bundle bundle = getArguments();
-        mEntry = bundle.getParcelable(ARG_ALARM_ENTRY);
-
         final Activity activity = getActivity();
         final View view = LayoutInflater.from(activity).inflate(R.layout.dialog_time, null, false);
         mTimePicker = (TimePicker) view.findViewById(R.id.time_picker);
@@ -56,9 +52,13 @@ public class TimePickerDialogFragment extends DialogFragment {
         final long alarmId = bundle.getLong(ARG_ALARM_ID);
         final AlarmEntry entry = bundle.getParcelable(ARG_ALARM_ENTRY);
 
-        final int mins = mTimePicker.getHours() * 60 + mTimePicker.getMinutes();
-
-        entry.setTime(mins / 60, mins % 60);
+        if (mTimePicker.isAnyNumberEntered()) {
+            final int mins = mTimePicker.getHours() * 60 + mTimePicker.getMinutes();
+            entry.setTime(mins / 60, mins % 60);
+        } else {
+            entry.setTime(null);
+            entry.setEnabled(false);
+        }
 
         activity.onAlarmEntryChanged(alarmId, entry, true);
     }

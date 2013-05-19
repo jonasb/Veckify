@@ -709,4 +709,8 @@ public class TimePicker extends LinearLayout implements Button.OnClickListener, 
             mRight.setContentDescription(null);
         }
     }
+
+    public boolean isAnyNumberEntered() {
+        return (mInputPointer > -1);
+    }
 }
