@@ -117,7 +117,7 @@ class AlarmAdapter extends CursorAdapter {
         private boolean mShuffle;
         private Integer mVolume;
         private boolean mUpdating;
-        private AlarmEntry mEntry;
+        private final AlarmEntry mEntry = new AlarmEntry();
         private boolean mTellTime;
 
         public ViewHolder(ViewGroup view, Callback callback) {
@@ -220,7 +220,7 @@ class AlarmAdapter extends CursorAdapter {
             final boolean hasPlaylist = playlist != null && playlist.length() > 0;
 
             // create an entry with all values needed to update the entry
-            mEntry = new AlarmEntry();
+            mEntry.clear();
             final boolean enabled = alarm.enabled();
             mEntry.setEnabled(enabled);
             mEntry.setTime(mTime);

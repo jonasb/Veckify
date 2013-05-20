@@ -51,6 +51,13 @@ public class AlarmEntry extends DatabaseEntry {
         dest.writeInt(mHasPlaylist ? 1 : 0);
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+
+        mHasPlaylist = false;
+    }
+
     public void setDeleted(boolean deleted) {
         mValues.put(AlarmTable.deleted, deleted);
     }

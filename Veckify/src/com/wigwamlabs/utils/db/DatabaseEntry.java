@@ -32,6 +32,10 @@ public class DatabaseEntry implements Parcelable {
         dest.writeParcelable(mValues, 0);
     }
 
+    public void clear() {
+        mValues.clear();
+    }
+
     public ContentValues getValues() {
         return mValues;
     }
