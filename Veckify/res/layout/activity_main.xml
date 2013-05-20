@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:background="#161616">
+        android:background="@drawable/now_playing_background">
 
         <com.wigwamlabs.spotify.ui.SpotifyImageView
             android:id="@+id/trackImage"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="accent_primary" type="color">#7ab800</item>
-    <item name="accent_secondary" type="color">#9E7F3B</item>
+    <color name="accent_primary">#7ab800</color>
+    <color name="accent_secondary">#9E7F3B</color>
+    <color name="now_playing_normal">#161616</color>
 </resources>
