@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="CheckBoxHoloColors" parent="android:Widget.CompoundButton.CheckBox">
+      <item name="android:button">@drawable/btn_check_holo_dark</item>
+    </style>
+
+    <style name="SeekBarHoloColors" parent="android:Widget.Holo.SeekBar">
+        <item name="android:progressDrawable">@drawable/scrubber_progress_horizontal_holo_dark</item>
+        <item name="android:indeterminateDrawable">@drawable/scrubber_progress_horizontal_holo_dark</item>
+        <item name="android:thumb">@drawable/scrubber_control_selector_holo_dark</item>
+    </style>
+
+</resources>
