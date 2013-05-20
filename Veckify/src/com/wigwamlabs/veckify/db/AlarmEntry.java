@@ -124,6 +124,10 @@ public class AlarmEntry extends DatabaseEntry {
         mValues.put(AlarmTable.shuffle, shuffle);
     }
 
+    public boolean getTellTime() {
+        return mValues.getAsBoolean(AlarmTable.telltime).booleanValue();
+    }
+
     public void setTellTime(boolean tellTime) {
         mValues.put(AlarmTable.telltime, tellTime);
     }

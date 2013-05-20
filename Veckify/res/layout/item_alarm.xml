@@ -99,7 +99,7 @@
             android:layout_marginRight="8dp"
             android:layout_below="@id/playlistName"
             android:background="@drawable/icon_background"
-            android:src="@drawable/ic_button_telltime_inverse" />
+            android:src="@drawable/ic_button_tts_inverse" />
 
         <TextView
             android:id="@+id/runNowButton"

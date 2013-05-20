@@ -36,4 +36,5 @@
         <item quantity="other">%d mins</item>
     </plurals>
     <string name="run_now_button">Run now</string>
+    <string name="tellTime">Tell time between tracks</string>
 </resources>

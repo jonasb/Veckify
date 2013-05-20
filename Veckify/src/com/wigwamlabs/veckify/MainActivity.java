@@ -350,6 +350,12 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         fragment.show(getFragmentManager(), "volume-picker");
     }
 
+    @Override
+    public void onSetTts(long alarmId, AlarmEntry entry) {
+        final TtsSettingsFragment fragment = TtsSettingsFragment.create(alarmId, entry);
+        fragment.show(getFragmentManager(), "tts-settings");
+    }
+
     private static class UndoAction implements Parcelable {
         public static final Parcelable.Creator CREATOR =
                 new Parcelable.Creator() {

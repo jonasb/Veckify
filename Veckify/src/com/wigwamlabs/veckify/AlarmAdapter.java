@@ -94,6 +94,8 @@ class AlarmAdapter extends CursorAdapter {
         void onPickRepeatDays(long alarmId, AlarmEntry entry);
 
         void onPickVolume(long alarmId, AlarmEntry entry);
+
+        void onSetTts(long alarmId, AlarmEntry entry);
     }
 
     private static class ViewHolder {
@@ -187,8 +189,8 @@ class AlarmAdapter extends CursorAdapter {
             mTellTimeToggle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mEntry.setTellTime(!mTellTime);
-                    mCallback.onAlarmEntryChanged(mAlarmId, mEntry, true);
+                    mEntry.setTellTime(mTellTime);
+                    mCallback.onSetTts(mAlarmId, mEntry);
                 }
             });
 
@@ -246,7 +248,6 @@ class AlarmAdapter extends CursorAdapter {
             mRepeatSchedule.setText(AlarmUtils.repeatDaysText(mContext, repeatDays));
             mRepeatShuffleToggle.setImageResource(alarm.shuffle() ? R.drawable.ic_button_shuffle_inverse : R.drawable.ic_button_repeat_inverse);
             mVolumeButton.setImageResource(AlarmUtils.getVolumeDrawable(alarm.volume()));
-            mTellTimeToggle.setImageResource(alarm.tellTime() ? R.drawable.ic_button_telltime_inverse : R.drawable.ic_button_telltime);
             mRunNowButton.setEnabled(hasPlaylist);
 
             mUpdating = false;
