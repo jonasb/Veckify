@@ -12,6 +12,8 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.wigwamlabs.spotify.Playlist;
+import com.wigwamlabs.spotify.PlaylistProvider;
 import com.wigwamlabs.veckify.db.AlarmEntry;
 import com.wigwamlabs.veckify.db.AlarmsCursor;
 
@@ -21,6 +23,7 @@ class AlarmAdapter extends CursorAdapter {
     private final Callback mCallback;
     private final ArrayList<Long> mDeletedItems = new ArrayList<Long>();
     private boolean mEnablePlaylistPickers;
+    private PlaylistProvider mPlaylistProvider;
 
     public AlarmAdapter(Context context, Callback callback) {
         super(context, null, 0);
@@ -42,7 +45,7 @@ class AlarmAdapter extends CursorAdapter {
             targetHeight = 1;
         } else {
             final ViewHolder vh = (ViewHolder) view.getTag();
-            vh.update(alarm, mEnablePlaylistPickers);
+            vh.update(alarm, mEnablePlaylistPickers, mPlaylistProvider);
         }
         final ViewGroup.LayoutParams lp = view.getLayoutParams();
         if (lp.height != targetHeight) {
@@ -84,6 +87,10 @@ class AlarmAdapter extends CursorAdapter {
         notifyDataSetChanged();
     }
 
+    public void setPlaylistProvider(PlaylistProvider playlistProvider) {
+        mPlaylistProvider = playlistProvider;
+    }
+
     public interface Callback {
         void onAlarmEntryChanged(long alarmId, AlarmEntry entry, boolean enableIfPossible);
 
@@ -96,6 +103,8 @@ class AlarmAdapter extends CursorAdapter {
         void onPickVolume(long alarmId, AlarmEntry entry);
 
         void onSetTts(long alarmId, AlarmEntry entry);
+
+        boolean onDownloadPlaylist(String playlistLink);
     }
 
     private static class ViewHolder {
@@ -110,6 +119,8 @@ class AlarmAdapter extends CursorAdapter {
         private final ImageButton mTellTimeToggle;
         private final View mRunNowButton;
         private final TextView mTimeToAlarm;
+        private final View mDownloadPlaylist;
+        private final AlarmEntry mEntry = new AlarmEntry();
         private long mAlarmId;
         private String mPlaylistLink;
         private Integer mTime;
@@ -117,7 +128,6 @@ class AlarmAdapter extends CursorAdapter {
         private boolean mShuffle;
         private Integer mVolume;
         private boolean mUpdating;
-        private final AlarmEntry mEntry = new AlarmEntry();
         private boolean mTellTime;
 
         public ViewHolder(ViewGroup view, Callback callback) {
@@ -142,6 +152,17 @@ class AlarmAdapter extends CursorAdapter {
                 @Override
                 public void onClick(View v) {
                     mCallback.onPickPlaylist(mAlarmId, mEntry, mPlaylistLink);
+                }
+            });
+
+            // download
+            mDownloadPlaylist = view.findViewById(R.id.downloadPlaylist);
+            mDownloadPlaylist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mCallback.onDownloadPlaylist(mPlaylistLink)) {
+                        mDownloadPlaylist.setVisibility(View.GONE);
+                    }
                 }
             });
 
@@ -205,7 +226,7 @@ class AlarmAdapter extends CursorAdapter {
             });
         }
 
-        public void update(AlarmsCursor alarm, boolean enablePlaylistPicker) {
+        public void update(AlarmsCursor alarm, boolean enablePlaylistPicker, PlaylistProvider playlistProvider) {
             mUpdating = true;
 
             mAlarmId = alarm._id();
@@ -216,8 +237,14 @@ class AlarmAdapter extends CursorAdapter {
             mVolume = alarm.volume();
             final int repeatDays = alarm.repeatDays();
             mIntents = alarm.createIntents(mContext);
-            final String playlist = alarm.playlistName();
-            final boolean hasPlaylist = playlist != null && playlist.length() > 0;
+            final String playlistName = alarm.playlistName();
+            final boolean hasPlaylist = playlistName != null && playlistName.length() > 0;
+
+            boolean playlistDownloadable = false;
+            if (playlistProvider != null) {
+                final Playlist playlist = playlistProvider.getPlaylist(mPlaylistLink);
+                playlistDownloadable = (playlist != null && playlist.getOfflineStatus(playlistProvider.getSession()) == Playlist.OFFLINE_STATUS_NO);
+            }
 
             // create an entry with all values needed to update the entry
             mEntry.clear();
@@ -240,9 +267,10 @@ class AlarmAdapter extends CursorAdapter {
                 mTimeView.setText("-:--");
                 mTimeToAlarm.setVisibility(View.GONE);
             }
-            mPlaylistName.setText(hasPlaylist ? playlist : mContext.getText(R.string.noPlaylistSelected));
+            mPlaylistName.setText(hasPlaylist ? playlistName : mContext.getText(R.string.noPlaylistSelected));
             mPlaylistName.setTypeface(Typeface.DEFAULT, hasPlaylist ? 0 : Typeface.ITALIC);
             mPlaylistName.setEnabled(enablePlaylistPicker);
+            mDownloadPlaylist.setVisibility(playlistDownloadable ? View.VISIBLE : View.GONE);
             mEnabledToggle.setImageResource(enabled ? R.drawable.ic_button_alarm_enabled : R.drawable.ic_button_alarm_disabled);
             mEnabledToggle.setEnabled(hasPlaylist && mTime != null);
             mRepeatSchedule.setText(AlarmUtils.repeatDaysText(mContext, repeatDays));

@@ -18,7 +18,9 @@ import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.example.android.undobar.UndoBarController;
 import com.wigwamlabs.spotify.ImageProvider;
 import com.wigwamlabs.spotify.Player;
+import com.wigwamlabs.spotify.Playlist;
 import com.wigwamlabs.spotify.PlaylistContainer;
+import com.wigwamlabs.spotify.PlaylistProvider;
 import com.wigwamlabs.spotify.Session;
 import com.wigwamlabs.spotify.ui.SpotifyImageView;
 import com.wigwamlabs.spotify.ui.SpotifyPlayerActivity;
@@ -41,6 +43,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     private Long mScrollToIdOnLoad;
     private UndoBarController mUndoBarController;
     private TimeUpdater mTimeUpdater;
+    private PlaylistProvider mPlaylistProvider;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,8 +79,6 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         super.onResume();
 
         mTimeUpdater.start();
-
-//TODO        updateUi();
     }
 
     @Override
@@ -93,10 +94,10 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         Debug.logLifecycle("MainActivity.onDestroy()");
         super.onDestroy();
 
-//TODO        if (mPlaylist != null) {
-//            mPlaylist.destroy();
-//            mPlaylist = null;
-//        }
+        if (mPlaylistProvider != null) {
+            mPlaylistProvider.destroy();
+            mPlaylistProvider = null;
+        }
 
         if (mPlaylistContainer != null) {
             mPlaylistContainer.destroy();
@@ -174,20 +175,8 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         super.onSpotifySessionAttached(spotifySession);
         setAutoLogin(true);
 
-        /* TODO
-        final String link = mAlarm.getPlaylistLink();
-        if (link != null) {
-            new PendingPlaylistAction(link, false) {
-                @Override
-                protected void onPlaylistLoaded(Playlist playlist) {
-                    if (mPlaylist == null) {
-                        onPlaylistPicked(playlist);
-                    }
-                    playlist.destroy();
-                }
-            }.start(getSpotifySession());
-        }
-        */
+        mPlaylistProvider = new PlaylistProvider(spotifySession);
+        mAlarmAdapter.setPlaylistProvider(mPlaylistProvider);
     }
 
     @Override
@@ -210,13 +199,6 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
 
         final boolean showNowPlaying = (state == Player.STATE_PLAYING || state == Player.STATE_PAUSED_USER || state == Player.STATE_PAUSED_NOISY || state == Player.STATE_PAUSED_AUDIOFOCUS);
         mNowPlaying.setVisibility(showNowPlaying ? VISIBLE : GONE);
-    }
-
-    @Override
-    public void onOfflineTracksToSyncChanged(boolean syncing, int remainingTracks, int approxTotalTracks) {
-        super.onOfflineTracksToSyncChanged(syncing, remainingTracks, approxTotalTracks);
-
-//TODO        updateUi();
     }
 
     @Override
@@ -332,16 +314,6 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     public void onPickPlaylist(long alarmId, AlarmEntry entry, String playlistLink) {
         final PlaylistPickerFragment fragment = PlaylistPickerFragment.create(alarmId, entry, playlistLink);
         fragment.show(getFragmentManager(), "playlist-picker");
-        //TODO will change playlist...
-
-        // forget old playlist
-//TODO        if (mPlaylist != null) {
-//            mPlaylist.destroy();
-//            mPlaylist = null;
-//        }
-//        if (playlist != null)
-//            mPlaylist = playlist.clone();
-
     }
 
     @Override
@@ -354,6 +326,16 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     public void onSetTts(long alarmId, AlarmEntry entry) {
         final TtsSettingsFragment fragment = TtsSettingsFragment.create(alarmId, entry);
         fragment.show(getFragmentManager(), "tts-settings");
+    }
+
+    @Override
+    public boolean onDownloadPlaylist(String playlistLink) {
+        final Playlist playlist = mPlaylistProvider.getPlaylist(playlistLink);
+        if (playlist != null) {
+            playlist.setOfflineMode(getSpotifySession(), true);
+            return true;
+        }
+        return false;
     }
 
     private static class UndoAction implements Parcelable {
