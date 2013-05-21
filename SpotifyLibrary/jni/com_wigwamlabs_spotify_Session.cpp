@@ -123,6 +123,24 @@ JNI_METHOD(void, com_wigwamlabs_spotify_Session, nativeDestroy) {
     }
 }
 
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeSetStreamingBitrate, jint bitrate) {
+    LOGV("nativeSetStreamingBitrate(%d)", bitrate);
+    Session *session = getNativeSession(env, self);
+    sp_error error = session->setStreamingBitrate((sp_bitrate) bitrate);
+    if (error != SP_ERROR_OK) {
+        LOGW("setStreamingBitrate(%d) => %s", bitrate, sp_error_message(error));
+    }
+}
+
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeSetOfflineBitrate, jint bitrate) {
+    LOGV("nativeSetOfflineBitrate(%d)", bitrate);
+    Session *session = getNativeSession(env, self);
+    sp_error error = session->setOfflineBitrate((sp_bitrate) bitrate);
+    if (error != SP_ERROR_OK) {
+        LOGW("setOfflineBitrate(%d) => %s", bitrate, sp_error_message(error));
+    }
+}
+
 JNI_METHOD(jint, com_wigwamlabs_spotify_Session, nativeGetConnectionState) {
     LOGV("nativeGetConnectionState()");
 

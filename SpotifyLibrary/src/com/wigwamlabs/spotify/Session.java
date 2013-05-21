@@ -16,6 +16,9 @@ public class Session extends NativeItem {
     public static final int CONNECTION_STATE_DISCONNECTED = 2;
     public static final int CONNECTION_STATE_UNDEFINED = 3;
     public static final int CONNECTION_STATE_OFFLINE = 4;
+    public static final int BITRATE_96K = 2;
+    public static final int BITRATE_160K = 0;
+    public static final int BITRATE_320K = 1;
     private static final Handler mHandler = new Handler();
     private final Context mContext;
     private final Preferences mPreferences;
@@ -40,7 +43,22 @@ public class Session extends NativeItem {
             deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         }
         setHandle(nativeCreate(settingsPath, cachePath, deviceId));
+
         mPreferences = new Preferences(context);
+        mPreferences.setDefaultValues();
+        mPreferences.setCallback(new Preferences.Callback() {
+            @Override
+            public void onStreamingBitratePreferenceChanged(int bitrate) {
+                nativeSetStreamingBitrate(bitrate);
+            }
+
+            @Override
+            public void onOfflineBitratePreferenceChanged(int bitrate) {
+                nativeSetOfflineBitrate(bitrate);
+            }
+        });
+        nativeSetStreamingBitrate(mPreferences.getStreamingBitrate());
+        nativeSetOfflineBitrate(mPreferences.getOfflineBitrate());
     }
 
     private static native void nativeInitClass();
@@ -48,6 +66,10 @@ public class Session extends NativeItem {
     @Override
     public void destroy() {
         super.destroy();
+
+        if (mPreferences != null) {
+            mPreferences.setCallback(null);
+        }
 
         if (mPlayer != null) {
             mPlayer.destroy();
@@ -94,6 +116,10 @@ public class Session extends NativeItem {
 
     @Override
     native void nativeDestroy();
+
+    private native void nativeSetStreamingBitrate(int bitrate);
+
+    private native void nativeSetOfflineBitrate(int bitrate);
 
     private native int nativeGetConnectionState();
 

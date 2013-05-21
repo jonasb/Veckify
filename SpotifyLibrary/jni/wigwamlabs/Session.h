@@ -26,6 +26,8 @@ public:
 
     sp_session *getSession();
 
+    sp_error setStreamingBitrate(sp_bitrate bitrate);
+    sp_error setOfflineBitrate(sp_bitrate bitrate);
     int getConnectionState() const;
     sp_error login(const char *username, const char *password, const char *blob);
     sp_error logout();

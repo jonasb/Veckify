@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferenceKeyStreamingBitrate">streaming_bitrate</string>
+    <string name="preferenceKeyOfflineBitrate">offline_bitrate</string>
+    <string-array name="pref_spotify_bitrate_values">
+        <item>96</item>
+        <item>160</item>
+        <item>320</item>
+    </string-array>
+</resources>

@@ -1,0 +1,10 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+    <header
+        android:fragment="com.wigwamlabs.veckify.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/pref_header_general" />
+    -->
+    <header
+        android:fragment="com.wigwamlabs.spotify.ui.SpotifyPreferenceFragment"
+        android:title="@string/pref_header_spotify" />
+</preference-headers>

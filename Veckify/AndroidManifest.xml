@@ -41,6 +41,11 @@
             android:launchMode="singleInstance"
             android:theme="@style/DarkTheme"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation" />
+        <activity
+            android:name="SettingsActivity"
+            android:parentActivityName="MainActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/DarkTheme" />
 
         <receiver
             android:name="com.wigwamlabs.veckify.BroadcastReceiver"

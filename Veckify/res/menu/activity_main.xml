@@ -8,4 +8,7 @@
     <item
         android:id="@+id/offlineSync"
         android:title="@string/menu_offline_playlists" />
+    <item
+        android:id="@+id/settings"
+        android:title="@string/title_activity_settings" />
 </menu>

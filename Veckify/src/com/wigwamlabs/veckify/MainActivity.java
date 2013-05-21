@@ -120,6 +120,9 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
         case R.id.offlineSync:
             startActivity(new Intent(this, OfflinePlaylistsActivity.class));
             return true;
+        case R.id.settings:
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
