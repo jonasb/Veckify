@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.android.systemui.SwipeHelper;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SwipeDismissListView extends ListView implements SwipeHelper.Callback {
+public class SwipeDismissListView extends ListView implements SwipeHelper.Callback, AbsListView.OnScrollListener {
     private final SwipeHelper mSwipeHelper;
     private final int mAnimationTime;
     private final List<PendingDismissData> mPendingDismisses = new ArrayList<PendingDismissData>();
@@ -47,6 +48,7 @@ public class SwipeDismissListView extends ListView implements SwipeHelper.Callba
     private Callback mCallback;
     private int mDismissAnimationRefCount = 0;
     private int mDragPosition = -1;
+    private int mScrollState = SCROLL_STATE_IDLE;
 
     public SwipeDismissListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -55,6 +57,8 @@ public class SwipeDismissListView extends ListView implements SwipeHelper.Callba
         mSwipeHelper = new SwipeHelper(SwipeHelper.X, this, densityScale, touchSlop);
 
         mAnimationTime = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        setOnScrollListener(this);
     }
 
     @Override
@@ -72,12 +76,25 @@ public class SwipeDismissListView extends ListView implements SwipeHelper.Callba
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return mSwipeHelper.onInterceptTouchEvent(ev) || super.onInterceptTouchEvent(ev);
+        // prioritize scrolling over swipe
+        boolean intercepted = super.onInterceptTouchEvent(ev);
+        if (!intercepted && mScrollState == SCROLL_STATE_IDLE) {
+            intercepted = mSwipeHelper.onInterceptTouchEvent(ev);
+        }
+        return intercepted;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        return mSwipeHelper.onTouchEvent(ev) || super.onTouchEvent(ev);
+        // if we're not scrolling we're most likely swiping, so prioritize swipe helper
+        boolean handled = false;
+        if (mScrollState == SCROLL_STATE_IDLE) {
+            handled = mSwipeHelper.onTouchEvent(ev);
+        }
+        if (!handled) {
+            handled = super.onTouchEvent(ev);
+        }
+        return handled;
     }
 
     @Override
@@ -181,6 +198,15 @@ public class SwipeDismissListView extends ListView implements SwipeHelper.Callba
     @Override
     public void onDragCancelled(View v) {
         mDragPosition = -1;
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        mScrollState = scrollState;
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     }
 
     interface Callback {
