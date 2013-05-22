@@ -51,7 +51,8 @@
             android:name="OpenSourceLicensesActivity"
             android:parentActivityName="SettingsActivity"
             android:label="@string/activity_opensource_licenses"
-            android:theme="@style/LightTheme" />
+            android:theme="@style/LightTheme"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation" />
 
         <receiver
             android:name="com.wigwamlabs.veckify.BroadcastReceiver"
