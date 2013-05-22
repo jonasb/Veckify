@@ -1,6 +1,8 @@
 package com.wigwamlabs.spotify;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
@@ -19,10 +21,13 @@ public class Session extends NativeItem {
     public static final int BITRATE_96K = 2;
     public static final int BITRATE_160K = 0;
     public static final int BITRATE_320K = 1;
+    private static final int CONNECTION_RULES_DOWNLOAD_OVER_MOBILE = 0x1 | 0x4 | 0x8; // network | mobile | wifi
+    private static final int CONNECTION_RULES_DEFAULT = 0x1 | 0x8; // network | wifi
     private static final Handler mHandler = new Handler();
     private final Context mContext;
     private final Preferences mPreferences;
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
+    private final ConnectivityManager mConnectivityManager;
     private int mState;
     private Player mPlayer;
     private ImageProvider mImageProvider;
@@ -56,9 +61,18 @@ public class Session extends NativeItem {
             public void onOfflineBitratePreferenceChanged(int bitrate) {
                 nativeSetOfflineBitrate(bitrate);
             }
+
+            @Override
+            public void onConnectionRulesPreferenceChanged(boolean downloadOverMobile) {
+                nativeSetConnectionRules(downloadOverMobile ? CONNECTION_RULES_DOWNLOAD_OVER_MOBILE : CONNECTION_RULES_DEFAULT);
+            }
         });
         nativeSetStreamingBitrate(mPreferences.getStreamingBitrate());
         nativeSetOfflineBitrate(mPreferences.getOfflineBitrate());
+        nativeSetConnectionRules(mPreferences.getDownloadOverMobile() ? CONNECTION_RULES_DOWNLOAD_OVER_MOBILE : CONNECTION_RULES_DEFAULT);
+
+        mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        updateConnectionType();
     }
 
     private static native void nativeInitClass();
@@ -120,6 +134,10 @@ public class Session extends NativeItem {
     private native void nativeSetStreamingBitrate(int bitrate);
 
     private native void nativeSetOfflineBitrate(int bitrate);
+
+    private native void nativeSetConnectionType(int type);
+
+    private native void nativeSetConnectionRules(int connectionRules);
 
     private native int nativeGetConnectionState();
 
@@ -193,6 +211,32 @@ public class Session extends NativeItem {
                 mPreferences.setCredentialsBlob(blob);
             }
         });
+    }
+
+    public void updateConnectionType() {
+        final NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
+        int type = 0; // unknown
+        if (mConnectivityManager.isActiveNetworkMetered()) {
+            type = 2; // treat it as mobile
+        } else if (networkInfo != null) {
+            if (networkInfo.isRoaming()) {
+                type = 3; // mobile roaming
+            } else {
+                switch (networkInfo.getType()) {
+                case ConnectivityManager.TYPE_WIFI:
+                    type = 4; // wifi
+                    break;
+                case ConnectivityManager.TYPE_ETHERNET:
+                    type = 5; // wired
+                    break;
+                default:
+                case ConnectivityManager.TYPE_MOBILE:
+                    type = 2; // mobile
+                    break;
+                }
+            }
+        }
+        nativeSetConnectionType(type);
     }
 
     public int getConnectionState() {

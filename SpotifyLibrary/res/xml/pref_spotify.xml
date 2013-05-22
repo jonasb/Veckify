@@ -15,4 +15,9 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="@string/pref_title_offline_bitrate" />
+    <CheckBoxPreference
+        android:key="@string/preferenceKeyDownloadOverMobile"
+        android:title="@string/pref_title_download_over_mobile"
+        android:summaryOn="@string/prefSummaryDownloadMobileOn"
+        android:summaryOff="@string/prefSummaryDownloadMobileOff" />
 </PreferenceScreen>

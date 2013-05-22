@@ -226,6 +226,16 @@ sp_error Session::setOfflineBitrate(sp_bitrate bitrate) {
     return sp_session_preferred_offline_bitrate(mSession, bitrate, false);
 }
 
+sp_error Session::setConnectionType(sp_connection_type type) {
+    LOGV("%s %d", __func__, type);
+    return sp_session_set_connection_type(mSession, type);
+}
+
+sp_error Session::setConnectionRules(sp_connection_rules connectionRules) {
+    LOGV("%s %d", __func__, connectionRules);
+    return sp_session_set_connection_rules(mSession, connectionRules);
+}
+
 int Session::getConnectionState() const {
     LOGV(__func__);
     return sp_session_connectionstate(mSession);

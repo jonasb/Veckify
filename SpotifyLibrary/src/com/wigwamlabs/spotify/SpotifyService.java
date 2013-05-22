@@ -31,7 +31,7 @@ public class SpotifyService extends android.app.Service {
         mPlayer = mSession.getPlayer();
 
         //
-        mRuntimeBroadcastReceiver = new RuntimeBroadcastReceiver(mPlayer);
+        mRuntimeBroadcastReceiver = new RuntimeBroadcastReceiver(mSession);
         registerReceiver(mRuntimeBroadcastReceiver, mRuntimeBroadcastReceiver.getFilter());
 
         // init notifications

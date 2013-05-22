@@ -31,10 +31,9 @@ public class SpotifyPreferenceFragment extends PreferenceFragment {
     private static class SummaryProvider implements Preference.OnPreferenceChangeListener {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            final String value = (String) newValue;
             if (preference instanceof ListPreference) {
                 final ListPreference listPreference = (ListPreference) preference;
-                final int index = listPreference.findIndexOfValue(value);
+                final int index = listPreference.findIndexOfValue((String) newValue);
                 preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
             }
             return true;

@@ -20,6 +20,9 @@
     <string name="offline_sync_notification_text">%1$d of %2$d synced.</string>
     <string name="pref_title_streaming_bitrate">Streaming quality</string>
     <string name="pref_title_offline_bitrate">Download quality</string>
+    <string name="pref_title_download_over_mobile">Download on mobile networks</string>
+    <string name="prefSummaryDownloadMobileOn">Offline playlists will be downloaded on mobile networks and wi-fi</string>
+    <string name="prefSummaryDownloadMobileOff">Offline playlists will only be downloaded on wi-fi</string>
     <string-array name="pref_spotify_bitrate">
         <item>Normal quality</item>
         <item>High quality</item>

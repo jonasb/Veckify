@@ -28,6 +28,8 @@ public:
 
     sp_error setStreamingBitrate(sp_bitrate bitrate);
     sp_error setOfflineBitrate(sp_bitrate bitrate);
+    sp_error setConnectionType(sp_connection_type type);
+    sp_error setConnectionRules(sp_connection_rules connectionRules);
     int getConnectionState() const;
     sp_error login(const char *username, const char *password, const char *blob);
     sp_error logout();

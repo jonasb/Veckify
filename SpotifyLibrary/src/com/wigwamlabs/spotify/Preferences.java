@@ -10,12 +10,14 @@ class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener 
     private final SharedPreferences mPreferences;
     private final String mOfflineBitrateKey;
     private final String mStreamingBitrateKey;
+    private final String mDownloadOverMobileKey;
     private Callback mCallback;
 
     public Preferences(Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         mStreamingBitrateKey = context.getString(R.string.preferenceKeyStreamingBitrate);
         mOfflineBitrateKey = context.getString(R.string.preferenceKeyOfflineBitrate);
+        mDownloadOverMobileKey = context.getString(R.string.preferenceKeyDownloadOverMobile);
     }
 
     public void setDefaultValues() {
@@ -72,6 +74,10 @@ class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener 
         return bitrate;
     }
 
+    boolean getDownloadOverMobile() {
+        return mPreferences.getBoolean(mDownloadOverMobileKey, false);
+    }
+
     public void setCallback(Callback callback) {
         mCallback = callback;
         if (mCallback != null) {
@@ -91,6 +97,8 @@ class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener 
             mCallback.onStreamingBitratePreferenceChanged(getStreamingBitrate());
         } else if (mOfflineBitrateKey.equals(key)) {
             mCallback.onOfflineBitratePreferenceChanged(getOfflineBitrate());
+        } else if (mDownloadOverMobileKey.equals(key)) {
+            mCallback.onConnectionRulesPreferenceChanged(getDownloadOverMobile());
         }
     }
 
@@ -98,5 +106,7 @@ class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener 
         void onStreamingBitratePreferenceChanged(int bitrate);
 
         void onOfflineBitratePreferenceChanged(int bitrate);
+
+        void onConnectionRulesPreferenceChanged(boolean downloadOverMobile);
     }
 }

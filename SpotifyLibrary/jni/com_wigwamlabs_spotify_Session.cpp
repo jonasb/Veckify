@@ -141,6 +141,24 @@ JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeSetOfflineBitrate, j
     }
 }
 
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeSetConnectionType, jint type) {
+    LOGV("nativeSetConnectionType(%d)", type);
+    Session *session = getNativeSession(env, self);
+    sp_error error = session->setConnectionType((sp_connection_type) type);
+    if (error != SP_ERROR_OK) {
+        LOGW("setConnectionType(%d) => %s", type, sp_error_message(error));
+    }
+}
+
+JNI_METHOD_ARGS(void, com_wigwamlabs_spotify_Session, nativeSetConnectionRules, jint connectionRules) {
+    LOGV("nativeSetConnectionRules(%d)", connectionRules);
+    Session *session = getNativeSession(env, self);
+    sp_error error = session->setConnectionRules((sp_connection_rules) connectionRules);
+    if (error != SP_ERROR_OK) {
+        LOGW("setConnectionRules(%d) => %s", connectionRules, sp_error_message(error));
+    }
+}
+
 JNI_METHOD(jint, com_wigwamlabs_spotify_Session, nativeGetConnectionState) {
     LOGV("nativeGetConnectionState()");
 
