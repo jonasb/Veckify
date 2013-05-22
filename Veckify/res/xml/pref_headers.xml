@@ -7,4 +7,7 @@
     <header
         android:fragment="com.wigwamlabs.spotify.ui.SpotifyPreferenceFragment"
         android:title="@string/pref_header_spotify" />
+    <header
+        android:fragment="com.wigwamlabs.veckify.LegalPreferenceFragment"
+        android:title="@string/pref_header_legal" />
 </preference-headers>

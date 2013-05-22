@@ -47,6 +47,11 @@
             android:parentActivityName="MainActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/DarkTheme" />
+        <activity
+            android:name="OpenSourceLicensesActivity"
+            android:parentActivityName="SettingsActivity"
+            android:label="@string/activity_opensource_licenses"
+            android:theme="@style/LightTheme" />
 
         <receiver
             android:name="com.wigwamlabs.veckify.BroadcastReceiver"

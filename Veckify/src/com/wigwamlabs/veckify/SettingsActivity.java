@@ -53,10 +53,16 @@ public class SettingsActivity extends PreferenceActivity {
         GeneralPreferenceFragment.onCreateSimple(this);
 
         // Spotify
-        final PreferenceCategory header = new PreferenceCategory(this);
+        PreferenceCategory header = new PreferenceCategory(this);
         header.setTitle(R.string.pref_header_spotify);
         getPreferenceScreen().addPreference(header);
         SpotifyPreferenceFragment.onCreateSimple(this);
+
+        // Legal
+        header = new PreferenceCategory(this);
+        header.setTitle(R.string.pref_header_legal);
+        getPreferenceScreen().addPreference(header);
+        LegalPreferenceFragment.onCreateSimple(this);
     }
 
     @Override

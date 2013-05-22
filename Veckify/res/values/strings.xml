@@ -39,4 +39,6 @@
     <string name="tellTime">Tell time between tracks</string>
     <string name="pref_header_spotify">Spotify</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="pref_header_legal">Legal</string>
+    <string name="activity_opensource_licenses">Open-source licenses</string>
 </resources>
