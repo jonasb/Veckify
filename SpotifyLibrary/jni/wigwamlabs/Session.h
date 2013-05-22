@@ -76,6 +76,7 @@ private:
     bool mMainThreadRunning;
     Player *mPlayer;
     bool mWaitingForLoggedIn;
+    sp_error mOfflineError;
 };
 
 }

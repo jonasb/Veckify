@@ -104,7 +104,8 @@ Session::Session(SessionCallback *callback) :
     mMainThread(0),
     mMainNotifyDo(0),
     mMainThreadRunning(false),
-    mWaitingForLoggedIn(false) {
+    mWaitingForLoggedIn(false),
+    mOfflineError(SP_ERROR_OK) {
 }
 
 sp_error Session::startThread() {
@@ -342,7 +343,7 @@ void Session::onGetAudioBufferStats(sp_session *session, sp_audio_buffer_stats *
 
 void Session::onOfflineStatusUpdated(sp_session *session) {
     Session *self = getSelf(session);
-    bool syncing = (sp_session_connectionstate(self->mSession) == SP_CONNECTION_STATE_LOGGED_IN);
+    bool syncing = (self->mOfflineError == SP_ERROR_OK && sp_session_connectionstate(self->mSession) == SP_CONNECTION_STATE_LOGGED_IN);
     int tracks = sp_offline_tracks_to_sync(self->mSession);
     LOGV("%s: syncing: %d, offline tracks to sync: %d", __func__, syncing, tracks);
     self->mCallback->onOfflineTracksToSyncChanged(syncing, tracks);
@@ -350,6 +351,10 @@ void Session::onOfflineStatusUpdated(sp_session *session) {
 
 void Session::onOfflineError(sp_session *session, sp_error error) {
     LOGV("%s %s", __func__, sp_error_message(error));
+    //TODO display error for user when disk is full?
+    Session *self = getSelf(session);
+    self->mOfflineError = error;
+    onOfflineStatusUpdated(session);
 }
 
 void Session::onCredentialsBlobUpdated(sp_session *session, const char *blob) {
