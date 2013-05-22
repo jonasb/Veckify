@@ -48,9 +48,9 @@
             android:label="@string/title_activity_settings"
             android:theme="@style/DarkTheme" />
         <activity
-            android:name="OpenSourceLicensesActivity"
+            android:name="ThirdPartyLicensesActivity"
             android:parentActivityName="SettingsActivity"
-            android:label="@string/activity_opensource_licenses"
+            android:label="@string/activity_thirdparty_licenses"
             android:theme="@style/LightTheme"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation" />
 

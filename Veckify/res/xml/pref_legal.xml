@@ -1,7 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <Preference android:title="Open-source licenses">
+    <Preference android:title="@string/pref_title_thirdparty_licenses">
         <intent
             android:targetPackage="com.wigwamlabs.veckify"
-            android:targetClass="com.wigwamlabs.veckify.OpenSourceLicensesActivity" />
+            android:targetClass="com.wigwamlabs.veckify.ThirdPartyLicensesActivity" />
     </Preference>
 </PreferenceScreen>

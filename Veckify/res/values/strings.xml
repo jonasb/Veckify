@@ -40,5 +40,6 @@
     <string name="pref_header_spotify">Spotify</string>
     <string name="title_activity_settings">Settings</string>
     <string name="pref_header_legal">Legal</string>
-    <string name="activity_opensource_licenses">Open-source licenses</string>
+    <string name="activity_thirdparty_licenses">Third-party licenses</string>
+    <string name="pref_title_thirdparty_licenses">Third-party licenses</string>
 </resources>
