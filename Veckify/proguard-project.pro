@@ -12,6 +12,14 @@
 
 # Add any project specific keep options here:
 
+-keepattributes *Annotation*
+-keep @interface *
+-include ../SpotifyLibrary/proguard-annotations.pro
+
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:
