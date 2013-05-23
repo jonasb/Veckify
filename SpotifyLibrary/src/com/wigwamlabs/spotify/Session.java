@@ -3,6 +3,7 @@ package com.wigwamlabs.spotify;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
@@ -216,7 +217,7 @@ public class Session extends NativeItem {
     public void updateConnectionType() {
         final NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
         int type = 0; // unknown
-        if (mConnectivityManager.isActiveNetworkMetered()) {
+        if (Build.VERSION.SDK_INT >= 16 && mConnectivityManager.isActiveNetworkMetered()) {
             type = 2; // treat it as mobile
         } else if (networkInfo != null) {
             if (networkInfo.isRoaming()) {
