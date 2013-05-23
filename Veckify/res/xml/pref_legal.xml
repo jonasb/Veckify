@@ -4,4 +4,7 @@
             android:targetPackage="com.wigwamlabs.veckify"
             android:targetClass="com.wigwamlabs.veckify.ThirdPartyLicensesActivity" />
     </Preference>
+    <Preference
+        android:summary="@string/spotify_disclaimer"
+        android:enabled="false" />
 </PreferenceScreen>
