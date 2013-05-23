@@ -11,6 +11,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:src="@drawable/spotify_logo_primary_horizontal_dark_background" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/spotify_disclaimer" />
+
         <EditText
             android:id="@+id/username"
             android:layout_width="match_parent"
@@ -37,6 +50,9 @@
             android:id="@+id/errorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center"
             android:visibility="gone" />
     </LinearLayout>
 

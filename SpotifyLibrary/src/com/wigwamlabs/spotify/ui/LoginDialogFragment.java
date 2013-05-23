@@ -1,13 +1,14 @@
 package com.wigwamlabs.spotify.ui;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -25,16 +26,8 @@ public class LoginDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        return dialog;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.dialog_login, container, false);
+        final Activity activity = getActivity();
+        final View root = LayoutInflater.from(activity).inflate(R.layout.dialog_login, null, false);
 
         final View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
             @Override
@@ -68,7 +61,18 @@ public class LoginDialogFragment extends DialogFragment {
             }
         });
 
-        return root;
+        final AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setView(root)
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        return dialog;
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        // quite the activity since the user isn't logging in
+        getActivity().finish();
     }
 
     private void login() {

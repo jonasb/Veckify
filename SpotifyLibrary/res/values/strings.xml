@@ -23,6 +23,7 @@
     <string name="pref_title_download_over_mobile">Download on mobile networks</string>
     <string name="prefSummaryDownloadMobileOn">Offline playlists will be downloaded on mobile networks and wi-fi</string>
     <string name="prefSummaryDownloadMobileOff">Offline playlists will only be downloaded on wi-fi</string>
+    <string name="spotify_disclaimer">This product uses Music by Spotify but is not endorsed, certified or otherwise approved in any way by Spotify. Spotify is the registered trade mark of the Spotify Group.</string>
     <string-array name="pref_spotify_bitrate">
         <item>Normal quality</item>
         <item>High quality</item>
