@@ -6,9 +6,4 @@
             <padding android:left="8sp" android:right="8sp" />
         </shape>
     </item>
-    <item>
-        <shape android:shape="rectangle">
-            <padding android:left="8sp" android:right="8sp" />
-        </shape>
-    </item>
 </selector>
