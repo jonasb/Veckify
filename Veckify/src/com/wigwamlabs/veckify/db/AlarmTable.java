@@ -20,7 +20,7 @@ final class AlarmTable {
 
     public static void create(SQLiteDatabase db) {
         // version 1
-        final QueryBuilder.CreateQueryBuilder builder = QueryBuilder.create(n)
+        QueryBuilder.create(n)
                 .pk(_id)
                 .integer(deleted)
                 .integer(enabled)
@@ -30,20 +30,11 @@ final class AlarmTable {
                 .text(playlistname, null)
                 .text(playlistlink, null)
                 .integer(volume, null)
-                .integer(shuffle);
-        // version 2
-        builder
+                .integer(shuffle)
                 .integer(telltime, null)
                 .execute(db);
     }
 
     public static void upgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        switch (oldVersion) {
-        case 1:
-            QueryBuilder.alterAddColumn(n, telltime)
-                    .integer(null)
-                    .execute(db);
-            //fall-through
-        }
     }
 }
