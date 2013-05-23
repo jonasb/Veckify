@@ -6,7 +6,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
-import android.util.Log;
 
 import proguard.annotation.Keep;
 
@@ -201,7 +200,7 @@ public class Session extends NativeItem {
 
     @Keep
     void onMetadataUpdated() {
-        Log.d("XXX", "onMetadataUpdated()");
+        Debug.logTemp("onMetadataUpdated()");
     }
 
     @Keep

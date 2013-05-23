@@ -83,4 +83,10 @@ public final class Debug {
             Log.v(TAG, "Bitmap cache: " + msg);
         }
     }
+
+    public static void logTemp(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "XXX: " + msg);
+        }
+    }
 }
