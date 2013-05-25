@@ -41,7 +41,8 @@
             android:parentActivityName="MainActivity"
             android:launchMode="singleInstance"
             android:theme="@style/DarkTheme"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation" />
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation"
+            android:exported="true"/>
         <activity
             android:name="SettingsActivity"
             android:parentActivityName="MainActivity"
