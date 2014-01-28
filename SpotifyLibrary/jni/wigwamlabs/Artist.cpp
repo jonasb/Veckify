@@ -12,7 +12,7 @@ Artist::Artist(sp_artist *artist) :
 }
 
 sp_error Artist::destroy() {
-    LOGV(__func__);
+    LOGV("%s", __func__);
     sp_error error = SP_ERROR_OK;
     if (mArtist) {
         error = sp_artist_release(mArtist);

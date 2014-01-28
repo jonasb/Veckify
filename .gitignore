@@ -1,4 +1,4 @@
-.idea/dictionaries/
+.idea/
 SpotifyLibrary/libs/armeabi/
 bin/
 build/
@@ -8,10 +8,8 @@ out/
 proguard_logs/
 
 .gradle/
-.idea/jenkinsSettings.xml
-.idea/uiDesigner.xml
-.idea/workspace.xml
 key.c
 local.properties
 tags
 *.keystore
+*.iml

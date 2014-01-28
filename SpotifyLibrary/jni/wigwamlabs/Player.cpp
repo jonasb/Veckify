@@ -144,7 +144,7 @@ bool Player::initialize() {
 }
 
 sp_error Player::destroy() {
-    LOGV(__func__);
+    LOGV("%s", __func__);
     sp_error error = SP_ERROR_OK;
 
     // destroy buffer queue audio player object, and invalidate all associated interfaces
@@ -386,7 +386,7 @@ void Player::clearAllBuffers() {
 }
 
 void Player::onPlayTokenLost() {
-    LOGV(__func__);
+    LOGV("%s", __func__);
     if (pause(STATE_PAUSED_USER) && mCallback) {
         mCallback->onPlayTokenLost();
     }

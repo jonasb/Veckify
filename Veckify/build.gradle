@@ -4,14 +4,14 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4.1'
+        classpath 'com.android.tools.build:gradle:0.8.0'
     }
 }
 
 apply plugin: 'android'
 
 android {
-    buildToolsVersion "17.0"
+    buildToolsVersion "19.0.1"
     compileSdkVersion 17
 
         sourceSets {
@@ -27,9 +27,14 @@ android {
 
             instrumentTest.setRoot('tests')
         }
+
     buildTypes {
         release {
             runProguard true
+        }
+        debug {
+            packageNameSuffix ".debug"
+            versionNameSuffix "-DEBUG"
         }
     }
 }
