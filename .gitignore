@@ -8,6 +8,7 @@ out/
 proguard_logs/
 
 .gradle/
+com_crashlytics_export_strings.xml
 key.c
 local.properties
 tags

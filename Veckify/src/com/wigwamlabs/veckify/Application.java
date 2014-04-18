@@ -9,7 +9,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         Debug.logLifecycle("Application.onCreate()");
         super.onCreate();
-        Debug.enableStrictMode();
+        Debug.initApplication(this);
 
         mDb = new DataDatabaseAdapter(this);
     }

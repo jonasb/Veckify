@@ -3,10 +3,12 @@ package com.wigwamlabs.veckify;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 public final class Debug {
     private static final String TAG = "Veckify";
 
-    static void enableStrictMode() {
+    static void initApplication(Application app) {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
@@ -16,6 +18,8 @@ public final class Debug {
                     .detectAll()
                     .penaltyLog()
                     .build());
+        } else {
+            Crashlytics.start(app);
         }
     }
 
