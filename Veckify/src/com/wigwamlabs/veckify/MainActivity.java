@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,14 +61,14 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         Debug.logLifecycle("MainActivity.onSaveInstanceState()");
         super.onSaveInstanceState(outState);
         mUndoBarController.onSaveInstanceState(outState);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         Debug.logLifecycle("MainActivity.onRestoreInstanceState()");
         super.onRestoreInstanceState(savedInstanceState);
         mUndoBarController.onRestoreInstanceState(savedInstanceState);
@@ -380,7 +381,7 @@ public class MainActivity extends SpotifyPlayerActivity implements LoaderManager
             final long[] oldIds = ids;
             ids = new long[oldIds.length + newIds.length];
             System.arraycopy(oldIds, 0, ids, 0, oldIds.length);
-            System.arraycopy(newIds, 0, ids, oldIds.length + 0, newIds.length);
+            System.arraycopy(newIds, 0, ids, oldIds.length, newIds.length);
         }
     }
 }

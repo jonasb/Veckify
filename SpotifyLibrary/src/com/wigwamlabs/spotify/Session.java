@@ -1,5 +1,6 @@
 package com.wigwamlabs.spotify;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -216,7 +217,7 @@ public class Session extends NativeItem {
     public void updateConnectionType() {
         final NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
         int type = 0; // unknown
-        if (Build.VERSION.SDK_INT >= 16 && mConnectivityManager.isActiveNetworkMetered()) {
+        if (isActiveNetworkMetered()) {
             type = 2; // treat it as mobile
         } else if (networkInfo != null) {
             if (networkInfo.isRoaming()) {
@@ -237,6 +238,11 @@ public class Session extends NativeItem {
             }
         }
         nativeSetConnectionType(type);
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private boolean isActiveNetworkMetered() {
+        return Build.VERSION.SDK_INT >= 16 && mConnectivityManager.isActiveNetworkMetered();
     }
 
     public int getConnectionState() {

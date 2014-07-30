@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
 
 public class RuntimeBroadcastReceiver extends BroadcastReceiver {
     private final Session mSession;

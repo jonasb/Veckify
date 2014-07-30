@@ -25,6 +25,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -75,7 +76,7 @@ public class SwipeDismissListView extends ListView implements SwipeHelper.Callba
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull MotionEvent ev) {
         // prioritize scrolling over swipe
         boolean intercepted = super.onInterceptTouchEvent(ev);
         if (!intercepted && mScrollState == SCROLL_STATE_IDLE) {
@@ -85,7 +86,7 @@ public class SwipeDismissListView extends ListView implements SwipeHelper.Callba
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull MotionEvent ev) {
         // if we're not scrolling we're most likely swiping, so prioritize swipe helper
         boolean handled = false;
         if (mScrollState == SCROLL_STATE_IDLE) {
@@ -227,7 +228,7 @@ public class SwipeDismissListView extends ListView implements SwipeHelper.Callba
         }
 
         @Override
-        public int compareTo(PendingDismissData other) {
+        public int compareTo(@NonNull PendingDismissData other) {
             // Sort by descending position
             return other.position - position;
         }

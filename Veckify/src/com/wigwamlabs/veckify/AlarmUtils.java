@@ -45,7 +45,7 @@ public final class AlarmUtils {
         mDateFormatYear = String.format("%s/%s/%s k:mm", formatOrder[0], formatOrder[1], formatOrder[2]);
         final StringBuilder sb = new StringBuilder();
         for (char c : formatOrder) {
-            if (c == DateFormat.YEAR) {
+            if (c == 'y') { // year
                 continue;
             }
             if (sb.length() > 0) {
