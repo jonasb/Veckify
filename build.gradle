@@ -1,12 +1,13 @@
 buildscript {
     repositories {
-        maven { url "https://github.com/ben-manes/gradle-versions-plugin/raw/mvnrepo" }
         mavenCentral()
+        jcenter()
+        maven { url 'http://download.crashlytics.com/maven' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.2'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5-beta-2'
+        classpath 'com.android.tools.build:gradle:0.12.2'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5-beta-5'
     }
 }
 

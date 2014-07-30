@@ -4,15 +4,15 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.8.1'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.11.3'
     }
 }
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'crashlytics'
 
 android {
-    buildToolsVersion "19.0.3"
+    buildToolsVersion '20'
     compileSdkVersion 19
 
     sourceSets {
@@ -36,7 +36,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
         debug {
-            packageNameSuffix ".debug"
+            applicationIdSuffix ".debug"
             versionNameSuffix "-DEBUG"
         }
     }
