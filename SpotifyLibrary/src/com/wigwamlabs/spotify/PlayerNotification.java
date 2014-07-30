@@ -56,6 +56,7 @@ class PlayerNotification extends ForegroundNotification implements Player.Callba
                 .setContentText(mTrackName)
                 .setContentIntent(mIntent);
 
+        resetTrackImageIfRecycled();
         if (mTrackImage != null) {
             builder.setLargeIcon(mTrackImage);
         }
@@ -85,6 +86,7 @@ class PlayerNotification extends ForegroundNotification implements Player.Callba
             mTrackImage = null;
         } else {
             mTrackImage = mImageProvider.get(mTrackImageLink);
+            resetTrackImageIfRecycled();
             if (mTrackImage == null) {
                 mImageProvider.load(mTrackImageLink, this, true);
             }
@@ -119,6 +121,12 @@ class PlayerNotification extends ForegroundNotification implements Player.Callba
         if (imageLink.equals(mTrackImageLink)) {
             mTrackImage = image;
             onNotificationUpdated();
+        }
+    }
+
+    private void resetTrackImageIfRecycled() {
+        if (mTrackImage != null && mTrackImage.isRecycled()) {
+            mTrackImage = null;
         }
     }
 }
