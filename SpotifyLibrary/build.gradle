@@ -1,24 +1,34 @@
+buildscript {
+    repositories {
+        maven { url 'http://download.crashlytics.com/maven' }
+    }
+    dependencies {
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.8.1'
+    }
+}
+
 apply plugin: 'android-library'
+apply plugin: 'crashlytics'
 
 android {
     buildToolsVersion "19.0.3"
     compileSdkVersion 19
 
-        sourceSets {
-            main {
-                manifest.srcFile 'AndroidManifest.xml'
-                    java.srcDirs = ['src']
-                    resources.srcDirs = ['src']
-                    aidl.srcDirs = ['src']
-                    renderscript.srcDirs = ['src']
-                    res.srcDirs = ['res']
-                    assets.srcDirs = ['assets']
-                    jniLibs.srcDirs = ['libs']
-            }
-
-            instrumentTest.setRoot('tests')
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
         }
-    task ndkBuild(type:Exec) {
+
+        instrumentTest.setRoot('tests')
+    }
+    task ndkBuild(type: Exec) {
         commandLine 'ndk-build'
     }
     tasks.withType(Compile) {
@@ -26,8 +36,12 @@ android {
     }
 }
 
+repositories {
+    maven { url 'http://download.crashlytics.com/maven' }
+}
 dependencies {
     compile 'com.android.support:support-v4:19.1.0'
     compile files('libs/proguard-annotations.jar')
+    compile 'com.crashlytics.android:crashlytics:1.1.11'
 }
 
