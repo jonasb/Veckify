@@ -3,7 +3,7 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.8.1'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.16.0'
     }
 }
 
@@ -31,7 +31,7 @@ android {
     task ndkBuild(type: Exec) {
         commandLine 'ndk-build'
     }
-    tasks.withType(Compile) {
+    tasks.withType(JavaCompile) {
         compileTask -> compileTask.dependsOn ndkBuild
     }
 }
@@ -42,6 +42,6 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:20.0.0'
     compile files('libs/proguard-annotations.jar')
-    compile 'com.crashlytics.android:crashlytics:1.1.11'
+    compile 'com.crashlytics.android:crashlytics:1.1.13'
 }
 

@@ -4,7 +4,7 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.11.3'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.16.0'
     }
 }
 
@@ -31,7 +31,7 @@ android {
 
     buildTypes {
         release {
-            runProguard true
+            minifyEnabled true
             proguardFile 'proguard-project.pro'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
@@ -50,5 +50,5 @@ dependencies {
     compile project(':ActionBar')
     compile project(':UndoBar')
     compile project(':BetterTimePicker')
-    compile 'com.crashlytics.android:crashlytics:1.1.11'
+    compile 'com.crashlytics.android:crashlytics:1.1.13'
 }
